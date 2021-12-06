@@ -3,11 +3,12 @@ import {Message} from 'element-ui'
 import router from '../src/router'
 // 相应拦截器
 axios.interceptors.response.use(success => {
-  if (success.data.code && success.data.code === '200') {
-    // Message.success({message: success.data.msg})
-  } else {
-    Message.error({message: success.data.msg})
-  }
+  // if (success.data.code && success.data.code === '200') {
+  //   Message.success({message: success.data.msg})
+  // }
+  // else {
+  //   Message.error({message: success.data.msg})
+  // }
   return success
 }, error => {
   if (error.response.code === '504' || error.response.code === '404') {
