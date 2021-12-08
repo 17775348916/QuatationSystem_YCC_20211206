@@ -1,22 +1,19 @@
 package com.evan.wj.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.evan.wj.pojo.Project_Overview;
-import com.evan.wj.result.ProjectListResult;
 import com.evan.wj.result.Result;
-import com.evan.wj.dao.Project_OverviewDAO;
 import com.evan.wj.service.Account_informationService;
 import com.evan.wj.service.Project_OverviewService;
-import com.evan.wj.vo.OverViewAndFeasibleVo;
 import com.evan.wj.vo.ProjWithTimeVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.HtmlUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -55,7 +52,7 @@ public class SWController {
         for(ProjWithTimeVo p : pwt){
             log.info(p.toString());
         }
-
+        System.out.println(pwt.toString());
         return new Result<List<ProjWithTimeVo>>(pwt);
     }
 

@@ -123,46 +123,48 @@
             </el-row>
             <el-row>
               <el-col :offset="3" :span="6">
-                <div>氢谱:{{ x.ztjs.hsl }}</div>
+                <div>氢谱:{{ x.hsl }}</div>
               </el-col>
               <el-col :span="6">
-                <div>碳谱:{{ x.ztjs.csl }}</div>
+                <div>碳谱:{{ x.csl }}</div>
               </el-col>
               <el-col :span="6">
-                <div>质谱:{{x.ztjs.msl}}</div>
+                <div>质谱:{{ x.msl }}</div>
               </el-col>
             </el-row>
             <el-row>
               <el-col :offset="3" :span="4">
-                <div>测试总时间:{{x.ztjs.zsjcs}}</div>
+                <div>测试总时间:{{ x.zsjcs }}</div>
               </el-col>
             </el-row>
             <el-row>
               <el-col :offset="3" :span="6">
-                <div>打通路线时间:{{ x.ztjs.dtlxsjcs }}天</div>
+                <div>打通路线时间:{{ x.dtlxsjcs }}天</div>
               </el-col>
               <el-col :span="6">
-                <div>积累量时间:{{ x.ztjs.jllsjcs }} 天</div>
+                <div>积累量时间:{{ x.jllsjcs }} 天</div>
               </el-col>
             </el-row>
             <el-row>
               <el-col :offset="3" :span="4">
-                技术难度：{{ x.ztjs.isdifficultjs }}
+                技术难度：{{ x.isdifficultjs }}
               </el-col>
             </el-row>
             <el-row>
               <el-col :offset="3" :span="8">
-                完成项目时间:{{ x.ztjs.timeneeded }}
+                完成项目时间:{{ x.timeneeded }}
               </el-col>
             </el-row>
             <el-row>
               <el-col :offset="3" :span="8">
-                完成项目的特殊要求:{{ x.ztjs.bz }}
+                完成项目的特殊要求:{{ x.bz }}
               </el-col>
             </el-row>
             <el-row>
               <el-col :offset="3" :span="4">
-                完成项目相关文档:{{x.ztjs.papersjs}}
+                <el-row>
+                  完成项目相关文档: <a :href="x.papersjs" target="_blank">文档</a>
+                </el-row>
               </el-col>
             </el-row>
           </div>
@@ -174,7 +176,7 @@
             </el-row>
             <el-row>
               <el-col :offset="3" :span="12">
-                <div>{{ x.ztjs.reasonsjs }}</div>
+                <div>{{ x.reasonsjs }}</div>
               </el-col>
             </el-row>
           </div>
@@ -241,8 +243,8 @@ export default {
       })
         .then(successResponse => {
           if (successResponse.data.success) {
-            console.log(successResponse.data.data)
             this.list2 = successResponse.data.data
+            // console.log(this.list2)
             if (this.list2.length < 1) {
               this.$message('查询时间段内无项目')
             } else {
@@ -261,28 +263,14 @@ export default {
                   })
                   .catch(failResponse => {
                   })
-                // this.list2[m].testresult = ''
-                // this.$axios
-                //   .post('/querytestresult', {
-                //     projectid: this.list2[m].projectid
-                //   })
-                //   .then(successResponse => {
-                //     if (successResponse.data.success) {
-                //       // console.log(successResponse.data.data)
-                //       this.list2[m].testresult = successResponse.data.data
-                //     } else {
-                //       this.$message(successResponse.data.msg)
-                //     }
-                //   })
-                //   .catch(failResponse => {
-                //   })
-                this.list2[m].ztjs = {
-                  reasonjs: '',
-                  isdifficultjs: '',
-                  timeneeded: '',
-                  bz: '',
-                  papersjs: ''
-                }
+                // this.list2[m].ztjs = {
+                //   isdifficultjs: '',
+                //   timeneeded: '',
+                //   bz: '',
+                //   papersjs: '',
+                //   hsl: '',
+                //   msl: ''
+                // }
                 if (this.list2[m].projectztjs === '已评估-不可行') {
                   this.$axios
                     .post('/querynofeasible', {
@@ -290,8 +278,7 @@ export default {
                     })
                     .then(successResponse => {
                       if (successResponse.data.success) {
-                        // console.log(successResponse.data.data)
-                        this.list2[m].ztjs = successResponse.data.data
+                        this.$set(this.list2[m], 'reasonsjs', successResponse.data.data.reasonsjs)
                       } else {
                         this.$message(successResponse.data.msg)
                       }
@@ -305,7 +292,18 @@ export default {
                     })
                     .then(successResponse => {
                       if (successResponse.data.success) {
-                        this.list2[m].ztjs = successResponse.data.data
+                        // console.log(successResponse.data.data)
+                        this.$set(this.list2[m], 'hsl', successResponse.data.data.hsl)
+                        this.$set(this.list2[m], 'msl', successResponse.data.data.msl)
+                        this.$set(this.list2[m], 'csl', successResponse.data.data.csl)
+                        this.$set(this.list2[m], 'csl', successResponse.data.data.csl)
+                        this.$set(this.list2[m], 'isdifficultjs', successResponse.data.data.isdifficultjs)
+                        this.$set(this.list2[m], 'timeneeded', successResponse.data.data.timeneeded)
+                        this.$set(this.list2[m], 'bz', successResponse.data.data.bz)
+                        this.$set(this.list2[m], 'jllsjcs', successResponse.data.data.jllsjcs)
+                        this.$set(this.list2[m], 'dtlxsjcs', successResponse.data.data.dtlxsjcs)
+                        this.$set(this.list2[m], 'zsjcs', successResponse.data.data.zsjcs)
+                        this.$set(this.list2[m], 'papersjs', successResponse.data.data.papersjs)
                       } else {
                         this.$message(successResponse.data.msg)
                       }
@@ -314,6 +312,7 @@ export default {
                     })
                 }
               }
+              console.log(this.list2)
             }
           } else {
             this.$message(successResponse.data.msg)
@@ -321,7 +320,6 @@ export default {
         })
         .catch(failResponse => {
         })
-      this.$forceUpdate()
     },
     lookMaterial: function (x) {
       window.sessionStorage.setItem(this.account_id, x)

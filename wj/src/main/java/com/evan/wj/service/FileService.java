@@ -5,7 +5,6 @@ import com.evan.wj.dao.Project_OverviewDAO;
 import com.evan.wj.pojo.Feasible_project;
 import com.evan.wj.pojo.Project_Overview;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -39,16 +38,10 @@ public class FileService {
              * 存放图片的时候是/projectid+url
              */
             proj.setProjectdetails(String.valueOf(projectid) + "/" + url);
-//            /**
-//             * 原来是存入/projectid+url，现在更改为url
-//             */
-//            proj.setProjectdetails(url);
 
             project_overviewDAO.save(proj);
         } else {
             Feasible_project fproj = feasibleProjectDAO.findByProjectid(projectid);
-
-//            fproj.setPapersjs(String.valueOf(projectid) + "/" + url);
             /**
              * 原来是存入/projectid+url，现在更改为url
              */

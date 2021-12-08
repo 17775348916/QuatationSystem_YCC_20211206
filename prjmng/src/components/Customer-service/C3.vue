@@ -198,7 +198,7 @@
           <el-row><div align="center">完成项目时间(天)：{{ x.ztjs.timeneeded}}</div></el-row>
           <el-row><div align="center">完成项目的特殊要求：{{ x.ztjs.bz }}</div></el-row>
           <el-row><div align="center">项目技术文档：</div></el-row>
-          <el-row><a :href="url +  x.ztjs.papersjs" >文档</a></el-row>
+          <el-row><a :href="url +  x.ztjs.papersjs" target="_blank">文档</a></el-row>
           <el-row><div align="center">报价：{{ x.finalprice }}</div></el-row>
         </div>
         <div slot="footer" class="dialog-footer">
@@ -319,7 +319,6 @@ export default {
                 bz: '',
                 papersjs: ''
               }
-              // this.list1[m].itemkey = Math.random()
               this.$axios
                 .post('/querymateriallr', {
                   projectid: this.list1[m].projectid
@@ -341,7 +340,6 @@ export default {
                   })
                   .then(successResponse => {
                     if (successResponse.data.success) {
-                      console.log(successResponse.data.data)
                       this.list1[m].ztjs = successResponse.data.data
                     } else {
                       this.$message(successResponse.data.msg)
