@@ -25,37 +25,38 @@ import java.util.UUID;
 @Controller
 @Slf4j
 public class PapersController {
-    @Value("/Users/yaochaochao/IdeaProjects/QuatationSystem-main/data/file")
+    @Value("${web.upload-path}")
     private String folder;
     SimpleDateFormat sdf = new SimpleDateFormat("/yyyy/MM/dd/");
+
     @CrossOrigin
     @PostMapping("/api/upload")
     @ResponseBody
-    public Map<String, Object> fileUpload(MultipartFile file, HttpServletRequest req){
+    public Map<String, Object> fileUpload(MultipartFile file, HttpServletRequest req) {
         Map<String, Object> result = new HashMap<>();
         String originalFilename = file.getOriginalFilename();
-        if(!originalFilename.endsWith(".pdf")){
-            result.put("status","error");
-            result.put("msg","文件类型不对");
+        if (!originalFilename.endsWith(".pdf")) {
+            result.put("status", "error");
+            result.put("msg", "文件类型不对");
             return result;
         }
-        String format = "/pdf/"+sdf.format(new Date());
+        String format = "/pdf/" + sdf.format(new Date());
         String realPath = folder + format;
 //        String realPath = folder;
         System.out.println(realPath);
         File folder = new File(realPath);
-        if(!folder.exists()){
+        if (!folder.exists()) {
             folder.mkdirs();
         }
         String newName = UUID.randomUUID().toString() + ".pdf";
         try {
-            file.transferTo(new File(folder,newName));
-            String url = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort()+ format + newName;
-            result.put("status","success");
-            result.put("url",url);
+            file.transferTo(new File(folder, newName));
+            String url = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + format + newName;
+            result.put("status", "success");
+            result.put("url", url);
         } catch (IOException e) {
-            result.put("status","error");
-            result.put("msg",e.getMessage());
+            result.put("status", "error");
+            result.put("msg", e.getMessage());
             e.printStackTrace();
         }
         return result;
