@@ -65,7 +65,7 @@
           <el-row>
             <el-col :span="12">
               <div>产品结构图片：</div>
-              <img alt="图片未上传" v-bind:src="x.projectdetails"/>
+              <img alt="图片未上传" v-bind:src="x.projectdetails" style="max-width: 600px"/>
             </el-col>
             <el-col :span="12">
               <div>备注：{{ x.bz }}</div>
@@ -168,7 +168,7 @@
           <el-row>
             <el-col :span="12">
               <div>产品结构图片：</div>
-              <img alt="图片未上传" v-bind:src="x.projectdetails"/>
+              <img alt="图片未上传" v-bind:src="x.projectdetails" style="max-width:600px"/>
             </el-col>
             <el-col :span="12">
               <div>备注：{{ x.bz }}</div>

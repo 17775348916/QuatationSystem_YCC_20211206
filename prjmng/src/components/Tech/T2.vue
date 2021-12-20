@@ -33,7 +33,7 @@
       <el-col :span="12">
         <div>产品结构式图片</div>
         <br>
-        <img v-bind:src="project.projectdetails" alt="图片未上传" />
+        <img v-bind:src="project.projectdetails" alt="图片未上传" style="max-width:600px" />
       </el-col>
       <el-col :span="12">
         <div>客户对产品纯度，货期等方面特殊要求：</div>
@@ -117,13 +117,11 @@
         </el-form-item>
         <el-form-item>
           <el-row>
-            <el-col :offset="3" :span="4">
-              请提交完成项目相关文档(文件大小限制为50MB)
+            <el-col :offset="4" :span="4">
+              请提交项目参考文件(大小限制为50MB)
             </el-col>
-            <el-col :span="4">
+            <el-col :span="3">
               <Papers-Upload ref="PapersUpload"></Papers-Upload>
-              <!--              <Papers-Upload ref="PapersUpload" @onUpload="uploadPaper"></Papers-Upload>-->
-<!--              <img-upload @onUpload="uploadPaper" ref="PapersUpload"></img-upload>-->
             </el-col>
           </el-row>
 
@@ -230,7 +228,7 @@ export default {
           jllsjcs: _this.input.jllsjcs,
           zsjcs: Number(_this.input.dtlxsjcs) + Number(_this.input.jllsjcs),
           isdifficultjs: _this.input.isdifficultjs,
-          papersjs: window.sessionStorage.getItem('PaperUrl'),
+          papersjs: this.$refs.PapersUpload.url,
           timeneeded: _this.input.timeneeded,
           bz: _this.input.bz,
           evaluationjs: _this.input.evaluationjs,

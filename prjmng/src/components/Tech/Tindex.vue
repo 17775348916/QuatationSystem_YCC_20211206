@@ -103,7 +103,7 @@
           <el-row>
             <el-col :span="12">
               <div>产品结构图片：</div>
-              <img alt="图片未上传" v-bind:src="x.projectdetails"/>
+              <img alt="图片未上传" v-bind:src="x.projectdetails" style="max-width: 600px"/>
             </el-col>
             <el-col :span="12">
               <div>备注：{{ x.bz }}</div>
@@ -161,9 +161,67 @@
               </el-col>
             </el-row>
             <el-row>
-              <el-col :offset="3" :span="4">
-                <el-row>
-                  完成项目相关文档: <a :href="x.papersjs" target="_blank">文档</a>
+              <el-col :offset="3" :span="8">
+                <el-row >
+                  项目参考文档：
+                  <el-col v-for ="(item,index) in x.papersjs" v-bind:key="index">
+                    <div v-if= "index === 0">
+                      <div v-if="item.includes('.pdf')" >
+                        项目参考文档：<a :href="item" target="_blank">{{x.paperType[index]}}</a>
+                      </div>
+                      <div v-else-if="item.includes('.jpg')">
+                        项目参考文档：<a :href="item" target="_blank">{{x.paperType[index]}}</a>
+                      </div>
+                      <div v-else-if="item.includes('.jpeg')">
+                        项目参考文档：<a :href="item" target="_blank">{{x.paperType[index]}}</a>
+                      </div>
+                      <div v-else-if="item.includes('.png')">
+                        项目参考文档：<a :href="item" target="_blank">{{x.paperType[index]}}</a>
+                      </div>
+                      <div v-if="item.includes('.doc')" >
+                        项目参考文档：<a :href="item">{{x.paperType[index]}}</a>
+                      </div>
+                      <div v-else-if="item.includes('.docx')">
+                        项目参考文档：<a :href="item">{{x.paperType[index]}}</a>
+                      </div>
+                      <div v-else-if="item.includes('.xls')">
+                        项目参考文档：<a :href="item">{{x.paperType[index]}}</a>
+                      </div>
+                      <div v-else-if="item.includes('.xlsx')">
+                        项目参考文档：<a :href="item">{{x.paperType[index]}}</a>
+                      </div>
+                      <div v-else-if="item.includes('.rar')">
+                        项目参考文档：<a :href="item">{{x.paperType[index]}}</a>
+                      </div>
+                    </div>
+                    <div v-else-if ="item.includes('.pdf')">
+                      <a :href="item" target="_blank">{{x.paperType[index]}}</a>
+                    </div>
+                    <div v-else-if="item.includes('.jpg')">
+                      <a :href="item" target="_blank">{{x.paperType[index]}}</a>
+                    </div>
+                    <div v-else-if="item.includes('.jpeg')">
+                      <a :href="item" target="_blank">{{x.paperType[index]}}</a>
+                    </div>
+                    <div v-else-if="item.includes('.png')">
+                      <a :href="item" target="_blank">{{x.paperType[index]}}</a>
+                    </div>
+                    <div v-else-if ="item.includes('.xls')">
+                      <a :href="item">{{x.paperType[index]}}</a>
+                    </div>
+                    <div v-else-if="item.includes('.doc')">
+                      <a :href="item">{{x.paperType[index]}}</a>
+                    </div>
+                    <div v-else-if="item.includes('.docx')">
+                      <a :href="item">{{x.paperType[index]}}</a>
+                    </div>
+                    <div v-else-if="item.includes('.rar')">
+                      <a :href="item">{{x.paperType[index]}}</a>
+                    </div>
+                    <div v-else-if="item.includes('.xlsx')">
+                      <a :href="item">{{x.paperType[index]}}</a>
+                    </div>
+                  </el-col>
                 </el-row>
               </el-col>
             </el-row>
@@ -296,14 +354,22 @@ export default {
                         this.$set(this.list2[m], 'hsl', successResponse.data.data.hsl)
                         this.$set(this.list2[m], 'msl', successResponse.data.data.msl)
                         this.$set(this.list2[m], 'csl', successResponse.data.data.csl)
-                        this.$set(this.list2[m], 'csl', successResponse.data.data.csl)
                         this.$set(this.list2[m], 'isdifficultjs', successResponse.data.data.isdifficultjs)
                         this.$set(this.list2[m], 'timeneeded', successResponse.data.data.timeneeded)
                         this.$set(this.list2[m], 'bz', successResponse.data.data.bz)
                         this.$set(this.list2[m], 'jllsjcs', successResponse.data.data.jllsjcs)
                         this.$set(this.list2[m], 'dtlxsjcs', successResponse.data.data.dtlxsjcs)
                         this.$set(this.list2[m], 'zsjcs', successResponse.data.data.zsjcs)
-                        this.$set(this.list2[m], 'papersjs', successResponse.data.data.papersjs)
+                        let strs = successResponse.data.data.papersjs.split('||')
+                        let paperType = []
+                        console.log('strs', strs)
+                        strs.forEach(item => {
+                          let strss = item.split('&&')
+                          paperType.push(strss[strss.length - 1])
+                        })
+                        this.$set(this.list2[m], 'paperType', paperType)
+                        this.$set(this.list2[m], 'papersjs', strs)
+                        console.log(paperType)
                       } else {
                         this.$message(successResponse.data.msg)
                       }

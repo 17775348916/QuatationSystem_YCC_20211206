@@ -285,7 +285,6 @@ export default {
         .then(successResponse => {
           if (successResponse.data.success) {
             // alert('添加成功' + year + '-' + (month + 1) + '-' + day)
-            this.$message({duration: 5000, message: '添加成功'})
             localStorage.removeItem('b1projectname')
             localStorage.removeItem('b1projectdetails')
             localStorage.removeItem('b1projectsl')
@@ -300,6 +299,7 @@ export default {
             localStorage.removeItem('b1ismoney')
             localStorage.removeItem('b1isdeal')
             localStorage.removeItem('b1bz')
+            this.$message('添加成功')
             location.reload()
           } else {
             this.$message('添加失败,' + successResponse.data.msg)

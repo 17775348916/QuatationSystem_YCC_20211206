@@ -41,7 +41,7 @@ public class LoginController {
         if(!byId.getKeywords().equals(requestUser.getKeywords())){
             return new Result("400",false,"账号或者密码错误");
         }
-        return new Result();
+        return new Result("200",true,"登陆成功");
     }
 
     @CrossOrigin

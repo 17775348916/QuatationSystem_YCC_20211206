@@ -83,6 +83,8 @@ export default {
                   this.$router.replace({path: '/Cindex'})
                   break
               }
+            } else {
+              this.$message.error(resp.data.msg)
             }
           })
         } else {

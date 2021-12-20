@@ -5,6 +5,7 @@ import com.evan.wj.dao.Project_OverviewDAO;
 import com.evan.wj.pojo.Feasible_project;
 import com.evan.wj.pojo.Project_Overview;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,10 @@ public class FileService {
     private String pfolder;
 
     public void morefile(String url, int projectid, boolean flag) {
+        if(StringUtils.isEmpty(url)){
+            log.error("morefile:url is null");
+            return;
+        }
         File dir = new File(pfolder + "/" + projectid);
         if (!dir.exists() && !dir.isDirectory()) {
             dir.mkdir();

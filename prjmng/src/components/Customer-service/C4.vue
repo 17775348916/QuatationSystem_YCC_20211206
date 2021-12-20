@@ -51,18 +51,48 @@
       <br>
       <el-dialog :visible.sync="dialogTableVisible1[index].flag1" title="项目及外包价格">
         <el-row>
-          <div align="center">技术难度：{{ item.ztjs.isdifficultjs }}</div>
+          <div align="center">技术难度：{{ item.isdifficultjs }}</div>
         </el-row>
         <el-row>
-          <div align="center">完成项目时间(天)：{{ item.ztjs.timeneeded }}</div>
+          <div align="center">完成项目时间(天)：{{ item.timeneeded }}</div>
         </el-row>
         <el-row>
-          <div align="center">完成项目的特殊要求：{{ item.ztjs.bz }}</div>
+          <div align="center">完成项目的特殊要求：{{ item.bz }}</div>
         </el-row>
         <el-row>
           <div align="center">项目技术文档：</div>
         </el-row>
-        <el-row><a :href="url +  item.ztjs.papersjs">文档</a></el-row>
+        <el-row>
+          <el-col v-for ="(x,ind) in item.papersjs" v-bind:key="ind">
+            <div v-if="x.includes('.pdf')">
+              <a :href="x" target="_blank">{{item.paperType[ind]}}</a>
+            </div>
+            <div v-else-if="x.includes('.jpg')">
+              <a :href="x" target="_blank">{{item.paperType[ind]}}</a>
+            </div>
+            <div v-else-if="x.includes('.jpeg')">
+              <a :href="x" target="_blank">{{item.paperType[ind]}}</a>
+            </div>
+            <div v-else-if="x.includes('.png')">
+              <a :href="x" target="_blank">{{item.paperType[ind]}}</a>
+            </div>
+            <div v-else-if="x.includes('.doc')">
+              <a :href="x">{{item.paperType[ind]}}</a>
+            </div>
+            <div v-else-if="x.includes('.docx')">
+              <a :href="x">{{item.paperType[ind]}}</a>
+            </div>
+            <div v-else-if="x.includes('.xls')">
+              <a :href="x">{{item.paperType[ind]}}</a>
+            </div>
+            <div v-else-if="x.includes('.xlsx')">
+              <a :href="x">{{item.paperType[ind]}}</a>
+            </div>
+            <div v-else-if="x.includes('.rar')">
+              <a :href="x">{{item.paperType[ind]}}</a>
+            </div>
+          </el-col>
+        </el-row>
         <el-row>
           <div align="center">外包价：{{ item.wbprice }}</div>
         </el-row>
@@ -164,25 +194,55 @@
             </el-button>
           </el-col>
           <el-col :span="5">
-            <div>实验情况：{{ item.finalreceive.testresult }}</div>
+            <el-button style="background-color: yellowgreen">
+              实验情况：{{ item.testresult }}
+            </el-button>
           </el-col>
         </el-row>
       </el-row>
       <br>
       <el-dialog :visible.sync="dialogTableVisible2[index].flag1" title="项目及外包价格">
         <el-row>
-          <div align="center">技术难度：{{ item.ztjs.isdifficultjs }}</div>
+          <div align="center">技术难度：{{ item.isdifficultjs }}</div>
         </el-row>
         <el-row>
-          <div align="center">完成项目时间(天)：{{ item.ztjs.timeneeded }}</div>
+          <div align="center">完成项目时间(天)：{{ item.timeneeded }}</div>
         </el-row>
         <el-row>
-          <div align="center">完成项目的特殊要求：{{ item.ztjs.bz }}</div>
+          <div align="center">完成项目的特殊要求：{{ item.bz }}</div>
         </el-row>
         <el-row>
           <div align="center">项目技术文档：</div>
         </el-row>
-        <el-row><a :href="url +  item.ztjs.papersjs">文档</a></el-row>
+        <el-row>
+          <el-col v-for ="(x,ind) in item.papersjs" v-bind:key="ind">
+            <div v-if="x.includes('.pdf')">
+              <a :href="x" target="_blank">{{item.paperType[ind]}}</a>
+            </div>
+            <div v-else-if="x.includes('.jpg')">
+              <a :href="x" target="_blank">{{item.paperType[ind]}}</a>
+            </div>
+            <div v-else-if="x.includes('.jpeg')">
+              <a :href="x" target="_blank">{{item.paperType[ind]}}</a>
+            </div>
+            <div v-else-if="x.includes('.png')">
+              <a :href="x" target="_blank">{{item.paperType[ind]}}</a>
+            </div>
+<!--            .jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx,.rar-->
+            <div v-else-if="x.includes('.doc')">
+              <a :href="x">{{item.paperType[ind]}}</a>
+            </div>
+            <div v-else-if="x.includes('.xls')">
+              <a :href="x">{{item.paperType[ind]}}</a>
+            </div>
+            <div v-else-if="x.includes('.xlsx')">
+              <a :href="x">{{item.paperType[ind]}}</a>
+            </div>
+            <div v-else-if="x.includes('.rar')">
+              <a :href="x">{{item.paperType[ind]}}</a>
+            </div>
+          </el-col>
+        </el-row>
         <el-row>
           <div align="center">外包价：{{ item.wbprice }}</div>
         </el-row>
@@ -347,12 +407,6 @@ export default {
                 flag3: false,
                 flag4: false
               })
-              this.list1[m].ztjs = {
-                isdifficultjs: '',
-                timeneeded: '',
-                bz: '',
-                papersjs: ''
-              }
               this.$axios
                 .post('/queryfeasible', {
                   projectid: this.list1[m].projectid
@@ -360,7 +414,24 @@ export default {
                 .then(successResponse => {
                   if (successResponse.data.success) {
                     console.log(successResponse.data.data)
-                    this.list1[m].ztjs = successResponse.data.data
+                    this.$set(this.list1[m], 'hsl', successResponse.data.data.hsl)
+                    this.$set(this.list1[m], 'msl', successResponse.data.data.msl)
+                    this.$set(this.list1[m], 'csl', successResponse.data.data.csl)
+                    this.$set(this.list1[m], 'isdifficultjs', successResponse.data.data.isdifficultjs)
+                    this.$set(this.list1[m], 'timeneeded', successResponse.data.data.timeneeded)
+                    this.$set(this.list1[m], 'bz', successResponse.data.data.bz)
+                    this.$set(this.list1[m], 'jllsjcs', successResponse.data.data.jllsjcs)
+                    this.$set(this.list1[m], 'dtlxsjcs', successResponse.data.data.dtlxsjcs)
+                    this.$set(this.list1[m], 'zsjcs', successResponse.data.data.zsjcs)
+                    let strs = successResponse.data.data.papersjs.split('||')
+                    let paperType = []
+                    console.log('strs', strs)
+                    strs.forEach(item => {
+                      let strss = item.split('&&')
+                      paperType.push(strss[strss.length - 1])
+                    })
+                    this.$set(this.list1[m], 'paperType', paperType)
+                    this.$set(this.list1[m], 'papersjs', strs)
                     this.$axios
                       .post('/querywbprice', {
                         projectid: this.list1[m].projectid
@@ -410,20 +481,31 @@ export default {
                 flag3: false,
                 flag4: false
               })
-              this.list2[m].ztjs = {
-                isdifficultjs: '',
-                timeneeded: '',
-                bz: '',
-                papersjs: ''
-              }
+
               this.$axios
                 .post('/queryfeasible', {
                   projectid: this.list2[m].projectid
                 })
                 .then(successResponse => {
                   if (successResponse.data.success) {
-                    // console.log(successResponse.data.data)
-                    this.list2[m].ztjs = successResponse.data.data
+                    this.$set(this.list2[m], 'hsl', successResponse.data.data.hsl)
+                    this.$set(this.list2[m], 'msl', successResponse.data.data.msl)
+                    this.$set(this.list2[m], 'csl', successResponse.data.data.csl)
+                    this.$set(this.list2[m], 'isdifficultjs', successResponse.data.data.isdifficultjs)
+                    this.$set(this.list2[m], 'timeneeded', successResponse.data.data.timeneeded)
+                    this.$set(this.list2[m], 'bz', successResponse.data.data.bz)
+                    this.$set(this.list2[m], 'jllsjcs', successResponse.data.data.jllsjcs)
+                    this.$set(this.list2[m], 'dtlxsjcs', successResponse.data.data.dtlxsjcs)
+                    this.$set(this.list2[m], 'zsjcs', successResponse.data.data.zsjcs)
+                    let strs = successResponse.data.data.papersjs.split('||')
+                    let paperType = []
+                    console.log('strs', strs)
+                    strs.forEach(item => {
+                      let strss = item.split('&&')
+                      paperType.push(strss[strss.length - 1])
+                    })
+                    this.$set(this.list2[m], 'paperType', paperType)
+                    this.$set(this.list2[m], 'papersjs', strs)
                     this.$axios
                       .post('/querywbprice', {
                         projectid: this.list2[m].projectid
@@ -473,7 +555,8 @@ export default {
                   if (successResponse.data.success) {
                     // console.log(this.list2[m].projectid + ' finalprice info ' + successResponse.data.data)
                     this.list2[m].finalreceive = successResponse.data.data
-                    console.log(this.list2[m].finalreceive)
+                    this.$set(this.list2[m], 'testresult', successResponse.data.data.testresult)
+                    console.log('finalreceive', this.list2[m].finalreceive)
                   } else {
                     this.$message(successResponse.data.msg)
                   }

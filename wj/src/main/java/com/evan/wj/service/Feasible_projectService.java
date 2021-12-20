@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,8 +42,10 @@ public class Feasible_projectService {
             return new Result<>("400", false, "项目id不正确");
         }
     }
-
+    @SuppressWarnings("AlibabaTransactionMustHaveRollback")
+    @Transactional
     public int savenew(Feasible_project newfproj) {
+
         int projectid = newfproj.getProjectid();
         if (projectZtDAO.existsByProjectid(projectid)) {
             if (feasibleProjectDAO.existsByProjectid(projectid)) {
@@ -54,21 +56,20 @@ public class Feasible_projectService {
                 newfproj.setEvaluationdate(ntime);
                 newfproj.setEvaluationname(evaname);
                 feasibleProjectDAO.save(newfproj);
-
                 fileService.morefile(newfproj.getPapersjs(), projectid, false);
-
                 ProjectZt pzt = projectZtDAO.findByProjectid(projectid);
                 pzt.setEvaluationname(evaname);
                 pzt.setEvaluationdate(ntime);
-                projectZtDAO.save(pzt);
                 this.culculate(projectid, evaname);
+                projectZtDAO.save(pzt);
                 return 0;
             }
         } else {
             return 2;
         }
     }
-
+    @SuppressWarnings("AlibabaTransactionMustHaveRollback")
+    @Transactional
     public void culculate(int projectid, String evaname) {
         ProjectZt pzt = projectZtDAO.findByProjectid(projectid);
         Project_Overview pov = project_overviewDAO.findByProjectid(projectid);
@@ -77,9 +78,11 @@ public class Feasible_projectService {
 
         String khtype = pov.getKhtype(), ismoney = pov.getIsmoney(), isdifficult = fproj.getIsdifficultjs();
 
-        //有问题
-        // TODO: 2021/12/4
         Quoting_model model = quoting_modelDAO.askmodel(khtype, ismoney, isdifficult);
+        if(model == null){
+            log.error("{Feasible_projectService.culculate：}没有当前报价模型,报价模型为："+isdifficult);
+            return;
+        }
         log.info(projectid + "询价模式依据" + khtype + " " + ismoney + " " + isdifficult + "\n" + model.toString());
 
         String modelname = model.getModelname();

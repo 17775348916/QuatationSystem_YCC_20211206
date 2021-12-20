@@ -1,8 +1,7 @@
 package com.evan.wj.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.evan.wj.result.Result;
+import com.evan.wj.util.StringUtils;
 import com.evan.wj.vo.FileVo;
 import com.evan.wj.vo.ImgVo;
 import lombok.extern.slf4j.Slf4j;
@@ -13,12 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import com.evan.wj.util.StringUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 @Controller
 @Slf4j
@@ -36,8 +33,9 @@ class ImageController {
         File imageFolder = new File(folder);
         File f = new File(imageFolder, StringUtils.getRandomString(9) + filetype);
         log.info("新图片保存在：" + f.getAbsolutePath());
-        if (!f.getParentFile().exists())
+        if (!f.getParentFile().exists()){
             f.getParentFile().mkdirs();
+        }
         try {
             file.transferTo(f);
             String imgURL = f.getName();

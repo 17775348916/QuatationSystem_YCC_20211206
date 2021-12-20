@@ -3,16 +3,14 @@ package com.evan.wj;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
-import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.stereotype.Component;
-import org.springframework.util.unit.DataSize;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import sun.misc.Unsafe;
 
 import javax.servlet.*;
@@ -20,10 +18,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-import static org.springframework.util.unit.DataUnit.MEGABYTES;
-
 @Configuration
 @SpringBootApplication
+@EnableTransactionManagement
 public class WjApplication {
     /**
      * 配置FastJson方式二

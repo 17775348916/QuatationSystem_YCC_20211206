@@ -21,9 +21,7 @@
         <th>已经过时间（小时）</th>
         <th>状态</th>
         <th>原料任务</th>
-        <!--          <th></th>-->
         <th>反馈状况</th>
-        <th></th>
       </tr>
       </thead>
       <tbody v-for="x in list1" :key="x.projectid">
@@ -34,14 +32,11 @@
         <th>未评估</th>
         <th>{{ x.istaskjs }}</th>
         <th>{{ x.fkztkf }}</th>
-        <th>
-          <div v-if="x.istaskjs === '已下达' && x.fkztkf === '未反馈'">
+        <div v-if="x.istaskjs === '已下达' && x.fkztkf === '未反馈'">
+          <th>
             <el-button small v-on:click="feedback(x.projectid)">查看</el-button>
-          </div>
-<!--          <div v-else>-->
-<!--            <el-button v-on:click="lookMaterial(x.projectid)">确认原料信息</el-button>-->
-<!--          </div>-->
-        </th>
+          </th>
+        </div>
       </tr>
       </tbody>
     </table>
@@ -118,6 +113,9 @@ export default {
           if (successResponse.data.success) {
             console.log(successResponse.data.data)
             this.list1 = successResponse.data.data
+            if (this.list1.length < 1) {
+              this.$message('查询时间段内无项目')
+            }
           } else {
             this.$message(successResponse.data.msg)
           }
@@ -135,6 +133,9 @@ export default {
           if (successResponse.data.success) {
             console.log(successResponse.data.data)
             this.list2 = successResponse.data.data
+            if (this.list2.length < 1) {
+              this.$message('查询时间段内无项目')
+            }
           } else {
             this.$message(successResponse.data.msg)
           }

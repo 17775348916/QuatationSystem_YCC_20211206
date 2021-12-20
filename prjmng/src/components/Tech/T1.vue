@@ -33,7 +33,7 @@
       <el-col :span="12">
         <div>产品结构式图片</div>
         <br>
-        <img v-bind:src="project.projectdetails" alt="图片未上传" />
+        <img v-bind:src="project.projectdetails" style="max-width:400px" alt="图片未上传"/>
       </el-col>
       <el-col :span="12">
         <div>客户对产品纯度，货期等方面特殊要求：</div>

@@ -5,8 +5,7 @@ import router from '../src/router'
 axios.interceptors.response.use(success => {
   // if (success.data.code && success.data.code === '200') {
   //   Message.success({message: success.data.msg})
-  // }
-  // else {
+  // } else {
   //   Message.error({message: success.data.msg})
   // }
   return success
@@ -22,7 +21,7 @@ axios.interceptors.response.use(success => {
     if (error.response.data.msg) {
       Message.error({message: error.response.data.msg})
     } else {
-      Message.error({message: '位置错误'})
+      Message.error({message: '后台服务问题：' + error.response.data.msg})
     }
   }
 })
