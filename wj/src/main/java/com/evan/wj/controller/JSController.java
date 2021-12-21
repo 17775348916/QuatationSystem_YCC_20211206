@@ -103,12 +103,12 @@ public class JSController {
     @CrossOrigin
     @PostMapping(value = "/api/queryfinalprice")
     @ResponseBody
-    public Result<Double> queryfinalprice(@RequestBody JSONObject json) {
+    public Result<String> queryfinalprice(@RequestBody JSONObject json) {
         int projectid = -1;
         if (json.getInteger("projectid") != null) {
             projectid = json.getInteger("projectid");
         }
-        Result<Double> finalprice = new Result<Double>(feasible_projectService.askfinalprice(projectid));
+        Result<String> finalprice = new Result<String>(feasible_projectService.askfinalprice(projectid));
         log.info("查询项目ID为：" + projectid + "\n项目信息为：" + finalprice.getData().toString());
         return finalprice;
     }
@@ -129,12 +129,12 @@ public class JSController {
     @CrossOrigin
     @PostMapping(value = "/api/querywbprice")
     @ResponseBody
-    public Result<Double> querywbprice(@RequestBody JSONObject json) {
+    public Result<String> querywbprice(@RequestBody JSONObject json) {
         int projectid = -1;
         if (json.getInteger("projectid") != null) {
             projectid = json.getInteger("projectid");
         }
-        Result<Double> finalprice = new Result<Double>(feasible_projectService.askwbprice(projectid));
+        Result<String> finalprice = new Result<String>(feasible_projectService.askwbprice(projectid));
         log.info("查询项目ID为：" + projectid + "\n外包价格为：" + finalprice.getData().toString());
         return finalprice;
     }

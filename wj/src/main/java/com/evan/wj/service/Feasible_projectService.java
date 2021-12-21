@@ -115,7 +115,7 @@ public class Feasible_projectService {
 
         double firmtot = costa + costb + costc + costd1;
         double collegetot = costa + costb + costc + costd2;
-        if(model.getModelname().equals("A")) {
+        if("A".equals(model.getModelname())) {
             fp.setWorkcost(costd1);
             fp.setAllcost(firmtot);
         } else {
@@ -123,32 +123,33 @@ public class Feasible_projectService {
             fp.setAllcost(collegetot);
         }
 
-        double wbprice = collegetot / model.getCollegecoefficient();
+        double wbprice = collegetot / model.getProductcoefficient();
         fp.setWbprice(wbprice);
 
         double finalprice;
-        if(modelname.equals("A")) {
-            finalprice = firmtot / model.getFirmcoefficient();
+        if("A".equals(modelname)) {
+            finalprice = wbprice / model.getFirmcoefficient();
         } else {
-            finalprice = firmtot / model.getProductcoefficient();
+            finalprice = wbprice / model.getCollegecoefficient();
         }
         fp.setFinalprice(finalprice);
         final_priceDAO.save(fp);
 
     }
 
-    public double askfinalprice(int projectid) {
+    public String askfinalprice(int projectid) {
         if (final_priceDAO.existsByProjectid(projectid)){
-            return final_priceDAO.findByProjectid(projectid).getFinalprice();
+
+            return String.format("%.1f",final_priceDAO.findByProjectid(projectid).getFinalprice());
         }
-        else return -1;
+        return "";
     }
 
-    public double askwbprice(int projectid) {
+    public String askwbprice(int projectid) {
         if (final_priceDAO.existsByProjectid(projectid)){
-            return final_priceDAO.findByProjectid(projectid).getWbprice();
+            return String.format("%.1f",final_priceDAO.findByProjectid(projectid).getWbprice());
         }
-        else return -1;
+        return "";
     }
 
     public Final_price askpriceinfo(int projectid) {

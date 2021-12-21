@@ -297,7 +297,7 @@
               </div>
             </el-col>
           </el-row>
-          <el-row><div align="center">报价：{{ x.finalprice }}</div></el-row>
+          <el-row><div align="center">最终报价：{{ x.finalprice }}</div></el-row>
         </div>
         <div slot="footer" class="dialog-footer">
           <el-button type="primary" @click="dialogTableVisible2[index].pgflag = false">确 定</el-button>
