@@ -128,7 +128,7 @@ public class Feasible_projectService {
 
         double finalprice;
         if("A".equals(modelname)) {
-            finalprice = wbprice / model.getFirmcoefficient();
+            finalprice = firmtot / model.getFirmcoefficient();
         } else {
             finalprice = wbprice / model.getCollegecoefficient();
         }
@@ -141,6 +141,14 @@ public class Feasible_projectService {
         if (final_priceDAO.existsByProjectid(projectid)){
 
             return String.format("%.1f",final_priceDAO.findByProjectid(projectid).getFinalprice());
+        }
+        return "";
+    }
+
+    public String askOutsourcingPrice(int projectid) {
+        if (final_priceDAO.existsByProjectid(projectid)){
+
+            return String.format("%.1f",final_priceDAO.findByProjectid(projectid).getWbprice());
         }
         return "";
     }

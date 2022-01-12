@@ -1,5 +1,6 @@
 package com.evan.wj.controller;
 
+import com.evan.wj.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -33,18 +34,12 @@ public class PapersController {
     @CrossOrigin
     @PostMapping("/api/upload")
     @ResponseBody
-    public Map<String, Object> fileUpload(@RequestBody MultipartFile file, HttpServletRequest req) {
+    public Result<Map<String, Object>> fileUpload(@RequestBody MultipartFile file, HttpServletRequest req) {
         Map<String, Object> result = new HashMap<>();
         String originalFilename = file.getOriginalFilename();
-//        if (!originalFilename.endsWith(".pdf")) {
-//            result.put("status", "error");
-//            result.put("msg", "文件类型不对");
-//            return result;
-//        }
         if(originalFilename != null){
-            String format = "/pdf/" + sdf.format(new Date());
+            String format = "/pdf" + sdf.format(new Date());
             String realPath = folder + format;
-//        String realPath = folder;
             System.out.println(realPath);
             File folder = new File(realPath);
             if (!folder.exists()) {
@@ -64,6 +59,6 @@ public class PapersController {
             }
         }
 
-        return result;
+        return new Result<Map<String, Object>>(result);
     }
 }

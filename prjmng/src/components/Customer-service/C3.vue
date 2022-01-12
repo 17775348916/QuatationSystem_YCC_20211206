@@ -94,7 +94,7 @@
           <el-row><div align="center">技术难度：{{ x.isdifficultjs }}</div></el-row>
           <el-row><div align="center">完成项目时间(天)：{{ x.timeneeded}}</div></el-row>
           <el-row><div align="center">完成项目的特殊要求：{{ x.bz }}</div></el-row>
-          <el-row><div align="center">项目技术文档：</div></el-row>
+<!--          <el-row><div align="center">项目技术文档：</div></el-row>-->
           <el-row>
             <el-col v-for ="(item,index) in x.papersjs" v-bind:key="index">
               <div v-if= "index === 0">
@@ -159,7 +159,10 @@
 <!--              </div>-->
             </el-col>
           </el-row>
-          <el-row><div align="center">报价：{{ x.finalprice }}</div></el-row>
+          <el-row><div align="center">最终价格：{{ x.finalprice }}</div></el-row>
+          <el-row><div align="center">外包价格：{{ x.outsourcingPrice }}</div></el-row>
+          <el-row><div align="left">*最终价格：给询单客户的报价</div></el-row>
+          <el-row><div align="left">*外包价格：为了促进成交，您可以在权限范围内，依据外报价的金额，调整给客户的报价</div></el-row>
         </div>
         <div slot="footer" class="dialog-footer">
           <el-button type="primary" @click="dialogTableVisible1[index].pgflag = false">确 定</el-button>
@@ -298,6 +301,9 @@
             </el-col>
           </el-row>
           <el-row><div align="center">最终报价：{{ x.finalprice }}</div></el-row>
+          <el-row><div align="center">最终报价：{{ x.outsourcingPrice }}</div></el-row>
+          <el-row><div align="left">*最终价格：给询单客户的报价</div></el-row>
+          <el-row><div align="left">*外包价格：为了促进成交，您可以在权限范围内，依据外报价的金额，调整给客户的报价</div></el-row>
         </div>
         <div slot="footer" class="dialog-footer">
           <el-button type="primary" @click="dialogTableVisible2[index].pgflag = false">确 定</el-button>
@@ -486,6 +492,20 @@ export default {
                         })
                         .catch(failResponse => {
                         })
+                      this.$axios
+                        .post('/queryOutsourcingPrice', {
+                          projectid: this.list1[m].projectid
+                        })
+                        .then(successResponse => {
+                          if (successResponse.data.success) {
+                            // console.log(successResponse.data.data)
+                            this.list1[m].outsourcingPrice = successResponse.data.data
+                          } else {
+                            this.$message(successResponse.data.msg)
+                          }
+                        })
+                        .catch(failResponse => {
+                        })
                     } else {
                       this.$message(successResponse.data.msg)
                     }
@@ -595,6 +615,20 @@ export default {
                           if (successResponse.data.success) {
                             // console.log(successResponse.data.data)
                             this.list2[m].finalprice = successResponse.data.data
+                          } else {
+                            this.$message(successResponse.data.msg)
+                          }
+                        })
+                        .catch(failResponse => {
+                        })
+                      this.$axios
+                        .post('/queryOutsourcingPrice', {
+                          projectid: this.list2[m].projectid
+                        })
+                        .then(successResponse => {
+                          if (successResponse.data.success) {
+                            // console.log(successResponse.data.data)
+                            this.list2[m].outsourcingPrice = successResponse.data.data
                           } else {
                             this.$message(successResponse.data.msg)
                           }

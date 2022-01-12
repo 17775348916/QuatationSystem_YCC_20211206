@@ -68,9 +68,9 @@ class ImageController {
         }
     }
 
-    public void MoveFile(String filename, int projectid) {
-
-    }
+//    public void MoveFile(String filename, int projectid) {
+//
+//    }
 
 //    @CrossOrigin
 //    @PostMapping("api/uploadfile")

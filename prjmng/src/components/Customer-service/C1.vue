@@ -343,8 +343,8 @@ export default {
           this.$message('原料' + (it + 1) + '原料名称缺失，请补充')
           return
         }
-        if (!(_this.other[it].ncas)) {
-          this.$message('原料' + (it + 1) + 'Cas号缺失，请补充')
+        if (!(_this.other[it].price)) {
+          this.$message('原料' + (it + 1) + '价格缺失，请补充')
           return
         }
         if (!(_this.other[it].cgsl)) {

@@ -114,6 +114,18 @@ public class JSController {
     }
 
     @CrossOrigin
+    @PostMapping(value = "/api/queryOutsourcingPrice")
+    @ResponseBody
+    public Result<String> queryOutsourcingPrice(@RequestBody JSONObject json) {
+        int projectid = -1;
+        if (json.getInteger("projectid") != null) {
+            projectid = json.getInteger("projectid");
+        }
+        return new Result<String>(feasible_projectService.askOutsourcingPrice(projectid));
+    }
+
+
+    @CrossOrigin
     @PostMapping(value = "/api/querypriceinfo")
     @ResponseBody
     public Result<Final_price> querypriceinfo(@RequestBody JSONObject json) {

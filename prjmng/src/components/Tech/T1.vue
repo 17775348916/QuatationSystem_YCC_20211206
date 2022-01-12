@@ -49,9 +49,9 @@
 
     <el-row>
       <el-col :span="2" :offset="2"><div>编号</div></el-col>
-      <el-col :span="4"><div>原料名称</div></el-col>
+      <el-col :span="4"><div>*原料名称</div></el-col>
       <el-col :span="4"><div>Cas号</div></el-col>
-      <el-col :span="4"><div>需要数量</div></el-col>
+      <el-col :span="4"><div>*需要数量</div></el-col>
       <el-col :span="4"><div>备注</div></el-col>
       <el-col :span="2"><div></div></el-col>
     </el-row>
@@ -219,8 +219,8 @@ export default {
       // console.log(this.list1)
       for (let m in this.list1) {
         // console.log(this.list1[m].materialname, this.list1[m].cas, this.list1[m].materialsl)
-        if (!(this.list1[m].materialname && this.list1[m].cas && this.list1[m].materialsl)) {
-          this.$message('原料名、Cas号、需要数量有缺失，请再次确认')
+        if (!(this.list1[m].materialname && this.list1[m].materialsl)) {
+          this.$message('原料名 或 需要数量 有缺失，请再次确认')
           return
         }
       }

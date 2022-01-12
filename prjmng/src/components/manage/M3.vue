@@ -33,6 +33,7 @@
       </tbody>
     </table>
     <el-button v-on:click="submit">提交修改</el-button>
+    <el-button v-on:click="$router.replace('/manageindex')">返回</el-button>
   </div>
 </template>
 

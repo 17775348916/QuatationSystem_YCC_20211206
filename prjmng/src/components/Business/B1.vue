@@ -284,23 +284,30 @@ export default {
         })
         .then(successResponse => {
           if (successResponse.data.success) {
-            // alert('添加成功' + year + '-' + (month + 1) + '-' + day)
-            localStorage.removeItem('b1projectname')
-            localStorage.removeItem('b1projectdetails')
-            localStorage.removeItem('b1projectsl')
-            localStorage.removeItem('b1cas')
-            localStorage.removeItem('b1khname')
-            localStorage.removeItem('b1khryname')
-            localStorage.removeItem('b1khrytype')
-            localStorage.removeItem('b1khrycontact')
-            localStorage.removeItem('b1khtype')
-            localStorage.removeItem('b1khryisreal')
-            localStorage.removeItem('b1cohistory')
-            localStorage.removeItem('b1ismoney')
-            localStorage.removeItem('b1isdeal')
-            localStorage.removeItem('b1bz')
-            this.$message('添加成功')
-            location.reload()
+            this.$confirm('项目信息已提交，继续录入新项目？', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消'
+            }).then(() => {
+              localStorage.removeItem('b1projectname')
+              localStorage.removeItem('b1projectdetails')
+              localStorage.removeItem('b1projectsl')
+              localStorage.removeItem('b1cas')
+              localStorage.removeItem('b1khname')
+              localStorage.removeItem('b1khryname')
+              localStorage.removeItem('b1khrytype')
+              localStorage.removeItem('b1khrycontact')
+              localStorage.removeItem('b1khtype')
+              localStorage.removeItem('b1khryisreal')
+              localStorage.removeItem('b1cohistory')
+              localStorage.removeItem('b1ismoney')
+              localStorage.removeItem('b1isdeal')
+              localStorage.removeItem('b1bz')
+              // this.$message('添加成功')
+              location.reload()
+              // this.$router.replace('/B1')
+            }).catch(() => {
+              this.$router.replace('/Bindex')
+            })
           } else {
             this.$message('添加失败,' + successResponse.data.msg)
           }
