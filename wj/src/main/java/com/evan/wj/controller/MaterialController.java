@@ -9,13 +9,13 @@ import com.evan.wj.service.MaterialService;
 import com.evan.wj.vo.FkCantBuyVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -121,13 +121,16 @@ public class MaterialController {
 
     @CrossOrigin
     @PostMapping(value = "api/lookallmaterial")
-    @ResponseBody Result<List<Material_info> >lookallmaterial(@RequestBody JSONObject json) {
-        log.info("所有原料库信息：");
-        List<Material_info> materialInfos= material_Service.askallmaterial();
-        for (Material_info materialInfo : materialInfos) {
-            log.info(materialInfo.toString());
+    @ResponseBody Result<Page<Material_info>>lookallmaterial(@RequestBody JSONObject json) {
+        int size=5,page=1;
+        if (json.getInteger("page") == null || json.getInteger("size") == null) {
+            log.error("[MaterialController.lookallmaterial]:json中的page或size为空");
+            return null;
         }
-        return new Result<List<Material_info>>(materialInfos);
+        page=json.getInteger("page")-1;
+        size=json.getInteger("size");
+        Page<Material_info> askallmaterial = material_Service.askallmaterial(page, size);
+        return new Result<>(askallmaterial);
     }
 
     @CrossOrigin

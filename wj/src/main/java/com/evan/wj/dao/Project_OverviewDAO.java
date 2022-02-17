@@ -1,19 +1,18 @@
 package com.evan.wj.dao;
 
 
-import com.evan.wj.pojo.ProjectZt;
 import com.evan.wj.pojo.Project_Overview;
-import com.evan.wj.vo.OverViewAndFeasibleVo;
 import com.evan.wj.vo.ProjWithTimeVo;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface Project_OverviewDAO extends JpaRepository<Project_Overview, Integer> {
+public interface Project_OverviewDAO extends JpaRepository<Project_Overview, Integer>,JpaSpecificationExecutor<Project_Overview>{
 
     Project_Overview findByProjectid(int projectid);
 
@@ -197,6 +196,8 @@ public interface Project_OverviewDAO extends JpaRepository<Project_Overview, Int
             "zt.timed < ?1 * 24")
     List<ProjWithTimeVo> askreceive(int interval);
 
+
+
     @Query(value = "select new com.evan.wj.vo.ProjWithTimeVo(zt.timed,\n" +
             "                          ov.projectid, ov.projectname, ov.projectdetails,\n" +
             "                          ov.projectsl, ov.cas, ov.khname, ov.khryname,\n" +
@@ -213,4 +214,9 @@ public interface Project_OverviewDAO extends JpaRepository<Project_Overview, Int
             "from Project_Overview ov,ProjectZt zt\n" +
             "where ov.projectid = zt.projectid")
     List<ProjWithTimeVo> askall();
+
+    @Query(value="update project_overview set test_result=?2 where project_id=?1",nativeQuery=true)
+    @Modifying
+    @Transactional
+    public void updateTestresult(int project_id,String testresult);
 }

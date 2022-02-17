@@ -103,7 +103,7 @@ public class Project_Overview {
     /**
      * 备注,客户对产品纯度，货期等方面的特殊要求
      **/
-//  @Column(name = "")
+    @Column(name = "bz")
     private String bz;
 
     @Column(name="model_name")
@@ -126,4 +126,11 @@ public class Project_Overview {
 
     @Column(name = "update_name")
     private String updatename;
+
+    @Column(name = "test_result")
+    private String testresult;
+
+    @OneToOne
+    @JoinColumn(name = "project_id")
+    private ProjectZt projectZt;
 }

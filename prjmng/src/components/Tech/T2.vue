@@ -1,146 +1,178 @@
 <template>
   <div>
     <TIdentityCheck></TIdentityCheck>
-    <el-row>
-      <el-col :span="6">
-        <div>订单编号:{{ project.projectid }}</div>
-      </el-col>
-      <el-col :span="6">
-        <div>询单日期{{ project.createdate }}</div>
-      </el-col>
-      <el-col :span="6">
-        <div>已经过{{ project.dura }}小时</div>
-      </el-col>
-      <el-col :span="6">
-        <div>未评估</div>
-      </el-col>
-    </el-row>
-    <br>
-    <el-row>
-      <el-col :span="7">
-        <div>需求产品名称：{{ project.projectname }}</div>
-      </el-col>
-      <el-col :span="7">
-        <div>Cas号：{{ project.cas }}</div>
-      </el-col>
-      <el-col :span="7">
-        <div>需求量：{{ project.projectsl }}</div>
-      </el-col>
-    </el-row>
-    <br>
-    <!--    <el-row>-->
-    <el-row>
-      <el-col :span="12">
-        <div>产品结构式图片</div>
-        <br>
-        <img v-bind:src="project.projectdetails" alt="图片未上传" style="max-width:600px" />
-      </el-col>
-      <el-col :span="12">
-        <div>客户对产品纯度，货期等方面特殊要求：</div>
-        <div>{{ project.bz }}</div>
-      </el-col>
-    </el-row>
-    <!--    </el-row>-->
+    <el-descriptions :column="4" style="margin-top:20px" border>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-user"></i>
+          订单编号
+        </template>
+        {{ project.projectid }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-date"></i>
+          询单日期
+        </template>
+        {{ project.createdate }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-time"></i>
+          经过时间(小时)
+        </template>
+        {{ project.dura }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-document"></i>
+          需求产品名称
+        </template>
+        {{ project.projectname }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-coordinate"></i>
+          Cas号
+        </template>
+        {{ project.cas }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-coordinate"></i>
+          需求量
+        </template>
+        {{ project.projectsl }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-picture"></i>
+          产品结构式图片
+        </template>
+        <div>
+          <el-popover
+            placement="top-end"
+            width="150px"
+            trigger="click">
+            <img alt="图片未上传" v-bind:src="project.projectdetails" style="max-width:600px"/>
+            <el-button slot="reference">预览</el-button>
+          </el-popover>
+        </div>
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-help"></i>
+          客户对产品纯度，货期等方面特殊要求
+        </template>
+        {{ project.bz }}
+      </el-descriptions-item>
+    </el-descriptions>
     <br>
     <el-form>
-      <el-form-item>技术可行性：
+      <el-form-item>
+        技术可行性：
         <el-select v-model="input.evaluationjs" placeholder="请判断技术可行性">
           <el-option v-if="project.fkztkf === '已反馈-能买到'" label="可行" value="已评估-可行"></el-option>
           <el-option label="不可行" value="已评估-不可行"></el-option>
         </el-select>
       </el-form-item>
       <div v-if="input.evaluationjs === '已评估-可行'">
-        <el-form-item>
-          <el-row>
-            <el-col :offset="3" :span="4">
-              需要进行测试信息：
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :offset="3" :span="6">
-              <div>氢谱<el-input-number v-model="input.hsl"></el-input-number>个</div>
-            </el-col>
-            <el-col :span="6">
-              <div>碳谱<el-input-number v-model="input.csl"></el-input-number>个</div>
-            </el-col>
-            <el-col :span="6">
-              <div>质谱<el-input-number v-model="input.msl"></el-input-number>个</div>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item>
-          <el-row>
-            <el-col :offset="3" :span="4">
-              项目花费时间：
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :offset="3" :span="6">
-              <div>打通路线时间<el-input v-model="input.dtlxsjcs" oninput="value=value.replace(/[^0-9.]/g,'')" style="width: 40%;"></el-input>天</div>
-            </el-col>
-            <el-col :span="6">
-              <div>积累量时间 <el-input v-model="input.jllsjcs" oninput="value=value.replace(/[^0-9.]/g,'')" style="width: 40%;"></el-input> 天 </div>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item>技术难度：
-          <el-select v-model="input.isdifficultjs" placeholder="下拉菜单选择： 难 or 一般 or 容易">
-            <el-option label="难" value="难"></el-option>
-            <el-option label="一般" value="一般"></el-option>
-            <el-option label="容易" value="容易"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-row>
-            <el-col :offset="3" :span="8">
-              请提交完成项目时间（此时间用于计算报价，如果技术难度大，完成项目时间可适当延长。）
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :offset="4" :span="8">
-              <el-input v-model="input.timeneeded" placeholder="输入项目需要的总时间"></el-input>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item>
-          <el-row>
-            <el-col :offset="3" :span="8">
-              请提交完成项目的特殊要求
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :offset="4" :span="8">
-              <el-input v-model="input.bz" type="textarea" placeholder="请在此输入完成项目的特殊要求，例如：需要客户提供特定的原料信息，项目的技术难点（例如产品不稳定、纯度特殊性等）。方便我们的“客服人员”与客户进行沟通。
+        <el-descriptions :column="3" title="需要进行测试信息" border>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-s-order"></i>
+              氢谱(个)
+            </template>
+            <el-input-number size="small" v-model="input.hsl"></el-input-number>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-s-order"></i>
+              碳谱(个)
+            </template>
+            <el-input-number size="small" v-model="input.csl"></el-input-number>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-s-order"></i>
+              质谱(个)
+            </template>
+            <el-input-number size="small" v-model="input.msl"></el-input-number>
+          </el-descriptions-item>
+        </el-descriptions>
+        <el-descriptions :column="3" title="项目花费时间与技术难度分析" style="margin-top:20px" border>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-time"></i>
+              打通路线时间(天)
+            </template>
+            <el-input size="small" v-model="input.dtlxsjcs" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-s-order"></i>
+              积累量时间(天)
+            </template>
+            <el-input size="small" v-model="input.jllsjcs" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-s-order"></i>
+              技术难度
+            </template>
+            <el-select size="small" v-model="input.isdifficultjs" placeholder="难 or 一般 or 容易">
+              <el-option label="难" value="难"></el-option>
+              <el-option label="一般" value="一般"></el-option>
+              <el-option label="容易" value="容易"></el-option>
+            </el-select>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-s-time"></i>
+              完成项目时间(天)
+            </template>
+            <el-input size="small" v-model="input.timeneeded" placeholder="输入项目需要的总时间" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-s-time"></i>
+              完成项目的特殊要求
+            </template>
+            <el-input size="small" v-model="input.bz" type="textarea" placeholder="请在此输入完成项目的特殊要求，例如：需要客户提供特定的原料信息，项目的技术难点（例如产品不稳定、纯度特殊性等）。方便我们的“客服人员”与客户进行沟通。
 如果没有，请输入“无”"></el-input>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item>
-          <el-row>
-            <el-col :offset="4" :span="4">
-              请提交项目参考文件(大小限制为50MB)
-            </el-col>
-            <el-col :span="3">
-              <Papers-Upload ref="PapersUpload"></Papers-Upload>
-            </el-col>
-          </el-row>
-
-        </el-form-item>
-        <el-form-item>
-          <el-button v-on:click="feasible_submit">提交</el-button>
-        </el-form-item>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-s-time"></i>
+              项目参考文件(大小限制为50MB)
+            </template>
+            <Papers-Upload ref="PapersUpload"></Papers-Upload>
+          </el-descriptions-item>
+        </el-descriptions>
+        <br>
+        <div align="left" style="font-size:16px;color:red">
+          *完成项目时间(天)：此时间用于计算报价，如果技术难度大，完成项目时间可适当延长
+        </div>
+        <br>
+        <div align="left" style="font-size:16px;color:red">
+          *完成项目的特殊要求：例如需要客户提供特定的原料信息，项目的技术难点（产品不稳定、纯度特殊性等）。方便客服人员与客户进行沟通。 如果没有，请输入“无”
+        </div>
+        <br>
+        <div align="right">
+          <el-button type="primary" v-on:click="feasible_submit">提交评估信息</el-button>
+        </div>
       </div>
       <div v-else-if="input.evaluationjs === '已评估-不可行'">
         <el-form-item>
           <el-input v-model="input.reasonsjs" autosize placeholder="请输入“技术不可行”具体原因，以便“客服人员”向客户汇报回复。"
                     type="textarea"></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-button v-on:click="unfeasible_submit">提交</el-button>
-        </el-form-item>
+        <div align="right">
+          <el-button type="primary" v-on:click="unfeasible_submit">提交评估信息</el-button>
+        </div>
       </div>
     </el-form>
-    <el-button v-on:click="$router.replace('/Tindex')">返回</el-button>
+<!--    <el-button v-on:click="$router.replace('/Tindex')">返回</el-button>-->
   </div>
 </template>
 

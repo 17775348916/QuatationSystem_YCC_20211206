@@ -10,6 +10,8 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
+    //上传服务器的时候，要改成
+    // assetsPublicPath: './',
     proxyTable: {
         '/api': {
           target: 'http://localhost:8443',
@@ -60,8 +62,8 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
-
+    // assetsPublicPath: './',
+    assetsPublicPath: './',
     /**
      * Source Maps
      */

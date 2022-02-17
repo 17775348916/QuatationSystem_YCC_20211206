@@ -1,84 +1,89 @@
 <template>
   <div>
     <CIdentityCheck></CIdentityCheck>
-    <Chead></Chead>
-    <h4>（一）请查看项目信息（技术未评估）：</h4>
-    <br>下拉菜单选择时间范围：
-    <select v-model="interval1" placeholder="时间范围">
-      <option label="当天" value="1">当天</option>
-      <option label="近3天" value="3">近3天</option>
-      <option label="近1周" value="7">近1周</option>
-      <option label="近1月" value="30">近1月</option>
-      <option label="所有" value="30000">所有</option>
-    </select>
-    <button v-on:click="showunzt()">查询</button>
 
-    <table class="table" v-if="Object.keys(list1).length>0">
-      <thead>
-      <tr>
-        <th>项目编号</th>
-        <th>询单日期</th>
-        <th>已经过时间（小时）</th>
-        <th>状态</th>
-        <th>原料任务</th>
-        <th>反馈状况</th>
-      </tr>
-      </thead>
-      <tbody v-for="x in list1" :key="x.projectid">
-      <tr>
-        <th>{{ x.projectid }}</th>
-        <th>{{ x.createdate.substr(0, 10) }}</th>
-        <th>{{ x.dura }}小时</th>
-        <th>未评估</th>
-        <th>{{ x.istaskjs }}</th>
-        <th>{{ x.fkztkf }}</th>
-        <div v-if="x.istaskjs === '已下达' && x.fkztkf === '未反馈'">
-          <th>
-            <el-button small v-on:click="feedback(x.projectid)">查看</el-button>
-          </th>
+    <el-container >
+      <el-header style="text-align: right; font-size: 16px">
+        <div class="title">
+          ChemEagle Brain 1.0
         </div>
-      </tr>
-      </tbody>
-    </table>
+        <el-dropdown trigger="click" @command="handleCommand">
+          <span class="el-dropdown-link" style="font-size:15px;color:black">
+            <i class="el-icon-user-solid" ></i>
+            <span style="font-family:华文楷体;font-size:18px">欢迎您，{{account_id}}号客服人员</span>
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item >注销登录</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </el-header>
 
-    <hr>
-    <h4>（二）请查看项目信息（技术已评估）：</h4>
-    <br>下拉菜单选择时间范围：
-    <select v-model="interval2" placeholder="时间范围">
-      <option label="当天" value="1">当天</option>
-      <option label="近3天" value="3">近3天</option>
-      <option label="近1周" value="7">近1周</option>
-      <option label="近1月" value="30">近1月</option>
-      <option label="所有" value="30000">所有</option>
-    </select>
-    <!--    <h4>此处需要从后端数据库中输出相应信息</h4>-->
-    <button v-on:click="showhavezt()">查询</button>
+      <el-container>
+        <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+          <el-menu
+            default-active="2"
+            class="el-menu-vertical-demo" @select="menuClick" >
+            <el-menu-item index="/Cindex">
+              <i class="el-icon-aim"></i>
+              <span slot="title">欢迎回到首页</span>
+            </el-menu-item>
+            <el-menu-item index="/C2">
+              <i class="el-icon-s-data"></i>
+              <span slot="title">原料数据库维护</span>
+            </el-menu-item>
+            <el-submenu index="2">
+              <template slot="title">
+                <i class="el-icon-document"></i>
+                <span>提供原料任务</span>
+              </template>
+              <el-menu-item index="/CUnevaluated">
+                <span slot="title">技术未评估</span>
+              </el-menu-item>
+              <el-menu-item index="/CEvaluated">
+                <span slot="title">技术已评估</span>
+              </el-menu-item>
+            </el-submenu>
 
-    <table class="table" v-if="Object.keys(list2).length>0">
-      <thead>
-      <tr>
-        <th>项目编号</th>
-        <th>询单日期</th>
-        <th>完成时间</th>
-        <th>状态</th>
-        <th>结果</th>
-        <th></th>
-      </tr>
-      </thead>
-      <tbody v-for="x in list2" :key="x.projectid">
-      <tr>
-        <th>{{ x.projectid }}</th>
-        <th>{{ x.createdate }}</th>
-        <th>{{ x.evaluationdate }}</th>
-        <th>已评估</th>
-        <th>{{ x.projectztjs }}</th>
-        <th>
-            <el-button v-on:click="feedback(x.projectid)">原料信息</el-button>
-        </th>
-      </tr>
-      </tbody>
-    </table>
+            <el-submenu index="3">
+              <template slot="title">
+                <i class="el-icon-phone-outline"></i>
+                <span>下单客户沟通</span>
+              </template>
+              <el-menu-item index="/CNeedCommunicateWithOrders">
+                <span slot="title">需要沟通的项目</span>
+              </el-menu-item>
+              <el-menu-item index="/CFinishCommunicateWithOrders">
+                <span slot="title">已完成沟通的项目</span>
+              </el-menu-item>
+            </el-submenu>
+            <el-submenu index="4">
+              <template slot="title">
+                <i class="el-icon-phone"></i>
+                <span>接单客户沟通</span>
+              </template>
+              <el-menu-item index="/CNeedCommunicateWithTakeOrders">
+                <span slot="title">需要沟通的项目</span>
+              </el-menu-item>
+              <el-menu-item index="/CFinishCommunicateWithTakeOrders">
+                <span slot="title">已完成沟通的项目</span>
+              </el-menu-item>
+            </el-submenu>
 
+          </el-menu>
+        </el-aside>
+        <el-main>
+          <el-breadcrumb v-if="this.$router.currentRoute.path!=='/Cindex'" separator-class="el-icon-arrow-right">
+            <el-breadcrumb-item :to="{ path: '/Cindex' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>{{this.$router.currentRoute.name}}</el-breadcrumb-item>
+          </el-breadcrumb>
+          <div class="welcomeTitle" v-if="this.$router.currentRoute.path==='/Cindex'">
+            客服人员您好，欢迎来到ChemEagle Brain 1.0 !
+          </div>
+          <router-view/>
+        </el-main>
+      </el-container>
+    </el-container>
   </div>
 </template>
 
@@ -90,11 +95,7 @@ export default {
   data () {
     return {
       account_id: window.sessionStorage.getItem('account_id'),
-      usertype: '',
-      interval1: '',
-      interval2: '',
-      list1: [],
-      list2: []
+      usertype: ''
     }
   },
   components: {
@@ -102,20 +103,42 @@ export default {
     Chead
   },
   methods: {
+    menuClick (index) {
+      this.$router.push(index)
+    },
+    handleCommand (command) {
+      window.sessionStorage.removeItem('account_id')
+      window.sessionStorage.removeItem('usertype')
+      window.sessionStorage.removeItem('islogin')
+      this.$router.replace('/A')
+    },
     showunzt () {
-      var _this = this
       this.$axios
-        .post('/unzt', {
-          interval: _this.interval1
+        .post('/unevaluatedPage', {
+          interval: this.interval1,
+          page: this.currentPage1,
+          size: this.pageSize1,
+          status: '未评估'
         })
         .then(successResponse => {
-          // console.log(successResponse.data)
           if (successResponse.data.success) {
-            console.log(successResponse.data.data)
-            this.list1 = successResponse.data.data
+            this.list1 = successResponse.data.data.content
             if (this.list1.length < 1) {
               this.$message('查询时间段内无项目')
             }
+            this.total1 = successResponse.data.data.totalElements
+            this.$axios
+              .post('/materialMissionNum', {
+                interval: this.interval1,
+                status: '未评估'
+              })
+              .then(successResponse => {
+                if (successResponse.data.success) {
+                  this.provideNum = JSON.parse(successResponse.data.data).provideNum
+                  this.noProvideNum = JSON.parse(successResponse.data.data).noProvideNum
+                }
+              })
+              .catch(failResponse => {})
           } else {
             this.$message(successResponse.data.msg)
           }
@@ -124,18 +147,20 @@ export default {
         })
     },
     showhavezt () {
-      var _this = this
-      this.$axios.post('/havezt', {
-        interval: _this.interval2,
-        resultkf: '所有'
+      this.$axios.post('/evaluatedPage', {
+        interval: this.interval2,
+        resultkf: '所有',
+        page: this.currentPage2,
+        size: this.pageSize2,
+        status: '已评估'
       })
         .then(successResponse => {
           if (successResponse.data.success) {
-            console.log(successResponse.data.data)
-            this.list2 = successResponse.data.data
+            this.list2 = successResponse.data.data.content
             if (this.list2.length < 1) {
               this.$message('查询时间段内无项目')
             }
+            this.total2 = successResponse.data.data.totalElements
           } else {
             this.$message(successResponse.data.msg)
           }
@@ -147,24 +172,116 @@ export default {
       window.sessionStorage.setItem(this.account_id, projectid)
       // console.log(projectid)
       this.$router.replace('/C1')
+    },
+    handleCurrentChange1 (currentPage) {
+      this.getList1(currentPage)
+    },
+    handleSizeChange1 (pageSize) {
+      this.pageSize1 = pageSize
+      this.getList1(this.currentPage1)
+    },
+    getList1 (currentPage) {
+      this.currentPage1 = currentPage
+      this.$axios
+        .post('/unevaluatedPage', {
+          interval: this.interval1,
+          page: currentPage,
+          size: this.pageSize1,
+          status: '未评估'
+        })
+        .then(successResponse => {
+          // console.log(successResponse.data)
+          if (successResponse.data.success) {
+            console.log(successResponse.data.data)
+            this.list1 = successResponse.data.data.content
+            if (this.list1.length < 1) {
+              this.$message('查询时间段内无项目')
+            }
+          } else {
+            this.$message(successResponse.data.msg)
+          }
+        })
+        .catch(failResponse => {
+        })
+    },
+    handleSizeChange2 (pageSize) {
+      this.pageSize2 = pageSize
+      this.getList2(this.currentPage2)
+    },
+    handleCurrentChange2 (currentPage) {
+      this.getList2(currentPage)
+    },
+    getList2 (currentPage) {
+      this.currentPage2 = currentPage
+      this.$axios.post('/evaluatedPage', {
+        interval: this.interval2,
+        resultkf: '所有',
+        page: this.currentPage2,
+        size: this.pageSize2,
+        status: '已评估'
+      })
+        .then(successResponse => {
+          if (successResponse.data.success) {
+            this.list2 = successResponse.data.data.content
+            if (this.list2.length < 1) {
+              this.$message('查询时间段内无项目')
+            }
+          } else {
+            this.$message(successResponse.data.msg)
+          }
+        })
+        .catch(failResponse => {
+        })
     }
   }
 }
 </script>
 
 <style scoped>
-.table {
-  width: 1000px;
-  height: 100px;
-  border: 1px solid #ccc;
-  border-collapse: collapse;
-  align-content: center;
-  alignment: center;
-  margin: auto;
+.el-header, .el-footer {
+  background-color: #409eff;
+  /*background-color: #545c64;*/
+  /*color: #fff;*/
+  display:flex;
+  align-items: center;
+  /*text-align: center;*/
+  /*line-height: 50px;*/
+  justify-content: space-between;
+  padding:0 15px;
+  box-sizing: border-box;
+
+}
+.title{
+  font-size:30px;
+  color: black;
+  font-family: 华文楷体;
 }
 
-.table td, .table th {
-  border: 1px solid #ccc;
-  padding: 5px;
+.el-aside {
+  background-color: #D3DCE6;
+  color: #333;
+  text-align: center;
+  /*line-height: 200px;*/
+}
+
+.el-main {
+  /*background-color: #E9EEF3;*/
+  /*color: #333;*/
+  text-align: center;
+  /*line-height: 160px;*/
+}
+
+body > .el-container {
+  margin-bottom: 40px;
+}
+
+.welcomeTitle{
+  font-size:30px;
+  font-family:华文楷体;
+  margin-top:50px;
+  color:#409eff
+}
+.el-dropdown-link{
+
 }
 </style>

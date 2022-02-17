@@ -1,10 +1,19 @@
 package com.evan.wj.service;
 
-import com.evan.wj.dao.*;
-import com.evan.wj.pojo.*;
+import com.evan.wj.dao.Material_infoDAO;
+import com.evan.wj.dao.Material_info_LRDAO;
+import com.evan.wj.dao.Material_needDAO;
+import com.evan.wj.dao.ProjectZtDAO;
+import com.evan.wj.pojo.Material_info;
+import com.evan.wj.pojo.Material_info_LR;
+import com.evan.wj.pojo.Material_need;
+import com.evan.wj.pojo.ProjectZt;
 import com.evan.wj.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -32,7 +41,7 @@ public class MaterialService {
     public boolean setcantbuy(int projectid, String reason, String fkname) {
         if (projectZtDAO.existsByProjectid(projectid)) {
             ProjectZt pzt = projectZtDAO.findByProjectid(projectid);
-            pzt.setIstaskjs("未下达");
+//            pzt.setIstaskjs("未下达");
             pzt.setFkztkf("已反馈-买不到");
             pzt.setReason(reason);
             fkname = account_informationService.namebyId(fkname);
@@ -47,7 +56,8 @@ public class MaterialService {
                 mlr.setMaterialname(mneed.getMaterialname());
                 mlr.setCas(mneed.getCas());
                 mlr.setIsbuy("买不到");
-                mlr.setDeleteflag("0");
+                //todo
+                mlr.setDeleteflag("1");
                 mlr.setCreatename(fkname);
                 mlr.setUpdatename(fkname);
                 mlr.setCreatedate(LocalDateTime.now());
@@ -195,7 +205,9 @@ public class MaterialService {
         }
     }
 
-    public List<Material_info> askallmaterial() {
-        return material_infoDAO.findAll();
+    public Page<Material_info> askallmaterial(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return material_infoDAO.findAll(pageable);
     }
 }

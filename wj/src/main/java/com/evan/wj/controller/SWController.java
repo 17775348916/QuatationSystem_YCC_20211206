@@ -5,9 +5,11 @@ import com.evan.wj.pojo.Project_Overview;
 import com.evan.wj.result.Result;
 import com.evan.wj.service.Account_informationService;
 import com.evan.wj.service.Project_OverviewService;
+import com.evan.wj.service.Project_ZtService;
 import com.evan.wj.vo.ProjWithTimeVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,98 +26,195 @@ public class SWController {
     @Autowired
     Account_informationService account_informationService;
 
+    @Autowired
+    Project_ZtService project_ztService;
+
     @CrossOrigin
     @PostMapping(value = "/api/SWAddNewProj")
     @ResponseBody
-    public Result addnew(@RequestBody Project_Overview newproj){
-        if(project_overviewService.addnewproj(newproj)) {
-            return new Result("0",true,"返回成功");
-        }
-        else {
-            return new Result("400",false,"添加项目错误");
+    public Result addnew(@RequestBody Project_Overview newproj) {
+        if (project_overviewService.addnewproj(newproj)) {
+            return new Result("0", true, "返回成功");
+        } else {
+            return new Result("400", false, "添加项目错误");
         }
     }
+
+    /**
+     * 查询尚不可行的项目信息
+     * @param json
+     * @return
+     */
+    @CrossOrigin
+    @PostMapping(value = "/api/showUnavailables")
+    @ResponseBody
+    public Result<Page<Project_Overview>> showUnavailablesPage(@RequestBody JSONObject json) {
+        int page = 1, size = 5;
+        Page<Project_Overview> projectOverviews = null;
+        if (json.getInteger("page") == null || json.getInteger("size") == null) {
+            log.error("[SWController.showUnavailables]:json中的page或size为空");
+            return null;
+        }
+        page=json.getInteger("page")-1;
+        size=json.getInteger("size");
+        Page<Project_Overview> project_overviews = project_overviewService.showUnavailablesPage(page, size);
+        return new Result<>(project_overviews);
+    }
+
+
+    /**
+     * 未提供以及提供的原料信息任务数量
+     * @param json
+     * @return
+     */
+    @CrossOrigin
+    @PostMapping(value = "/api/materialMissionNum")
+    @ResponseBody
+    public Result<String> materialMissionNum(@RequestBody JSONObject json) {
+        String status = "已评估";
+        int interval=-1;
+        if(json.getString("status") == null || json.getInteger("interval") == null){
+            log.error("[SWController.materialMissionNum]中的status活着interval前端未传");
+            return null;
+        }
+        status=json.getString("status");
+        interval = json.getInteger("interval");
+        return new Result<String>(project_ztService.findNumByStatusAndInterval(status,interval));
+    }
+
 
     @CrossOrigin
     @PostMapping(value = "/api/unzt")
     @ResponseBody
-    public Result<List<ProjWithTimeVo> > lookunzt(@RequestBody JSONObject json) {
+    public Result<List<ProjWithTimeVo>> lookunzt(@RequestBody JSONObject json) {
         int interval = -1;
-        if(json.getInteger("interval") != null) {
+        if (json.getInteger("interval") != null) {
             interval = json.getInteger("interval");
         } else {
             log.info(json.toJSONString());
-            return new Result<>("400",false,"未获得正确的间隔时间");
+            return new Result<>("400", false, "未获得正确的间隔时间");
         }
         List<ProjWithTimeVo> pwt = project_overviewService.queryunzt(interval);
         log.info("查询间隔为" + interval + "\n");
-        for(ProjWithTimeVo p : pwt){
+        for (ProjWithTimeVo p : pwt) {
             log.info(p.toString());
         }
         System.out.println(pwt.toString());
         return new Result<List<ProjWithTimeVo>>(pwt);
     }
 
+
+
     @CrossOrigin
     @PostMapping(value = "/api/havezt")
     @ResponseBody
-    public Result<List<ProjWithTimeVo> > lookhavezt(@RequestBody JSONObject json) {
+    public Result<List<ProjWithTimeVo>> lookhavezt(@RequestBody JSONObject json) {
         int interval = -1;
-        if(json.getInteger("interval") != null) {
+        if (json.getInteger("interval") != null) {
             interval = json.getInteger("interval");
         } else {
             log.info(json.toJSONString());
-            return new Result<>("400",false,"未获得正确的间隔时间");
+            return new Result<>("400", false, "未获得正确的间隔时间");
         }
         String resultkf = json.getString("resultkf");
-        List<ProjWithTimeVo> pwt = project_overviewService.queryhavezt(interval,resultkf);
+        List<ProjWithTimeVo> pwt = project_overviewService.queryhavezt(interval, resultkf);
         log.info("查询间隔为" + interval + "\n");
-        for(ProjWithTimeVo p : pwt){
+        for (ProjWithTimeVo p : pwt) {
             log.info(p.toString());
         }
         return new Result<List<ProjWithTimeVo>>(pwt);
     }
 
-//    /**
-//     * 展示包含可行性和非可行性的项目信息
-//     * @param json
-//     * @return
-//     */
-//    @CrossOrigin
-//    @PostMapping(value = "/api/queryAllInfo")
-//    @ResponseBody
-//    public Result<List<ProjWithTimeVo> > queryAllInfo(@RequestBody JSONObject json) {
-//        int interval = -1;
-//        if(json.getInteger("interval") != null) {
-//            interval = json.getInteger("interval");
-//        } else {
-//            log.info(json.toJSONString());
-//            return new Result<>("400",false,"未获得正确的间隔时间");
-//        }
-//        String resultkf = json.getString("resultkf");
-//        List<ProjWithTimeVo> pwt = project_overviewService.queryhavezt(interval,resultkf);
-//        log.info("查询间隔为" + interval + "\n");
-//        for(ProjWithTimeVo p : pwt){
-//            log.info(p.toString());
-//        }
-//        return new Result<List<ProjWithTimeVo>>(pwt);
-//    }
+    /**
+     * 分页查询, 根据成交结果，已评估的当前时间段内的项目.默认返回已评估成交的项目
+     *
+     * @param json
+     * @return
+     */
+    @CrossOrigin
+    @PostMapping(value = "/api/evaluatedPage")
+    @ResponseBody
+    public Result<Page<Project_Overview>> evaluatedPage(@RequestBody JSONObject json) {
+        int page = 1, size = 10, interval = -1;
+        String status = "已评估", resultkf = "成交";
+        Page<Project_Overview> projectOverviews = null;
+        if (json.getInteger("page") == null || json.getInteger("size") == null ||
+                json.getInteger("interval") == null) {
+            log.error("[SWController.evaluatedPage]:json中的page或size或interval为空");
+            return null;
+        }
+        if (json.getString("status") == null || json.getString("resultkf") == null) {
+            log.error("[SWController.evaluatedPage]:json中的status或resultkf为空");
+            return null;
+        }
+        page = json.getInteger("page")-1;
+        size = json.getInteger("size");
+        interval = json.getInteger("interval");
+        status = json.getString("status");
+        resultkf = json.getString("resultkf");
+        if ("所有".equals(resultkf)) {
+            projectOverviews = project_overviewService.findByIntervalAndStatus(page, size, interval, status);
+        } else {
+            projectOverviews = project_overviewService.findByIntervalAndStatusAndResult(page,size,interval,status,resultkf);
+        }
+        return new Result<>(projectOverviews);
+    }
+
+
+    /**
+     * 分页返回 当前状态下（未评估和已评估,默认为未评估） 的时间间隔内的项目
+     *
+     * @param json
+     * @return
+     */
+    @CrossOrigin
+    @PostMapping(value = "/api/unevaluatedPage")
+    @ResponseBody
+    public Result<Page<Project_Overview>> unevaluatedPage(@RequestBody JSONObject json) {
+        int page = 1, size = 10, interval = -1;
+        String status = "未评估";
+        Page<Project_Overview> projectOverviews = null;
+        if (json.getInteger("page") == null) {
+            log.error("page为空");
+        } else {
+            if (json.getInteger("size") == null) {
+                log.error("size为空");
+            } else {
+                if (json.getInteger("interval") == null) {
+                    log.error("interval为空");
+                } else {
+                    if (json.getString("status") == null) {
+                        log.error("[SWController.unevaluatedPage]中的json未传status");
+                    } else {
+                        page = json.getInteger("page")-1;
+                        size = json.getInteger("size");
+                        interval = json.getInteger("interval");
+                        status = json.getString("status");
+                        projectOverviews = project_overviewService.findByIntervalAndStatus(page, size, interval, status);
+                    }
+
+                }
+            }
+        }
+        return new Result<>(projectOverviews);
+    }
+
 
     @CrossOrigin
     @PostMapping(value = "/api/unfinish")
     @ResponseBody
-    public Result<List<ProjWithTimeVo> > lookunfinish(@RequestBody JSONObject json) {
+    public Result<List<ProjWithTimeVo>> lookunfinish(@RequestBody JSONObject json) {
         int interval = -1;
-        if(json.getInteger("interval") != null) {
+        if (json.getInteger("interval") != null) {
             interval = json.getInteger("interval");
         } else {
             log.info(json.toJSONString());
-            return new Result<>("400",false,"未获得正确的间隔时间");
+            return new Result<>("400", false, "未获得正确的间隔时间");
         }
 //        int interval = json.getInteger("interval");
         List<ProjWithTimeVo> pwt = project_overviewService.queryunfinish(interval);
         log.info("查询间隔为" + interval + "\n");
-        for(ProjWithTimeVo p : pwt){
+        for (ProjWithTimeVo p : pwt) {
             log.info(p.toString());
         }
         return new Result<List<ProjWithTimeVo>>(pwt);
@@ -124,73 +223,95 @@ public class SWController {
     @CrossOrigin
     @PostMapping(value = "/api/allproj")
     @ResponseBody
-    public Result<List<ProjWithTimeVo> > lookallproj() {
-        log.info("查询所有项目 ");
-        List<ProjWithTimeVo> pwt = project_overviewService.queryall();
-        log.info("项目信息为：");
-        for(ProjWithTimeVo p : pwt){
-            log.info(p.toString());
+    public Result<Page<Project_Overview>> lookallproj(@RequestBody JSONObject json) {
+        int page = 1, size = 5;
+        if (json.getInteger("page") == null || json.getInteger("size") == null) {
+            log.error("[SWController.lookallproj]:json中的page或size为空");
+            return null;
         }
-        return new Result<List<ProjWithTimeVo>>(pwt);
+        page=json.getInteger("page")-1;
+        size=json.getInteger("size");
+        Page<Project_Overview> pwt = project_overviewService.queryall(page,size);
+        return new Result<>(pwt);
+    }
+
+    @CrossOrigin
+    @PostMapping(value = "/api/finishContactPage")
+    @ResponseBody
+    public Result<Page<Project_Overview>> finishContactPage(@RequestBody JSONObject json) {
+        int page = 1, size = 10, interval = -1;
+        String status = "已评估", resultkf = "待定";
+        Page<Project_Overview> projectOverviews = null;
+        if (json.getInteger("page") == null || json.getInteger("size") == null ||
+                json.getInteger("interval") == null) {
+            log.error("[SWController.finishContactPage]:json中的page或size或interval为空");
+            return null;
+        }
+        if (json.getString("status") == null || json.getString("resultkf") == null) {
+            log.error("[SWController.finishContactPage]:json中的status或resultkf为空");
+            return null;
+        }
+        page = json.getInteger("page")-1;
+        size = json.getInteger("size");
+        interval = json.getInteger("interval");
+        status = json.getString("status");
+        resultkf = json.getString("resultkf");
+        projectOverviews = project_overviewService.findByIntervalAndStatusAndNotByGivingResult(page, size, interval, status, resultkf);
+        return new Result<>(projectOverviews);
     }
 
     @CrossOrigin
     @PostMapping(value = "/api/havefinish")
     @ResponseBody
-    public Result<List<ProjWithTimeVo> > lookhavefinish(@RequestBody JSONObject json) {
+    public Result<List<ProjWithTimeVo>> lookhavefinish(@RequestBody JSONObject json) {
         int interval = -1;
-        if(json.getInteger("interval") != null) {
+        if (json.getInteger("interval") != null) {
             interval = json.getInteger("interval");
         } else {
             log.info(json.toJSONString());
-            return new Result<>("400",false,"未获得正确的间隔时间");
+            return new Result<>("400", false, "未获得正确的间隔时间");
         }
-//        int interval = json.getInteger("interval");
         List<ProjWithTimeVo> pwt = project_overviewService.queryhavefinish(interval);
         log.info("查询间隔为" + interval + "\n");
-        for(ProjWithTimeVo p : pwt){
+        for (ProjWithTimeVo p : pwt) {
             log.info(p.toString());
         }
         return new Result<List<ProjWithTimeVo>>(pwt);
     }
 
+
+
     @CrossOrigin
     @PostMapping(value = "/api/unreceive")
     @ResponseBody
-    public Result<List<ProjWithTimeVo> > lookunreceive(@RequestBody JSONObject json) {
-        int interval = -1;
-        if(json.getInteger("interval") != null) {
+    public Result<Page<Project_Overview>> lookunreceive(@RequestBody JSONObject json) {
+        int interval = -1,page=1,size=5;
+        if (json.getInteger("interval") != null && json.getInteger("page")!=null && json.getInteger("size")!=null) {
+            page=json.getInteger("page")-1;
+            size=json.getInteger("size");
             interval = json.getInteger("interval");
         } else {
             log.info(json.toJSONString());
-            return new Result<>("400",false,"未获得正确的间隔时间");
+            return new Result<>("400", false, "[SWController.lookunreceive]前端传入信息有误");
         }
-//        int interval = json.getInteger("interval");
-        List<ProjWithTimeVo> pwt = project_overviewService.queryunreceive(interval);
-        log.info("查询间隔为" + interval + "\n");
-        for(ProjWithTimeVo p : pwt){
-            log.info(p.toString());
-        }
-        return new Result<List<ProjWithTimeVo>>(pwt);
+        Page<Project_Overview> pwt = project_overviewService.findByInterval(page, size, interval);
+        return new Result<>(pwt);
     }
 
     @CrossOrigin
     @PostMapping(value = "/api/havereceive")
     @ResponseBody
-    public Result<List<ProjWithTimeVo> > lookhavereceive(@RequestBody JSONObject json) {
-        int interval = -1;
-        if(json.getInteger("interval") != null) {
+    public Result<Page<Project_Overview>> lookhavereceive(@RequestBody JSONObject json) {
+        int interval = -1,page=1,size=5;
+        if (json.getInteger("interval") != null && json.getInteger("page")!=null && json.getInteger("size")!=null) {
             interval = json.getInteger("interval");
+            page = json.getInteger("page")-1;
+            size = json.getInteger("size");
         } else {
             log.info(json.toJSONString());
-            return new Result<>("400",false,"未获得正确的间隔时间");
+            return new Result<>("400", false, "未获得正确的间隔时间");
         }
-//        int interval = json.getInteger("interval");
-        List<ProjWithTimeVo> pwt = project_overviewService.queryhavereceive(interval);
-        log.info("查询间隔为" + interval + "\n");
-        for(ProjWithTimeVo p : pwt){
-            log.info(p.toString());
-        }
-        return new Result<List<ProjWithTimeVo>>(pwt);
+        Page<Project_Overview> pwt = project_overviewService.findByIntervalAlreadyFilledTestResult(page, size, interval);
+        return new Result<>(pwt);
     }
 }

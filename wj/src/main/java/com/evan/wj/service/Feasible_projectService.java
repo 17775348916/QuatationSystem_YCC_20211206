@@ -110,8 +110,8 @@ public class Feasible_projectService {
         double costc = costb * model.getRate();
         fp.setRjmaterialcost(costc);
         //劳动成本
-        double costd1 = fproj.getZsjcs() / 20.5 * model.getFirmwage();
-        double costd2 = fproj.getZsjcs() / 20.5 * model.getCollegewage();
+        double costd1 = fproj.getTimeneeded() / 20.5 * model.getFirmwage();
+        double costd2 = fproj.getTimeneeded() / 20.5 * model.getCollegewage();
 
         double firmtot = costa + costb + costc + costd1;
         double collegetot = costa + costb + costc + costd2;
@@ -137,12 +137,12 @@ public class Feasible_projectService {
 
     }
 
-    public String askfinalprice(int projectid) {
+    public Final_price askfinalprice(int projectid) {
         if (final_priceDAO.existsByProjectid(projectid)){
 
-            return String.format("%.1f",final_priceDAO.findByProjectid(projectid).getFinalprice());
+            return final_priceDAO.findByProjectid(projectid);
         }
-        return "";
+        return null;
     }
 
     public String askOutsourcingPrice(int projectid) {

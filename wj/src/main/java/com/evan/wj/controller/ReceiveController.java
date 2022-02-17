@@ -35,6 +35,13 @@ public class ReceiveController {
             return new Result("400",false,"添加接单信息错误");
         }
     }
+    @CrossOrigin
+    @PostMapping(value = "/api/updatePriceAndTime")
+    @ResponseBody
+    public Result<Boolean> updatePriceAndTime(@RequestBody Receive_kh newr) {
+        return new Result<>(receiveService.updatePriceAndTime(newr));
+    }
+
 
     @CrossOrigin
     @PostMapping(value = "/api/updatetestresult")

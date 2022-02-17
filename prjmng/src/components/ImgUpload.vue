@@ -2,7 +2,7 @@
   <el-upload
     class="img-upload"
     ref="upload"
-    action="http://localhost:8443/api/imgupload"
+    action="http://39.101.135.32:8443/api/imgupload"
     :on-preview="handlePreview"
     :on-remove="handleRemove"
     :before-remove="beforeRemove"
@@ -11,9 +11,10 @@
     :limit="1"
     :on-exceed="handleExceed"
     :file-list="fileList"
-    accept=".jpg,.jpeg,.png">
+    list-type="picture"
+    accept=".jpg,.jpeg,.png,.bmp,.gif">
     <el-button size="small" type="primary">点击上传</el-button>
-    <div slot="tip" class="el-upload__tip">只能上传jpg/png文件</div>
+<!--    <div slot="tip" class="el-upload__tip">只能上传jpg/png文件</div>-->
   </el-upload>
 </template>
 

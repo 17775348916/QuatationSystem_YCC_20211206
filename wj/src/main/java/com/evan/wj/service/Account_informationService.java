@@ -47,7 +47,7 @@ public class Account_informationService {
         log.info("添加新项目账号为" + Saccountid);
         Account_information account = account_informationDAO.findByAccountid(accountid);
         Identity identity = identityDAO.findByTypeid(account.getTypeid());
-        if(account != null)
+        if (account != null)
             return identity.getType() + "  " + account.getName() + " 工号:" + Saccountid;
         else {
             log.info("查询用户名出错！");

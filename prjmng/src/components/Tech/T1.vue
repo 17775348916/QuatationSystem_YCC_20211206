@@ -2,111 +2,134 @@
 <template>
   <div>
     <TIdentityCheck></TIdentityCheck>
-    <br><br>
-    <el-row>
-      <el-col :span="6">
-        <div>订单编号:{{ project.projectid }}</div>
-      </el-col>
-      <el-col :span="6">
-        <div>询单日期{{ project.createdate }}</div>
-      </el-col>
-      <el-col :span="6">
-        <div>已经过{{ project.dura }}小时</div>
-      </el-col>
-      <el-col :span="6">
-        <div>未评估</div>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="7">
-        <div>需求产品名称：{{ project.projectname }}</div>
-      </el-col>
-      <el-col :span="7">
-        <div>Cas号：{{ project.cas }}</div>
-      </el-col>
-      <el-col :span="7">
-        <div>需求量：{{ project.projectsl }}</div>
-      </el-col>
-    </el-row>
-    <!--    <el-row>-->
-    <el-row>
-      <el-col :span="12">
-        <div>产品结构式图片</div>
-        <br>
-        <img v-bind:src="project.projectdetails" style="max-width:400px" alt="图片未上传"/>
-      </el-col>
-      <el-col :span="12">
-        <div>客户对产品纯度，货期等方面特殊要求：</div>
-        <div>{{ project.bz }}</div>
-      </el-col>
-    </el-row>
-    <!--    </el-row>-->
     <br>
-    <div>
-      （一）请录入项目需要关键原料信息：
-    </div>
-    <br>
+    <el-descriptions class="margin-top" title="订单信息" :column="4"  style="margin-bottom:20px" border>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-user"></i>
+          订单编号
+        </template>
+        {{ project.projectid }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-mobile-phone"></i>
+          询单日期
+        </template>
+        {{ project.createdate }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-location-outline"></i>
+          耗费时间(小时)
+        </template>
+        {{ project.dura }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-office-building"></i>
+          当前状态
+        </template>
+        尚未评估
+      </el-descriptions-item>
+    </el-descriptions>
 
-    <el-row>
-      <el-col :span="2" :offset="2"><div>编号</div></el-col>
-      <el-col :span="4"><div>*原料名称</div></el-col>
-      <el-col :span="4"><div>Cas号</div></el-col>
-      <el-col :span="4"><div>*需要数量</div></el-col>
-      <el-col :span="4"><div>备注</div></el-col>
+    <el-descriptions class="margin-top1" title="需求产品信息" :column="4"  style="margin-bottom:20px" border>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-goods"></i>
+          产品名称
+        </template>
+        {{ project.projectname }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-info"></i>
+          cas号
+        </template>
+        {{ project.cas }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-shopping-cart-full"></i>
+          需求量
+        </template>
+        {{ project.projectsl }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-view"></i>
+          产品结构照片
+        </template>
+        <div>
+          <el-popover
+            placement="top-end"
+            width="150px"
+            trigger="click">
+            <img alt="图片未上传" v-bind:src="project.projectdetails" style="max-width:600px"/>
+            <el-button slot="reference" size="mini">预览</el-button>
+          </el-popover>
+        </div>
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">
+          <i class="el-icon-warning"></i>
+          客户对产品纯度，货期等方面特殊要求：
+        </template>
+        {{ project.bz }}
+      </el-descriptions-item>
+    </el-descriptions>
+    <hr>
+    <div align="left" style="font-size:16px;font-family:黑体;font-weight:bold;">
+      请录入项目需要关键原料信息：
+    </div>
+    <el-row style="margin-top:20px">
+      <el-col :span="1" ><div >编号</div></el-col>
+      <el-col :span="3"><span style="color:red" >*</span><span>原料名称</span></el-col>
+      <el-col :span="3"><div>Cas号</div></el-col>
+      <el-col :span="2"><span style="color:red">*</span><span>需要数量</span></el-col>
+      <el-col :span="2"><div>备注</div></el-col>
       <el-col :span="2"><div></div></el-col>
     </el-row>
-
-    <el-row v-for="(item,index) in list1" :key="item.uuid">
-      <el-col :span="2" :offset="2"><div>{{ index + 1 }}</div></el-col>
-      <el-col :span="4"><el-input v-model="item.materialname"></el-input></el-col>
-      <el-col :span="4"><el-input v-model="item.cas"></el-input></el-col>
-      <el-col :span="4"><el-input v-model="item.materialsl"></el-input></el-col>
-      <el-col :span="4"><el-input v-model="item.bz"></el-input></el-col>
-      <el-col :span="2"><el-button circle icon="el-icon-delete" type="info" v-on:click="deletem(index)"></el-button></el-col>
+    <el-row v-for="(item,index) in list1" :key="item.uuid" style="margin-top:10px;" align="right">
+      <el-col :span="1" ><div style="margin-top:5px;">{{ index + 1 }}</div></el-col>
+      <el-col :span="3"><el-input v-model="item.materialname" placeholder="原料名称(必填)"></el-input></el-col>
+      <el-col :span="3"><el-input v-model="item.cas"></el-input></el-col>
+      <el-col :span="2"><el-input v-model="item.materialsl"></el-input></el-col>
+      <el-col :span="2"><el-input v-model="item.bz"></el-input></el-col>
+      <el-col :span="1"><el-button circle icon="el-icon-delete" type="info" v-on:click="deletem(index)"></el-button></el-col>
+      <el-col :span="2"><el-button :span="5" v-on:click="addnew" v-if="index === 0">+添加</el-button></el-col>
+      <el-button type="primary" v-on:click="submit" style="margin-left:350px" v-if="index === 0">提交原料信息</el-button>
     </el-row>
-
-    <br>
-    <el-button align="left" v-on:click="addnew">+添加</el-button>
-    <br>
-    <el-row>
-      <el-col :offset="1" :span="8">
-        <div align="left">从原料信息库查询添加</div>
+    <hr>
+    <div align="left" style="font-size:16px;font-family:黑体;font-weight:bold;">
+      从原料信息库查询添加:
+    </div>
+    <el-row style="margin-top:10px;">
+      <el-col :span="11">
+        <el-input v-model="info" placeholder="请输入原料名称或cas号进行查询" @keydown.enter.native="search"></el-input>
       </el-col>
-    </el-row>
-    <el-row>
-      <el-col :offset="1" :span="8">
-        <el-input v-model="info" placeholder="请输入原料名称或cas号进行查询"></el-input>
-      </el-col>
-      <el-col :span="4">
+      <el-col :span="3" style="margin-left:20px">
         <el-button v-on:click="search">查询</el-button>
       </el-col>
     </el-row>
-    <el-row v-if="Object.keys(list2).length>0">
-      <el-col :offset="1" :span="16">
-        <el-table
-          :data="list2"
-          height="350"
-          style="width: 80%">
+    <el-row style="margin-top:5px;">
+      <div >
+        <el-table :span="12" v-if="Object.keys(list2).length>0"
+                  :data="list2"
+                  height="220"
+                  style="width:55%;">
           <el-table-column label="原料名称" prop="materialname"> </el-table-column>
           <el-table-column label="cas" prop="cas"> </el-table-column>
           <el-table-column label="规格" prop="quantities"> </el-table-column>
           <el-table-column label="纯度" prop="qurity"> </el-table-column>
           <el-table-column label="备注" prop="bz"> </el-table-column>
-<!--          <el-table-column fixed="right" label="操作" width="100">-->
-<!--            <template slot-scope="scope">-->
-<!--              <el-button size="small" type="text" @click="addfromlist2(scope.row)">添加</el-button>-->
-<!--            </template>-->
-<!--          </el-table-column>-->
         </el-table>
-      </el-col>
+      </div>
     </el-row>
-    <br><br>
-    <div>{{ nm }}</div>
-    <el-button type="primary" v-on:click="submit">提交原料信息</el-button>
-    <br><br>
-    <div>
-      <el-button v-on:click="$router.replace('/Tindex')">返回</el-button>
-    </div>
+<!--      <div align="right">-->
+<!--        <el-button type="primary" v-on:click="submit">提交原料信息</el-button>-->
+<!--      </div>-->
   </div>
 </template>
 
@@ -121,7 +144,6 @@ export default {
       projectid: '',
       project: '',
       info: '',
-      nm: '',
       list1: [],
       list2: [],
       cnt: Number(0)
@@ -201,7 +223,11 @@ export default {
       }
     },
     deletem (index) {
-      this.list1.splice(index, 1)
+      if (index === 0) {
+        this.$message.error('当前只添加一种原料，请勿删除')
+      } else {
+        this.list1.splice(index, 1)
+      }
     },
     addnew () {
       this.cnt = this.cnt + 1
@@ -235,12 +261,9 @@ export default {
         })
         .catch(failResponse => {
         })
-      this.$router.replace('/Tindex')
+      this.$router.replace('/TUnevaluated')
     },
     addfromlist2 (x) {
-      // console.log(index)
-      // x.projectid = this.projectid
-      // x.createname = this.account_id
       this.cnt = this.cnt + 1
       this.list1.push({
         projectid: this.projectid,
@@ -258,54 +281,5 @@ export default {
 }
 </script>
 
-<!--<style scoped>-->
-<!--.el-row {-->
-<!--  margin-bottom: 20px;-->
-
-<!--&-->
-<!--:last-child {-->
-<!--  margin-bottom: 0;-->
-<!--}-->
-
-<!--}-->
-<!--.el-col {-->
-<!--  border-radius: 4px;-->
-<!--}-->
-
-<!--.bg-purple-dark {-->
-<!--  background: #99a9bf;-->
-<!--}-->
-
-<!--.bg-purple {-->
-<!--  background: #d3dce6;-->
-<!--}-->
-
-<!--.bg-purple-light {-->
-<!--  background: #e5e9f2;-->
-<!--}-->
-
-<!--.grid-content {-->
-<!--  border-radius: 4px;-->
-<!--  min-height: 36px;-->
-<!--}-->
-
-<!--.row-bg {-->
-<!--  padding: 10px 0;-->
-<!--  background-color: #f9fafc;-->
-<!--}-->
-
-<!--.table {-->
-<!--  width: 1000px;-->
-<!--  height: 100px;-->
-<!--  border: 1px solid #ccc;-->
-<!--  border-collapse: collapse;-->
-<!--  align-content: center;-->
-<!--  alignment: center;-->
-<!--  margin: auto;-->
-<!--}-->
-
-<!--.table td, .table th {-->
-<!--  border: 1px solid #ccc;-->
-<!--  padding: 5px;-->
-<!--}-->
-<!--</style>-->
+<style scoped>
+</style>

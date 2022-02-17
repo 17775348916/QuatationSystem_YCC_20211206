@@ -1,6 +1,5 @@
 <template>
   <div>
-    欢迎您，工号：{{ account_id }} 身份：商务人员
   </div>
 </template>
 
@@ -34,7 +33,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

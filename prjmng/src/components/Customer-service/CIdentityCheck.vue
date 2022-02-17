@@ -1,6 +1,5 @@
 <template>
   <div>
-    欢迎你，工号{{ account_id }}客服人员
   </div>
 </template>
 

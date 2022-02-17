@@ -1,6 +1,6 @@
 <template>
   <el-upload
-    action="http://localhost:8443/api/upload"
+    action="http://39.101.135.32:8443/api/upload"
     :on-preview="handlePreview"
     :on-remove="handleRemove"
     :before-remove="beforeRemove"

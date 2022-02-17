@@ -87,5 +87,6 @@ C-3-1页面反馈**/
   private LocalDateTime khfeedbackdate;
 
   /*已经经过时间*/
+  @Column(name="timed")
   private int timed;
 }

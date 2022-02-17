@@ -1,59 +1,47 @@
 <template>
-  <div>
-    <IdentityCheckAd></IdentityCheckAd>
-    <el-row v-for="(x, index) in list" :key="x.projectid">
-      <br>
+  <div align="center">
+    <IdentityCheck></IdentityCheck>
+      <el-row v-for="(x, index) in list" :key="x.projectid" style="margin-top:20px">
       <el-row>
-        <el-col :span="3">
+        <el-col :span="4">
           <div>编号：{{ x.projectid }}</div>
         </el-col>
-        <el-col :span="7">
+        <el-col :span="4">
           <div>客户：{{ x.khname }} - {{x.khryname}}</div>
         </el-col>
-        <el-col :span="3">
+        <el-col :span="4">
           <div>询单产品：{{ x.projectname }}</div>
         </el-col>
-        <el-col :span="7">
+        <el-col :span="6">
           <div>询单日期：{{ x.createdate }}</div>
         </el-col>
-<!--        <el-col :span="4">-->
-<!--          <div>完成时间：{{ x.evaluationdate }}</div>-->
-<!--        </el-col>-->
-<!--        <el-col :span="3">-->
-<!--          <div>耗时：{{ x.dura }}小时</div>-->
-<!--        </el-col>-->
-<!--        <el-col :span="3">-->
-<!--          <div>状态：{{ x.projectztjs }}</div>-->
-<!--        </el-col>-->
-        <el-col :span="3">
-          <div>成交结果：{{ x.projectresultkf }}</div>
+        <el-col :span="5">
+          <div>成交结果：{{ x.projectZt.projectresultkf }}</div>
         </el-col>
       </el-row>
-      <br>
-      <el-row>
+      <el-row style="margin-top:10px">
         <el-col :span="4" >
-          <div v-if="x.isacceptsw === '有' && x.fkztkf === '已反馈-能买到'" >
-            <el-button type="primary" v-on:click="dialogTableVisible[index].mflag = true">原料信息</el-button>
+          <div v-if="x.isacceptsw === '有' && x.projectZt.fkztkf === '已反馈-能买到'" >
+            <el-button type="primary" v-on:click="dialogTableVisible[index].mflag = true" plain>原料信息</el-button>
           </div>
           <div v-else>不存在原料信息</div>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary" v-on:click="dialogTableVisible[index].cflag = true">客户信息</el-button>
+          <el-button type="primary" v-on:click="dialogTableVisible[index].cflag = true" plain>客户信息</el-button>
         </el-col>
         <el-col :span="4">
-          <div v-if="x.isacceptsw === '有' && x.projectztjs !== '未评估'" >
-            <el-button type="primary" v-on:click="dialogTableVisible[index].pgflag = true">项目评估信息</el-button>
+          <div v-if="x.isacceptsw === '有' && x.projectZt.projectztjs !== '未评估'" >
+            <el-button type="primary" v-on:click="dialogTableVisible[index].pgflag = true" plain>项目评估信息</el-button>
           </div>
-          <div v-else>不存在评估信息</div>
+          <div v-else>技术人员尚未评估</div>
         </el-col>
         <el-col :span="4">
-<!--          <div v-if="x.khfeedback !== null">-->
-            <el-button type="primary" v-on:click="dialogTableVisible[index].fkflag = true">客户反馈</el-button>
+            <el-button type="primary" v-on:click="dialogTableVisible[index].fkflag = true" plain>客户反馈</el-button>
 <!--          </div>-->
         </el-col>
         <el-col :span="4">
-          <div v-if="x.projectztjs === '已评估-可行'" >
-          <el-button type="primary" v-on:click="dialogTableVisible[index].priceflag = true">报价计算器计算信息</el-button>
+          <div v-if="x.projectZt.projectztjs === '已评估-可行'" >
+          <el-button type="primary" v-on:click="dialogTableVisible[index].priceflag = true" plain>报价计算器计算信息</el-button>
           </div>
           <div v-else>暂无报价结果</div>
         </el-col>
@@ -72,22 +60,84 @@
         </div>
       </el-dialog>
       <el-dialog title="客户信息" :visible.sync="dialogTableVisible[index].cflag">
-        <el-row><div align="left">询单人员姓名：{{ x.khryname }}</div></el-row><br>
-        <el-row><div align="left">询单人员身份：{{ x.khrytype }}</div></el-row><br>
-        <el-row><div align="left">询单人联系方式：{{ x.khrycontact }}</div></el-row><br>
-        <el-row><div align="left">询单人身份是否真实：{{ x.khryisreal }}</div></el-row><br>
-        <el-row><div align="left">客户类型：{{ x.khrytype }}</div></el-row><br>
-        <el-row><div align="left">客户合作历史：{{ x.cohistory }}</div></el-row><br>
-        <el-row><div align="left">是否有钱：{{ x.ismoney }}</div></el-row><br>
-        <el-row><div align="left">商务人员判断成交可能：{{ x.isdeal }}</div></el-row><br>
-        <el-row><div align="left">系统生成成交可能：{{ x.isacceptsw  }}</div></el-row><br>
-        <el-row><div align="left">录入人：{{ x.createname  }}</div></el-row><br>
+        <el-descriptions :column="3" border>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-user"></i>
+              询单人员姓名
+            </template>
+            {{ x.khryname }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-postcard"></i>
+              询单人员身份
+            </template>
+            {{ x.khrytype }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-mobile-phone"></i>
+              询单人员联系方式
+            </template>
+            {{ x.khrycontact }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-coordinate"></i>
+              询单人身份是否真实
+            </template>
+            {{ x.khryisreal }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-s-check"></i>
+              客户类型
+            </template>
+            {{ x.khtype }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-news"></i>
+              客户合作历史
+            </template>
+            {{ x.cohistory }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-coordinate"></i>
+              是否有钱
+            </template>
+            {{ x.ismoney }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-user"></i>
+              商务人员判断成交可能
+            </template>
+            {{ x.isdeal }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-user"></i>
+              系统生成成交可能
+            </template>
+            {{ x.isacceptsw }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-solid"></i>
+              录入人
+            </template>
+            {{ x.createname }}
+          </el-descriptions-item>
+        </el-descriptions>
         <div slot="footer" class="dialog-footer">
           <el-button type="primary" @click="dialogTableVisible[index].cflag = false">确 定</el-button>
         </div>
-      </el-dialog>
+      </el-dialog >
       <el-dialog title="项目评估信息" :visible.sync="dialogTableVisible[index].pgflag">
-        <div v-if="x.projectztjs === '已评估-不可行'">
+        <div v-if="x.projectZt.projectztjs === '已评估-不可行'">
           <el-row>
             <div align="left">不可行原因：</div>
             <div align="center">
@@ -95,69 +145,207 @@
             </div>
           </el-row>
         </div>
-        <div v-else-if="x.projectztjs === '已评估-可行'">
-          <el-row><div align="left">技术难度：{{ x.ztjs.isdifficultjs }}</div></el-row><br>
-          <el-row><div align="left">完成项目时间(天)：{{ x.ztjs.timeneeded}}</div></el-row><br>
-          <el-row><div align="left">完成项目的特殊要求：{{ x.ztjs.bz }}</div></el-row><br>
-          <el-row><div align="left">项目技术文档：<a :href="url +  x.ztjs.papersjs" >文档</a></div></el-row><br>
-          <el-row><div align="left">报价：{{ x.finalprice }}</div></el-row><br>
-        </div>
-        <div>
-          <el-row><div align="left">评估人：{{ x.ztjs.evaluationname }}</div></el-row><br>
-          <el-row><div align="left">评估日期：{{ x.ztjs.evaluationdate}}</div></el-row><br>
+        <div v-else-if="x.projectZt.projectztjs === '已评估-可行'">
+          <el-descriptions :column="3" border>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-bell"></i>
+                技术难度
+              </template>
+              {{ x.ztjs.isdifficultjs }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-time"></i>
+                完成项目时间(天)
+              </template>
+              {{ x.ztjs.timeneeded}}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-s-order"></i>
+                完成项目的特殊要求
+              </template>
+              {{ x.ztjs.bz }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-price-tag"></i>
+                最终价格(元)
+              </template>
+              {{ x.priceinfo.finalprice }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-date"></i>
+                评估日期
+              </template>
+              {{ x.ztjs.evaluationdate }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-user"></i>
+                评估人
+              </template>
+              {{ x.ztjs.evaluationname }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-document"></i>
+                项目技术文档
+              </template>
+              <div v-for ="(item,index) in x.papersjs" v-bind:key="index">
+                <div v-if= "index === 0">
+                  <div v-if="item.includes('.pdf')">
+                    <a :href="item" target="_blank">{{x.paperType[index]}}</a>
+                  </div>
+                  <div v-else-if="item.includes('.jpg')">
+                    <a :href="item" target="_blank">{{x.paperType[index]}}</a>
+                  </div>
+                  <div v-else-if="item.includes('.jpeg')">
+                    <a :href="item" target="_blank">{{x.paperType[index]}}</a>
+                  </div>
+                  <div v-else-if="item.includes('.png')">
+                    <a :href="item" target="_blank">{{x.paperType[index]}}</a>
+                  </div>
+                  <div v-else>
+                    <a :href="item">{{x.paperType[index]}}</a>
+                  </div>
+                </div>
+                <div v-else-if="item.includes('.pdf')">
+                  <a :href="item" target="_blank">{{x.paperType[index]}}</a>
+                </div>
+                <div v-else-if="item.includes('.jpg')">
+                  <a :href="item" target="_blank">{{x.paperType[index]}}</a>
+                </div>
+                <div v-else-if="item.includes('.jpeg')">
+                  <a :href="item" target="_blank">{{x.paperType[index]}}</a>
+                </div>
+                <div v-else-if="item.includes('.png')">
+                  <a :href="item" target="_blank">{{x.paperType[index]}}</a>
+                </div>
+                <div v-else>
+                  <a :href="item">{{x.paperType[index]}}</a>
+                </div>
+              </div>
+            </el-descriptions-item>
+          </el-descriptions>
         </div>
         <div slot="footer" class="dialog-footer">
           <el-button type="primary" @click="dialogTableVisible[index].pgflag = false">确 定</el-button>
         </div>
       </el-dialog>
       <el-dialog title="客户反馈" :visible.sync="dialogTableVisible[index].fkflag">
-        <el-row>
-          <div align="left">反馈信息：</div>
-          <div align="center">
+        <el-descriptions :column="3" border>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-help"></i>
+              反馈信息
+            </template>
             {{ x.khfeedback }}
-          </div>
-        </el-row>
+          </el-descriptions-item>
+        </el-descriptions>
         <div slot="footer" class="dialog-footer">
           <el-button type="primary" @click="dialogTableVisible[index].fkflag = false">确 定</el-button>
         </div>
       </el-dialog>
       <el-dialog title="报价计算机计算过程" :visible.sync="dialogTableVisible[index].priceflag">
-              <el-row>
-                <el-row><div align="left">报价模式：{{ x.priceinfo.pricemodel }}</div></el-row><br>
-                <el-row><div align="left">原料成本：{{ x.priceinfo.materialcost }}</div></el-row><br>
-                <el-row><div align="left">测试成本：{{ x.priceinfo.csmaterialcost }}</div></el-row><br>
-                <el-row><div align="left">溶剂耗材成本：{{ x.priceinfo.rjmaterialcost}}</div></el-row><br>
-                <el-row><div align="left">外包报价：{{ x.priceinfo.wbprice }}</div></el-row><br>
-                <el-row><div align="left">总成本：{{ x.priceinfo.allcost }}</div></el-row><br>
-                <el-row><div align="left">最终价格：{{ x.priceinfo.finalprice }}</div></el-row><br>
-              </el-row>
+        <el-descriptions :column="3" border>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-coordinate"></i>
+              报价模式
+            </template>
+            {{ x.priceinfo.pricemodel }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-document"></i>
+              原料成本(元)
+            </template>
+            {{ x.priceinfo.materialcost }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-money"></i>
+              测试成本(元)
+            </template>
+            {{ x.priceinfo.csmaterialcost }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-goods"></i>
+              溶剂耗材成本(元)
+            </template>
+            {{ x.priceinfo.rjmaterialcost }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-price-tag"></i>
+              总成本(元)
+            </template>
+            {{ x.priceinfo.allcost }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-wallet"></i>
+              外包报价(元)
+            </template>
+            {{ x.priceinfo.wbprice }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-coin"></i>
+              最终价格(元)
+            </template>
+            {{ x.priceinfo.finalprice }}
+          </el-descriptions-item>
+        </el-descriptions>
               <div slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="dialogTableVisible[index].priceflag = false">确 定</el-button>
               </div>
             </el-dialog>
     </el-row>
+    <el-pagination class="fy1"
+                   layout="total, sizes, prev, pager, next, jumper"
+                   :total="total"
+                   :page-sizes="[5, 10, 20]"
+                   :page-size= "pageSize"
+                   v-show="total>5"
+                   @size-change="handleSizeChange"
+                   @current-change="handleCurrentChange"
+                   background style="margin-top:20px">
+    </el-pagination>
   </div>
 </template>
 
 <script>
-import IdentityCheckAd from './IdentityCheckAd'
-// import axios from 'axios'
+import IdentityCheck from './IdentityCheck'
 export default {
   name: 'M2',
   data () {
     return {
       list: [],
       dialogTableVisible: [],
-      url: ''
+      url: '',
+      accountid: window.sessionStorage.getItem('account_id'),
+      currentPage: 1,
+      pageSize: 5,
+      total: 0,
+      papersjs: []
+
     }
   },
   created () {
     this.$axios
-      .post('/allproj')
+      .post('/allproj', {
+        page: this.currentPage,
+        size: this.pageSize
+      })
       .then(successResponse => {
         if (successResponse.data.success) {
-          console.log(successResponse.data.data)
-          this.list = successResponse.data.data
+          this.list = successResponse.data.data.content
+          this.total = successResponse.data.data.totalElements
           if (this.list.length < 1) {
             this.$message('无项目记录')
           }
@@ -202,7 +390,7 @@ export default {
               })
               .catch(failResponse => {
               })
-            if (this.list[m].projectztjs === '已评估-不可行') {
+            if (this.list[m].projectZt.projectztjs === '已评估-不可行') {
               this.$axios
                 .post('/querynofeasible', {
                   projectid: this.list[m].projectid
@@ -211,13 +399,14 @@ export default {
                   if (successResponse.data.success) {
                     console.log(successResponse.data.data)
                     this.list[m].ztjs = successResponse.data.data
+                    this.list[m].ztjs.evaluationdate = successResponse.data.data.evaluationdate.substr(0, 10)
                   } else {
                     this.$message(successResponse.data.msg)
                   }
                 })
                 .catch(failResponse => {
                 })
-            } else if (this.list[m].projectztjs === '已评估-可行') {
+            } else if (this.list[m].projectZt.projectztjs === '已评估-可行') {
               this.$axios
                 .post('/queryfeasible', {
                   projectid: this.list[m].projectid
@@ -226,6 +415,16 @@ export default {
                   if (successResponse.data.success) {
                     // console.log(successResponse.data.data)
                     this.list[m].ztjs = successResponse.data.data
+                    this.list[m].ztjs.evaluationdate = successResponse.data.data.evaluationdate.substr(0, 10)
+                    let strs = successResponse.data.data.papersjs.split('||')
+                    let paperType = []
+                    console.log('strs', strs)
+                    strs.forEach(item => {
+                      let strss = item.split('&&')
+                      paperType.push(strss[strss.length - 1])
+                    })
+                    this.$set(this.list[m], 'paperType', paperType)
+                    this.$set(this.list[m], 'papersjs', strs)
                     this.$axios
                       .post('/querypriceinfo', {
                         projectid: this.list[m].projectid
@@ -234,6 +433,18 @@ export default {
                         if (successResponse.data.success) {
                           console.log(successResponse.data.data)
                           this.list[m].priceinfo = successResponse.data.data
+                          this.list[m].priceinfo.finalprice = successResponse.data.data.finalprice.toFixed(2)
+                          this.list[m].priceinfo.wbprice = successResponse.data.data.wbprice.toFixed(2)
+                          this.list[m].priceinfo.allcost = successResponse.data.data.allcost.toFixed(2)
+                          if (successResponse.data.data.pricemodel === 'A') {
+                            this.list[m].priceinfo.pricemodel = 'A' + '（最高价）'
+                          } else if (successResponse.data.data.pricemodel === 'B') {
+                            this.list[m].priceinfo.pricemodel = 'B' + '（正常价）'
+                          } else if (successResponse.data.data.pricemodel === 'C') {
+                            this.list[m].priceinfo.pricemodel = 'C' + '（低价）'
+                          } else {
+                            this.list[m].priceinfo.pricemodel = 'D' + '（特价）'
+                          }
                         } else {
                           this.$message(successResponse.data.msg)
                         }
@@ -255,12 +466,175 @@ export default {
       .catch(failResponse => {
       })
   },
+  methods: {
+    menuClick (index) {
+      this.$router.push(index)
+    },
+    handleCommand (command) {
+      window.sessionStorage.removeItem('account_id')
+      window.sessionStorage.removeItem('usertype')
+      window.sessionStorage.removeItem('islogin')
+      this.$router.replace('/managelogin')
+    },
+    handleSizeChange (pageSize) {
+      this.pageSize = pageSize
+      this.getList(this.currentPage)
+    },
+    handleCurrentChange (currentPage) {
+      this.getList(currentPage)
+    },
+    getList (currentPage) {
+      this.currentPage = currentPage
+      this.$axios
+        .post('/allproj', {
+          page: this.currentPage,
+          size: this.pageSize
+        })
+        .then(successResponse => {
+          if (successResponse.data.success) {
+            this.list = successResponse.data.data.content
+            this.total = successResponse.data.data.totalElements
+            if (this.list.length < 1) {
+              this.$message('无项目记录')
+            }
+            for (let m in this.list) {
+              this.dialogTableVisible.push({
+                mflag: false,
+                cflag: false,
+                pgflag: false,
+                fkflag: false,
+                priceflag: false
+              })
+              this.list[m].mlist = []
+              this.list[m].ztjs = {
+                reasonjs: '',
+                isdifficultjs: '',
+                timeneeded: '',
+                bz: '',
+                papersjs: '',
+                evaluationname: '',
+                evaluationdate: ''
+              }
+              this.list[m].priceinfo = {
+                pricemodel: '',
+                materialcost: '',
+                csmaterialcost: '',
+                rjmaterialcost: '',
+                wbprice: '',
+                allcost: '',
+                finalprice: ''
+              }
+              this.$axios
+                .post('/querymateriallr', {
+                  projectid: this.list[m].projectid
+                })
+                .then(successResponse => {
+                  if (successResponse.data.success) {
+                    // console.log(successResponse.data.data)
+                    this.list[m].mlist = successResponse.data.data
+                  } else {
+                    this.$message(successResponse.data.msg)
+                  }
+                })
+                .catch(failResponse => {
+                })
+              if (this.list[m].projectZt.projectztjs === '已评估-不可行') {
+                this.$axios
+                  .post('/querynofeasible', {
+                    projectid: this.list[m].projectid
+                  })
+                  .then(successResponse => {
+                    if (successResponse.data.success) {
+                      console.log(successResponse.data.data)
+                      this.list[m].ztjs = successResponse.data.data
+                      this.list[m].ztjs.evaluationdate = successResponse.data.data.evaluationdate.substr(0, 10)
+                    } else {
+                      this.$message(successResponse.data.msg)
+                    }
+                  })
+                  .catch(failResponse => {
+                  })
+              } else if (this.list[m].projectZt.projectztjs === '已评估-可行') {
+                this.$axios
+                  .post('/queryfeasible', {
+                    projectid: this.list[m].projectid
+                  })
+                  .then(successResponse => {
+                    if (successResponse.data.success) {
+                      // console.log(successResponse.data.data)
+                      this.list[m].ztjs = successResponse.data.data
+                      this.list[m].ztjs.evaluationdate = successResponse.data.data.evaluationdate.substr(0, 10)
+                      let strs = successResponse.data.data.papersjs.split('||')
+                      let paperType = []
+                      console.log('strs', strs)
+                      strs.forEach(item => {
+                        let strss = item.split('&&')
+                        paperType.push(strss[strss.length - 1])
+                      })
+                      this.$set(this.list[m], 'paperType', paperType)
+                      this.$set(this.list[m], 'papersjs', strs)
+                      this.$axios
+                        .post('/querypriceinfo', {
+                          projectid: this.list[m].projectid
+                        })
+                        .then(successResponse => {
+                          if (successResponse.data.success) {
+                            console.log(successResponse.data.data)
+                            this.list[m].priceinfo = successResponse.data.data
+                            this.list[m].priceinfo.finalprice = successResponse.data.data.finalprice.toFixed(2)
+                            this.list[m].priceinfo.wbprice = successResponse.data.data.wbprice.toFixed(2)
+                            this.list[m].priceinfo.allcost = successResponse.data.data.allcost.toFixed(2)
+                            if (successResponse.data.data.pricemodel === 'A') {
+                              this.list[m].priceinfo.pricemodel = 'A' + '（最高价）'
+                            } else if (successResponse.data.data.pricemodel === 'B') {
+                              this.list[m].priceinfo.pricemodel = 'B' + '（正常价）'
+                            } else if (successResponse.data.data.pricemodel === 'C') {
+                              this.list[m].priceinfo.pricemodel = 'C' + '（低价）'
+                            } else {
+                              this.list[m].priceinfo.pricemodel = 'D' + '（特价）'
+                            }
+                          } else {
+                            this.$message(successResponse.data.msg)
+                          }
+                        })
+                        .catch(failResponse => {
+                        })
+                    } else {
+                      this.$message(successResponse.data.msg)
+                    }
+                  })
+                  .catch(failResponse => {
+                  })
+              }
+            }
+          } else {
+            this.$message(successResponse.data.msg)
+          }
+        })
+        .catch(failResponse => {
+        })
+    }
+  },
   components: {
-    IdentityCheckAd
+    IdentityCheck
   }
 }
 </script>
 
 <style scoped>
+.el-header, .el-footer {
+  background-color: #409eff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  box-sizing: border-box;
 
+}
+
+.title {
+  font-size: 30px;
+  color: black;
+  font-family: 华文楷体;
+}
 </style>

@@ -1,120 +1,134 @@
 <template>
   <div>
     <CIdentityCheck></CIdentityCheck>
-    <Chead></Chead>
     <br><br>
     <div v-if="project.projectztjs === '未评估'">
-      <el-row>
-        <el-col :span="4">
-          项目编号：{{ project.projectid }}
-        </el-col>
-        <el-col :span="6">
-          询单日期：{{ project.createdate }}
-        </el-col>
-        <el-col :span="4">
-          已经等待时间：{{ project.dura }} 小时
-        </el-col>
-        <el-col :span="4">
-          状态：{{ project.projectztjs }}
-        </el-col>
-        <el-col :span="4">
-          原料任务：{{ project.istaskjs }}
-        </el-col>
-      </el-row>
+      <el-descriptions class="margin-top" title="项目信息" :column="3" :size="medium" style="margin-bottom:20px" border>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-s-opportunity"></i>
+            项目编号
+          </template>
+          {{ project.projectid }}
+        </el-descriptions-item>
+        <el-descriptions-item >
+          <template slot="label" style="width:200px">
+            <i class="el-icon-date"></i>
+            询单日期
+          </template>
+          {{ project.createdate }}
+        </el-descriptions-item>
+        <el-descriptions-item >
+          <template slot="label" style="width:200px">
+            <i class="el-icon-time"></i>
+            已经等待时间(小时)
+          </template>
+          {{ project.dura }}
+        </el-descriptions-item>
+        <el-descriptions-item >
+          <template slot="label" style="width:200px">
+            <i class="el-icon-s-check"></i>
+            状态
+          </template>
+          {{ project.projectztjs }}
+        </el-descriptions-item>
+        <el-descriptions-item >
+          <template slot="label" style="width:200px">
+            <i class="el-icon-document"></i>
+            原料任务
+          </template>
+          {{ project.istaskjs }}
+        </el-descriptions-item>
+      </el-descriptions>
       <br>
       <el-row v-for="(item, index) in mlist" :key="index">
-        <br>
-        <el-row>
-          <el-col :span="4">原料{{ index + 1 }}</el-col>
-          <el-col :span="4">原料名称：{{ item.materialname }}</el-col>
-          <el-col :span="4">Cas号：{{ item.cas }}</el-col>
-          <el-col :span="4">需求量：{{ item.materialsl }}</el-col>
-          <el-col :span="4">备注：{{ item.bz }}</el-col>
-        </el-row>
-        <br>
-        <el-row>
-          <el-col :span="4">
-            <el-input v-model="other[index].nmaterialname" placeholder="原料名称"></el-input>
-          </el-col>
-          <el-col :span="4">
-            <el-input v-model="other[index].ncas" placeholder="Cas号"></el-input>
-          </el-col>
-          <el-col :span="4">
+        <el-descriptions class="margin-top" title="原料信息" :column="5" :size="medium" style="margin-bottom:20px" border>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-finished"></i>
+              原料序号
+            </template>
+            {{ index + 1 }}
+          </el-descriptions-item>
+          <el-descriptions-item >
+            <template slot="label" style="width:200px">
+              <i class="el-icon-s-opportunity"></i>
+              原料名称
+            </template>
+            {{ item.materialname }}
+          </el-descriptions-item>
+          <el-descriptions-item >
+            <template slot="label" style="width:200px">
+              <i class="el-icon-s-data"></i>
+              Cas号
+            </template>
+            {{ item.cas }}
+          </el-descriptions-item>
+          <el-descriptions-item >
+            <template slot="label" style="width:200px">
+              <i class="el-icon-s-order"></i>
+              需求量
+            </template>
+            {{ item.materialsl }}
+          </el-descriptions-item>
+          <el-descriptions-item >
+            <template slot="label" style="width:200px">
+              <i class="el-icon-help"></i>
+              备注
+            </template>
+            {{ item.bz }}
+          </el-descriptions-item>
+          <el-descriptions-item >
+            <template slot="label" style="width:200px">
+              <i class="el-icon-tickets"></i>
+              采购量
+            </template>
             <el-input v-model="other[index].cgsl"
                       placeholder="采购量"></el-input>
-          </el-col>
-          <el-col :span="4">
+          </el-descriptions-item>
+          <el-descriptions-item >
+            <template slot="label" style="width:200px">
+              <i class="el-icon-money"></i>
+              价格（元）
+            </template>
             <el-input v-model="other[index].price" onkeyup="value=value.replace(/[^0-9.]/g,'')"
                       placeholder="价格（元）"></el-input>
-          </el-col>
-          <el-col :span="4">
+          </el-descriptions-item>
+          <el-descriptions-item >
+            <template slot="label" style="width:200px">
+              <i class="el-icon-office-building"></i>
+              供应商
+            </template>
             <el-input v-model="other[index].provider" placeholder="供应商"></el-input>
-          </el-col>
-<!--          <el-col :span="3">-->
-<!--            <el-button v-on:click="changeflag(index)">从数据库</el-button>-->
-<!--          </el-col>-->
-        </el-row>
-        <br>
-<!--        <el-row v-if="other[index].flag === true">-->
-<!--          <el-col :offset="1" :span="8">-->
-<!--            <el-input v-model="other[index].info" placeholder="请输入原料名称或cas号进行查询"></el-input>-->
-<!--          </el-col>-->
-<!--          <el-col :span="4">-->
-<!--            <el-button v-on:click="search(index)">查询</el-button>-->
-<!--          </el-col>-->
-<!--        </el-row>-->
-<!--        <div v-if="other[index].sflag && other[index].flag === true">-->
-<!--          <el-row v-if="Object.keys(other[index].slist).length>0">-->
-<!--            <el-col :offset="1" :span="20">-->
-<!--              <el-table-->
-<!--                :data="other[index].slist"-->
-<!--                height="250"-->
-<!--                style="width: 95%">-->
-<!--                <el-table-column label="原料名称" prop="materialname"></el-table-column>-->
-<!--                <el-table-column label="cas" prop="cas"></el-table-column>-->
-<!--                <el-table-column label="规格" prop="quantities"></el-table-column>-->
-<!--                <el-table-column label="纯度" prop="qurity"></el-table-column>-->
-<!--                <el-table-column label="价格（元）" prop="price"></el-table-column>-->
-<!--                <el-table-column label="供应商" prop="provider"></el-table-column>-->
-<!--                <el-table-column label="录入时间" prop="createdate"></el-table-column>-->
-<!--&lt;!&ndash;                录入时间&ndash;&gt;-->
-<!--                <el-table-column label="备注" prop="bz"></el-table-column>-->
-<!--&lt;!&ndash;                <el-table-column fixed="right" label="操作" width="100">&ndash;&gt;-->
-<!--&lt;!&ndash;                  <template slot-scope="scope">&ndash;&gt;-->
-<!--&lt;!&ndash;                    <el-button size="small" type="text" @click="addfromlist2(index,scope.row)">添加</el-button>&ndash;&gt;-->
-<!--&lt;!&ndash;                  </template>&ndash;&gt;-->
-<!--&lt;!&ndash;                </el-table-column>&ndash;&gt;-->
-<!--              </el-table>-->
-<!--            </el-col>-->
-<!--          </el-row>-->
-<!--          <el-row v-else>-->
-<!--            <el-col :offset="1" :span="16">-->
-<!--              未查询到相关结果！-->
-<!--            </el-col>-->
-<!--          </el-row>-->
-<!--        </div>-->
-        <br>
+          </el-descriptions-item>
+        </el-descriptions>
       </el-row>
-      <br>
-      <el-row>
-        <el-col :offset="1" :span="8">
-          <div align="left">从原料信息库查询添加</div>
+      <el-row style="margin-top:25px">
+        <el-col :span="8">
+          <div align="left" style="font-family:黑体;font-weight:bold;">查询原料信息</div>
         </el-col>
       </el-row>
-      <el-row>
-        <el-col :offset="1" :span="8">
+      <el-row style="margin-top:20px">
+        <el-col :span="8">
           <el-input v-model="info" placeholder="请输入原料名称或cas号进行查询"></el-input>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="3">
           <el-button v-on:click="search">查询</el-button>
         </el-col>
+        <div align="right">
+          <el-button  type="primary" @click="submit">完成所有信息提交</el-button>
+          <el-button align="right" type="primary" @click="cantbuy">买不到原料反馈</el-button>
+          <el-button align="right" type="primary" v-on:click="$router.replace('/CUnevaluated')">返回</el-button>
+        </div>
       </el-row>
+      <br>
+
       <el-row v-if="Object.keys(searchlist).length>0">
-        <el-col :offset="1" :span="20">
+        <el-col :span="20">
           <el-table
             :data="searchlist"
             height="350"
-            style="width: 95%">
+            style="width: 50%">
             <el-table-column label="原料名称" prop="materialname"> </el-table-column>
             <el-table-column label="cas" prop="cas"> </el-table-column>
             <el-table-column label="规格" prop="quantities"> </el-table-column>
@@ -127,52 +141,49 @@
           </el-table>
         </el-col>
       </el-row>
-      <br><br><br>
-      <el-row>
-        <el-col :offset="2" :span="5">
-          <el-button type="primary" @click="submit">完成所有信息提交</el-button>
-        </el-col>
-        <el-col :offset="1" :span="5">
-          <el-button type="primary" @click="cantbuy">买不到原料反馈</el-button>
-        </el-col>
-        <el-col :offset="1" :span="2">
-          <el-button type="primary" @click="$router.replace('/Cindex')">返回</el-button>
-        </el-col>
-      </el-row>
     </div>
     <div v-else-if="project.projectztjs === '已评估-可行' || project.projectztjs === '已评估-不可行'">
-      <table v-if="Object.keys(haslist).length>0" class="table">
-        <thead>
-        <tr>
-          <th>编号</th>
-          <th>原料名称</th>
-          <th>Cas号</th>
-          <th>采购量</th>
-          <th>价格</th>
-          <th>供应商</th>
-          <th>是否可以买到</th>
-          <th>买不到原因</th>
-          <th>是否删除</th>
-        </tr>
-        </thead>
-        <tbody v-for="(x, index) in haslist" :key="index">
-        <tr>
-          <th>{{ index + 1 }}</th>
-          <th>{{ x.materialname }}</th>
-          <th>{{ x.cas }}</th>
-          <th>{{ x.cgsl }}</th>
-          <th>{{ x.price }}</th>
-          <th>{{ x.provider }}</th>
-          <th>{{ x.isbuy }}</th>
-          <th>
-            <div v-if="x.isbuy === '买不到'">{{ x.notreason }}</div>
-          </th>
-          <th>{{ x.deleteflag }}</th>
-        </tr>
-        </tbody>
-      </table>
-      <br>
-      <el-button type="primary" @click="$router.replace('/Cindex')">返回</el-button>
+      <el-table v-if="Object.keys(haslist).length>0"
+                :data="haslist"
+                border
+                style="width: 100%">
+        <el-table-column
+          prop= "materialname"
+          label="原料名称">
+        </el-table-column>
+        <el-table-column
+          prop= "cas"
+          label="cas号">
+        </el-table-column>
+        <el-table-column
+          prop= "cgsl"
+          label="采购量">
+        </el-table-column>
+        <el-table-column
+          prop= "price"
+          label="价格">
+        </el-table-column>
+        <el-table-column
+          prop= "provider"
+          label="供应商">
+        </el-table-column>
+        <el-table-column
+          prop= "isbuy"
+          label="是否可以买到">
+        </el-table-column>
+        <el-table-column
+          prop= "notreason"
+          label="买不到原因" >
+        </el-table-column>
+        <el-table-column
+          prop= "deleteflag"
+          label="是否删除" >
+        </el-table-column>
+      </el-table>
+      <div v-if="Object.keys(haslist).length===0">原料买不到，无原料信息</div>
+      <div align="right" style="margin-top:20px;">
+        <el-button align="right" type="primary" v-on:click="$router.replace('/CEvaluated')">返回</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -213,7 +224,6 @@ export default {
       .then(successResponse => {
         if (successResponse.data.success) {
           this.project = successResponse.data.data
-          console.log(this.project)
         } else {
           this.$message(successResponse.data.msg)
         }
@@ -340,15 +350,15 @@ export default {
       let _this = this
       for (let it in _this.mlist) {
         if (!(_this.other[it].nmaterialname)) {
-          this.$message('原料' + (it + 1) + '原料名称缺失，请补充')
+          this.$message('原料' + (++it) + '原料名称缺失，请补充')
           return
         }
         if (!(_this.other[it].price)) {
-          this.$message('原料' + (it + 1) + '价格缺失，请补充')
+          this.$message('原料' + (++it) + '价格缺失，请补充')
           return
         }
         if (!(_this.other[it].cgsl)) {
-          this.$message('原料' + (it + 1) + '采购数量缺失，请补充')
+          this.$message('原料' + (++it) + '采购数量缺失，请补充')
           return
         }
         if (!(_this.other[it].provider)) {

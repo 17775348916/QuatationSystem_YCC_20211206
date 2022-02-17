@@ -1,54 +1,90 @@
 <template>
   <div>
-    <IdentityCheckAd></IdentityCheckAd>
-    <el-header>用户账号权限密码管理</el-header>
-    <table class="table" style="width: 100%;">
-      <thead>
-      <tr class="table td">
-        <th>报价模式</th>
-        <th>氢谱单价</th>
-        <th>碳谱单价</th>
-        <th>质谱单价</th>
-        <th>(测试/溶剂)比率</th>
-        <th>企业月工资</th>
-        <th>高校月工资</th>
-        <th>企业报价系数</th>
-        <th>高校报价系数</th>
-        <th>产品报价系数</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="x in model" :key="x.modleid">
-        <th>{{ x.modelname }}</th>
-        <th><el-input v-model="x.hprice" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input></th>
-        <th><el-input v-model="x.cprice" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input></th>
-        <th><el-input v-model="x.mprice" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input></th>
-        <th><el-input v-model="x.rate" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input></th>
-        <th><el-input v-model="x.firmwage" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input></th>
-        <th><el-input v-model="x.collegewage" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input></th>
-        <th><el-input v-model="x.firmcoefficient" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input></th>
-        <th><el-input v-model="x.collegecoefficient" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input></th>
-        <th><el-input v-model="x.productcoefficient" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input></th>
-      </tr>
-      </tbody>
-    </table>
-    <el-button v-on:click="submit">提交修改</el-button>
-    <el-button v-on:click="$router.replace('/manageindex')">返回</el-button>
+    <IdentityCheck></IdentityCheck>
+        <el-main>
+          <el-table
+            :data="model"
+            style="width: 100%"  border>
+            <el-table-column
+              prop="modelname"
+              label="报价模式">
+            </el-table-column>
+            <el-table-column label="氢谱单价">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.hprice" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="碳谱报价">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.cprice" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="质谱报价">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.mprice" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="(测试/溶剂)比率">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.rate" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="企业月工资">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.firmwage" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="高校月工资">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.collegewage" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="企业报价系数">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.firmcoefficient" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="高校报价系数">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.collegecoefficient" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="产品报价系数">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.productcoefficient" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-main>
+    <div align="center">
+      <el-button type="primary" v-on:click="submit">提交修改</el-button>
+      <el-button type="primary" v-on:click="$router.replace('/manageindex')">返回</el-button>
+    </div>
   </div>
 </template>
 
 <script>
-import IdentityCheckAd from './IdentityCheckAd'
+import IdentityCheck from './IdentityCheck'
 
 export default {
   name: 'M3',
   data: function () {
     return {
-      model: ''
+      model: '',
+      accountid: window.sessionStorage.getItem('account_id')
+
     }
   },
   components: {
-    IdentityCheckAd
+    IdentityCheck
   },
   created () {
     this.$axios
@@ -75,21 +111,49 @@ export default {
         .catch(failResponse => {
           // console.log(this.loginForm)
         })
+    },
+    menuClick (index) {
+      this.$router.push(index)
+    },
+    handleCommand (command) {
+      window.sessionStorage.removeItem('account_id')
+      window.sessionStorage.removeItem('usertype')
+      window.sessionStorage.removeItem('islogin')
+      this.$router.replace('/managelogin')
     }
   }
 }
 </script>
 
 <style scoped>
-.table {
-  width: 300px;
-  height: 100px;
-  border: 1px solid #ccc;
-  border-collapse: collapse;
+/*.table {*/
+/*  width: 300px;*/
+/*  height: 100px;*/
+/*  border: 1px solid #ccc;*/
+/*  border-collapse: collapse;*/
+/*}*/
+
+/*.table td, .table th {*/
+/*  border: 1px solid #ccc;*/
+/*  padding: 5px;*/
+/*}*/
+.el-header, .el-footer {
+  background-color: #409eff;
+  /*background-color: #545c64;*/
+  /*color: #fff;*/
+  display: flex;
+  align-items: center;
+  /*text-align: center;*/
+  /*line-height: 50px;*/
+  justify-content: space-between;
+  padding: 0 15px;
+  box-sizing: border-box;
+
 }
 
-.table td, .table th {
-  border: 1px solid #ccc;
-  padding: 5px;
+.title {
+  font-size: 30px;
+  color: black;
+  font-family: 华文楷体;
 }
 </style>

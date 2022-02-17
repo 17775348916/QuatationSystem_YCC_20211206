@@ -1,33 +1,22 @@
 <template>
-  <div>
+  <el-form>
     <IdentityCheck></IdentityCheck>
-    <br>
-    <el-form>
-      <el-form-item>
-        <el-row>
-          <el-col :offset="3" :span="4" style="font-size:21px">
-            项目信息录入:
-          </el-col>
-        </el-row>
-      </el-form-item>
-      <el-form-item>
+    <el-form-item>
         <el-row>
           <el-col align="center" style="font-size:19px">
             （一）询单人联系方式
           </el-col>
         </el-row>
         <el-row>
-          <el-col :offset="1" :span="7">
+          <el-col :span="5">
             询单单位名称:
             <el-input v-model="contact.KH_name"></el-input>
           </el-col>
-          <el-col :offset="1" :span="7">
+          <el-col :offset="1" :span="5">
             询单人员姓名:
             <el-input v-model="contact.KHRY_name"></el-input>
           </el-col>
-        </el-row>
-        <el-row>
-          <el-col :offset="1" :span="7">
+          <el-col :offset="1" :span="5">
             <div>询单人员身份</div>
             <el-select v-model="contact.KHRY_Type">
               <el-option value="老师">老师</el-option>
@@ -35,76 +24,70 @@
               <el-option value="公司职员">公司职员</el-option>
             </el-select>
           </el-col>
-          <el-col :offset="1" :span="7">
+          <el-col :offset="1" :span="5">
             询单人联系方式:
             <el-input v-model="contact.KHRY_Contact"></el-input>
           </el-col>
         </el-row>
       </el-form-item>
       <el-form-item>
-        <br>
         <el-row>
           <el-col align="center" style="font-size:19px">
             （二）询单产品信息
           </el-col>
         </el-row>
         <el-row>
-          <el-col :offset="1" :span="7">
+          <el-col  :span="4">
             需求产品名称:
             <el-input v-model="product.Project_name"></el-input>
           </el-col>
-          <el-col :offset="1" :span="7">
+          <el-col :offset="1" :span="4">
             cas号:
             <el-input v-model="product.Cas"></el-input>
           </el-col>
-          <el-col :offset="1" :span="6">
+          <el-col :offset="1" :span="4">
             <div>需求量:</div>
             <el-input v-model="product.Project_SL"></el-input>
           </el-col>
-        </el-row>
-        <el-row>
-          <el-col :offset="1" :span="7">
+          <el-col :offset="1" :span="4">
+            备注:
+            <el-input v-model="product.BZ"></el-input>
+          </el-col>
+          <el-col  :span="4">
             产品图片上传
             <img-upload ref="imgUpload" @onUpload="uploadImg"></img-upload>
-          </el-col>
-          <el-col :offset="1" :span="7">
-            备注:
-            <el-input v-model="product.BZ" type="textarea"></el-input>
           </el-col>
         </el-row>
       </el-form-item>
       <el-form-item>
-        <br>
         <el-row>
           <el-col align="center" style="font-size:19px">
             （三）请对该项目询单人的身份进行评价判断，完成该条项目信息的提交任务。
           </el-col>
         </el-row>
         <el-row>
-          <el-col :offset="1" :span="7">
+          <el-col :span="4">
             <div>(1) 询单单位性质</div>
             <el-select v-model="judge.KH_type">
               <el-option value="高校">高校</el-option>
               <el-option value="企业">企业</el-option>
             </el-select>
           </el-col>
-          <el-col :offset="1" :span="7">
+          <el-col :offset="1" :span="4">
             <div>(2) 询单单位是否有成交机会?</div>
             <el-select v-model="judge.Is_deal">
               <el-option value="有">有</el-option>
               <el-option value="无">无</el-option>
             </el-select>
           </el-col>
-          <el-col :offset="1" :span="7">
+          <el-col :offset="1" :span="4">
             <div>(3) 询单人身份是否真实</div>
             <el-select v-model="judge.KHRY_IsReal">
               <el-option value="真实">真实</el-option>
               <el-option value="不真实">不真实</el-option>
             </el-select>
           </el-col>
-        </el-row>
-        <el-row>
-          <el-col :offset="1" :span="7">
+          <el-col :offset="1" :span="4">
             <div>(4) 询单人是否有钱</div>
             <el-select v-model="judge.Is_money">
               <el-option value="有钱">有钱</el-option>
@@ -112,7 +95,7 @@
               <el-option value="没钱">没钱</el-option>
             </el-select>
           </el-col>
-          <el-col :offset="1" :span="7">
+          <el-col :offset="1" :span="4">
             <div>(5) 客户合作历史</div>
             <el-select v-model="judge.Co_history">
               <el-option value="新客户">新客户</el-option>
@@ -120,24 +103,25 @@
             </el-select>
           </el-col>
         </el-row>
+        <el-row style="margin-top:20px">
+          <div align="left" style="font-size:16px;font-family:黑体;color:red;margin-left:10px">如果判定为"无成交机会"、"询单者身份不真实"或"询单者没钱"，后台对该条信息仅做记录处理，不进入下一工作环节，请您务必认真判断!</div>
+        </el-row>
       </el-form-item>
-      <el-form-item>
+      <el-form-item style="margin-top:90px">
         <el-row>
-          <el-col :offset="6" :span="3">
-            <el-button type="primary" v-on:click="submit">提交</el-button>
+          <el-col :offset="16" :span="3">
+            <el-button type="primary" v-on:click="submit" style="width:100%">提交</el-button>
           </el-col>
-          <el-col :offset="1" :span="3">
-            <el-button v-on:click="b1save">暂存</el-button>
+          <el-col :span="3">
+            <el-button v-on:click="b1save" >暂存</el-button>
           </el-col>
-          <el-col :offset="1" :span="3">
+          <el-col :span="1">
             <el-button v-on:click="$router.replace('/Bindex')">返回</el-button>
           </el-col>
-          <!--          <div align="width=10%;"></div>-->
         </el-row>
       </el-form-item>
     </el-form>
     <!--    <button type="button">下一步</button>-->
-  </div>
 </template>
 
 <script>
@@ -284,6 +268,7 @@ export default {
         })
         .then(successResponse => {
           if (successResponse.data.success) {
+            // this.$message('添加成功')
             this.$confirm('项目信息已提交，继续录入新项目？', '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消'

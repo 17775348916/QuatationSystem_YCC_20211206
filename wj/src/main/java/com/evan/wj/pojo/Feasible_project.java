@@ -1,12 +1,8 @@
 package com.evan.wj.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.time.LocalDateTime;
 
 @Entity
@@ -47,7 +43,7 @@ public class Feasible_project {
     String papersjs;
 
     @Column(name = "time_needed")
-    String timeneeded;
+    double timeneeded;
 
     @Column(name = "bz")
     String bz;
@@ -129,10 +125,10 @@ public class Feasible_project {
         this.papersjs = papersjs;
     }
 
-    public String getTimeneeded() {
+    public double getTimeneeded() {
         return timeneeded;
     }
-    public void setTimeneeded(String timeneeded) {
+    public void setTimeneeded(double timeneeded) {
         this.timeneeded = timeneeded;
     }
 

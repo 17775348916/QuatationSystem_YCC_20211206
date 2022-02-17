@@ -1,10 +1,7 @@
 package com.evan.wj.vo;
 
-import com.evan.wj.pojo.Project_Overview;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
@@ -91,113 +88,6 @@ public class ProjWithTimeVo {
     private LocalDateTime khfeedbackdate;
     private int dura;
 
-
-//    //feasible_project属性
-//    /**
-//     * 氢谱数量
-//     */
-//    private double hsl;
-//    /**
-//     * 碳谱数量
-//     */
-//    private double csl;
-//    /**
-//     * 质谱数量
-//     */
-//    private double msl;
-//    /**
-//     * 打通路线时间
-//     */
-//    private double dtlxsjcs;
-//    /**
-//     * 积累量时间
-//     */
-//    private double jllsjcs;
-//    /**
-//     * 测试总时间
-//     */
-//    private double zsjcs;
-//    /**
-//     * 技术难度
-//     */
-//    private String isdifficultjs;
-//    /**
-//     * 上传文献
-//     */
-//    private String paperjs;
-//    /**
-//     * 所需总时间
-//     */
-//    private String timeneeded;
-//
-//
-//    /**
-//     * no_feasible_project
-//     * 不可行原因
-//     */
-//    private String reasonjs;
-//
-//    public ProjWithTimeVo(int dura,
-//                                 int projectid, String projectname, String projectdetails,
-//                                 String projectsl, String cas, String khname, String khryname,
-//                                 String khrytype, String khrycontact, String khryisreal,
-//                                 String khtype, String cohistory, String ismoney,
-//                                 String isacceptsw, String bz, String modelname,
-//                                 LocalDateTime createdate, String createname,
-//                                 String projectztjs, String evaluationname,
-//                                 LocalDateTime evaluationdate, String istaskjs, String taskname,
-//                                 LocalDateTime taskdate, String fkztkf, String fkname,
-//                                 LocalDateTime fkdate, String projectresultkf,
-//                                 String projectresultname, LocalDateTime projectresultdate,
-//                                 String khfeedback, String khfeedbackname, LocalDateTime khfeedbackdate,
-//                                 double hsl, double csl, double msl, double dtlxsjcs, double jllsjcs,
-//                                 double zsjcs, String isdifficultjs, String paperjs,
-//                                 String timeneeded, String reasonjs) {
-//        this.dura = dura;
-//        this.projectid = projectid;
-//        this.projectname = projectname;
-//        this.projectdetails = projectdetails;
-//        this.projectsl = projectsl;
-//        this.cas = cas;
-//        this.khname = khname;
-//        this.khryname = khryname;
-//        this.khrytype = khrytype;
-//        this.khrycontact = khrycontact;
-//        this.khryisreal = khryisreal;
-//        this.khtype = khtype;
-//        this.cohistory = cohistory;
-//        this.ismoney = ismoney;
-//        this.isacceptsw = isacceptsw;
-//        this.bz = bz;
-//        this.modelname = modelname;
-//        this.createdate = createdate;
-//        this.createname = createname;
-//        this.projectztjs = projectztjs;
-//        this.evaluationname = evaluationname;
-//        this.evaluationdate = evaluationdate;
-//        this.istaskjs = istaskjs;
-//        this.taskname = taskname;
-//        this.taskdate = taskdate;
-//        this.fkztkf = fkztkf;
-//        this.fkname = fkname;
-//        this.fkdate = fkdate;
-//        this.projectresultkf = projectresultkf;
-//        this.projectresultname = projectresultname;
-//        this.projectresultdate = projectresultdate;
-//        this.khfeedback = khfeedback;
-//        this.khfeedbackname = khfeedbackname;
-//        this.khfeedbackdate = khfeedbackdate;
-//        this.hsl = hsl;
-//        this.csl=csl;
-//        this.msl=msl;
-//        this.dtlxsjcs=dtlxsjcs;
-//        this.jllsjcs=jllsjcs;
-//        this.zsjcs=zsjcs;
-//        this.isdifficultjs=isdifficultjs;
-//        this.paperjs=paperjs;
-//        this.timeneeded=timeneeded;
-//        this.reasonjs=reasonjs;
-//    }
 
     public ProjWithTimeVo(int dura,
                           int projectid, String projectname, String projectdetails,

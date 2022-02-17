@@ -5,12 +5,16 @@ import com.evan.wj.dao.Project_OverviewDAO;
 import com.evan.wj.dao.Receive_khDAO;
 import com.evan.wj.pojo.ProjectZt;
 import com.evan.wj.pojo.Project_Overview;
-import com.evan.wj.vo.OverViewAndFeasibleVo;
 import com.evan.wj.vo.ProjWithTimeVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +37,122 @@ public class Project_OverviewService {
         project_overviewdao.save(proj);
     }
 
-    public boolean xiada(int projectid, String cname) {
+    public Page<Project_Overview> showUnavailablesPage(int page,int size){
+        Pageable pageable = PageRequest.of(page, size);
+        Specification<Project_Overview> specification = new Specification<Project_Overview>() {
+            @Override
+            public Predicate toPredicate(Root<Project_Overview> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicateList = new ArrayList<>();
+                predicateList.add(criteriaBuilder.equal(root.get("isacceptsw"),"无"));
+                Predicate[] predicates = new Predicate[predicateList.size()];
+                return query.where(predicateList.toArray(predicates)).getRestriction();
+            }
+        };
+        return project_overviewdao.findAll(specification,pageable);
+    }
+
+    /**
+     * 分页查询尚未评估的项目
+     * @param page 第几页
+     * @param size 一页有几条
+     * @param interval 最近几天
+     * @return 第page页的size条数据
+     */
+    public Page<Project_Overview> findByIntervalAndStatus(int page, int size,int interval,String status){
+        project_overviewdao.updatetimed();
+        Pageable pageable = PageRequest.of(page, size);
+        Specification<Project_Overview> specification = new Specification<Project_Overview>() {
+            @Override
+            public Predicate toPredicate(Root<Project_Overview> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicateList = new ArrayList<>();
+                Join<Project_Overview, ProjectZt> join = root.join("projectZt", JoinType.LEFT);
+                predicateList.add(criteriaBuilder.like(join.get("projectztjs"),status+"%"));
+                predicateList.add(criteriaBuilder.lessThanOrEqualTo(join.get("timed"),interval*24));
+                Predicate[] predicates = new Predicate[predicateList.size()];
+                return query.where(predicateList.toArray(predicates)).getRestriction();
+            }
+        };
+        return project_overviewdao.findAll(specification,pageable);
+    }
+
+    /**
+     *
+     * @param page
+     * @param size
+     * @param interval
+     * @param status
+     * @param resultkf 客服反馈结果（成交，未成交，待定）
+     * @return
+     */
+    public Page<Project_Overview> findByIntervalAndStatusAndResult(int page, int size,int interval,String status,String resultkf){
+        Pageable pageable = PageRequest.of(page, size);
+        Specification<Project_Overview> specification = new Specification<Project_Overview>() {
+            @Override
+            public Predicate toPredicate(Root<Project_Overview> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicateList = new ArrayList<>();
+                Join<Project_Overview, ProjectZt> join = root.join("projectZt", JoinType.LEFT);
+                predicateList.add(criteriaBuilder.like(join.get("projectztjs"),status+"%"));
+                predicateList.add(criteriaBuilder.lessThanOrEqualTo(join.get("timed"),interval*24));
+                predicateList.add(criteriaBuilder.equal(join.get("projectresultkf"),resultkf));
+                Predicate[] predicates = new Predicate[predicateList.size()];
+                return query.where(predicateList.toArray(predicates)).getRestriction();
+            }
+        };
+        return project_overviewdao.findAll(specification,pageable);
+    }
+
+    /**
+     *
+     * @param page
+     * @param size
+     * @param interval
+     * @param status
+     * @param resultkf 客服反馈结果（成交，未成交，待定）
+     * @return
+     */
+    public Page<Project_Overview> findByIntervalAndStatusAndNotByGivingResult(int page, int size,int interval,String status,String resultkf){
+        Pageable pageable = PageRequest.of(page, size);
+        Specification<Project_Overview> specification = new Specification<Project_Overview>() {
+            @Override
+            public Predicate toPredicate(Root<Project_Overview> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicateList = new ArrayList<>();
+                Join<Project_Overview, ProjectZt> join = root.join("projectZt", JoinType.LEFT);
+                predicateList.add(criteriaBuilder.like(join.get("projectztjs"),status+"%"));
+                predicateList.add(criteriaBuilder.lessThanOrEqualTo(join.get("timed"),interval*24));
+                predicateList.add(criteriaBuilder.notEqual(join.get("projectresultkf"),resultkf));
+                Predicate[] predicates = new Predicate[predicateList.size()];
+                return query.where(predicateList.toArray(predicates)).getRestriction();
+            }
+        };
+        return project_overviewdao.findAll(specification,pageable);
+    }
+
+
+    /**
+     * 分页查找尚未填写实验结果testresult的项目
+     * @param page
+     * @param size
+     * @param interval
+     * @return
+     */
+    public Page<Project_Overview> findByInterval(int page, int size,int interval){
+        Pageable pageable = PageRequest.of(page, size);
+        Specification<Project_Overview> specification = new Specification<Project_Overview>() {
+            @Override
+            public Predicate toPredicate(Root<Project_Overview> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicateList = new ArrayList<>();
+                Join<Project_Overview, ProjectZt> join = root.join("projectZt", JoinType.LEFT);
+                predicateList.add(criteriaBuilder.equal(join.get("projectztjs"),"已评估-可行"));
+                predicateList.add(criteriaBuilder.lessThanOrEqualTo(join.get("timed"),interval*24));
+                predicateList.add(criteriaBuilder.equal(join.get("projectresultkf"),"成交"));
+                predicateList.add(criteriaBuilder.isNull(root.get("testresult")));
+                Predicate[] predicates = new Predicate[predicateList.size()];
+                return query.where(predicateList.toArray(predicates)).getRestriction();
+            }
+        };
+        return project_overviewdao.findAll(specification,pageable);
+    }
+        public boolean xiada(int projectid, String cname) {
         if(projectZtDAO.existsByProjectid(projectid)) {
             ProjectZt pzt = projectZtDAO.findByProjectid(projectid);
             pzt.setIstaskjs("已下达");
@@ -47,7 +166,30 @@ public class Project_OverviewService {
         }
     }
 
-
+    /**
+     * 分页查找已经填写实验结果testresult的项目
+     * @param page
+     * @param size
+     * @param interval
+     * @return
+     */
+    public Page<Project_Overview> findByIntervalAlreadyFilledTestResult(int page, int size,int interval){
+        Pageable pageable = PageRequest.of(page, size);
+        Specification<Project_Overview> specification = new Specification<Project_Overview>() {
+            @Override
+            public Predicate toPredicate(Root<Project_Overview> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicateList = new ArrayList<>();
+                Join<Project_Overview, ProjectZt> join = root.join("projectZt", JoinType.LEFT);
+                predicateList.add(criteriaBuilder.equal(join.get("projectztjs"),"已评估-可行"));
+                predicateList.add(criteriaBuilder.lessThanOrEqualTo(join.get("timed"),interval*24));
+                predicateList.add(criteriaBuilder.equal(join.get("projectresultkf"),"成交"));
+                predicateList.add(criteriaBuilder.isNotNull(root.get("testresult")));
+                Predicate[] predicates = new Predicate[predicateList.size()];
+                return query.where(predicateList.toArray(predicates)).getRestriction();
+            }
+        };
+        return project_overviewdao.findAll(specification,pageable);
+    }
 
     public List<Project_Overview> queryprojunzt(int interval){
         return project_overviewdao.askprojunzt(interval);
@@ -67,7 +209,6 @@ public class Project_OverviewService {
     }
 
     public List<ProjWithTimeVo> queryhavezt(int interval, String resultkf) {
-        project_overviewdao.updatetimed();
         if(resultkf.equals("所有")){
             return project_overviewdao.askhaveztall(interval);
         } else {
@@ -75,13 +216,6 @@ public class Project_OverviewService {
         }
     }
 
-//    public List<ProjWithTimeVo> queryAllInfo(int interval,String resultkf){
-//        if(resultkf.equals("所有")){
-//            return project_overviewdao.askhaveztall(interval);
-//        } else {
-//            return project_overviewdao.queryAllInfo(interval, resultkf);
-//        }
-//    }
     public ProjWithTimeVo queryproj(int projectid) {
         ProjWithTimeVo proj = new ProjWithTimeVo(-1);
         if(project_overviewdao.existsByProjectid(projectid) && projectZtDAO.existsByProjectid(projectid)){
@@ -95,7 +229,9 @@ public class Project_OverviewService {
     public boolean addnewproj(Project_Overview newproj) {
 
         String tmp = newproj.getCreatename();
-        if(tmp == null) return false;
+        if(tmp == null) {
+            return false;
+        }
         tmp = account_informationService.namebyId(tmp);
         newproj.setCreatename(tmp);
         newproj.setUpdatename(tmp);
@@ -115,16 +251,6 @@ public class Project_OverviewService {
         } catch (Exception e) {
             return false;
         }
-//        File dir = new File("D:\\QuatationSystem\\prjmng\\static\\file\\proj\\" + newproj.getProjectid());
-//        dir.mkdir();
-//        String pfolder = "D:/QuatationSystem/prjmng/static/file/proj/";
-//        String folder = "D:/QuatationSystem/prjmng/static/file/proj/" + newproj.getProjectid() + "/";
-//        String pic = newproj.getProjectdetails();
-//        File oripic = new File(pfolder + pic);
-//        oripic.renameTo(new File(folder + pic));
-//        log.info("移动：" + pfolder + pic + "\n" + folder + pic);
-//        newproj.setProjectdetails("/static/file/proj/" + newproj.getProjectid() + "/" + pic);
-//        this.save(newproj);
 
         fileService.morefile(newproj.getProjectdetails(), newproj.getProjectid(), true);
 
@@ -210,9 +336,18 @@ public class Project_OverviewService {
         return pwt;
     }
 
-    public List<ProjWithTimeVo> queryall() {
-        project_overviewdao.updatetimed();
-        List<ProjWithTimeVo> pwt = project_overviewdao.askall();
+    public Page<Project_Overview> queryall(int page,int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Specification<Project_Overview> specification = new Specification<Project_Overview>() {
+            @Override
+            public Predicate toPredicate(Root<Project_Overview> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicateList = new ArrayList<>();
+                predicateList.add(criteriaBuilder.equal(root.get("isacceptsw"),"有"));
+                Predicate[] predicates = new Predicate[predicateList.size()];
+                return query.where(predicateList.toArray(predicates)).getRestriction();
+            }
+        };
+        Page<Project_Overview> pwt = project_overviewdao.findAll(specification,pageable);
         return pwt;
     }
 }

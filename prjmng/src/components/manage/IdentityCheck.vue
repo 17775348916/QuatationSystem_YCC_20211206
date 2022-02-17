@@ -1,6 +1,5 @@
 <template>
   <div>
-    欢迎您，系统管理员{{account_id}}
   </div>
 </template>
 
@@ -14,7 +13,7 @@ export default {
     }
   },
   created () {
-    if (window.sessionStorage.getItem('islogin') == null) {
+    if (!window.sessionStorage.getItem('islogin')) {
       this.$message('未登录，请先登录')
       this.$router.replace({path: '/managelogin'})
     } else {

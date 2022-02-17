@@ -1,87 +1,109 @@
 <template>
   <div>
     <CIdentityCheck></CIdentityCheck>
-    <Chead></Chead>
-    <br><br>
-    <div>（一）请查询或更新原料数据库中的原料信息：</div>
     <br>
-    <el-form>
-      <el-form-item>
-        <el-col :offset="6" :span="6">
-          <el-input v-model="info" placeholder="请输入原料名称或cas号进行查询"></el-input>
-        </el-col>
-        <el-col :span="2">
-          <el-button v-on:click="search">查询</el-button>
-        </el-col>
-      </el-form-item>
-    </el-form>
+    <div>
+      （一）请查询或更新原数据库中的原料信息
+    </div>
+    <br>
+    <el-row>
+      <el-col style="margin-left:300px" span="10">
+        <el-input v-model="info" placeholder="请输入原料名称或cas号进行查询" @keydown.enter.native="search"></el-input>
+      </el-col>
+      <el-col span="3">
+        <el-button v-on:click="search">查询</el-button>
+      </el-col>
+    </el-row>
+    <br>
     <div v-if="newm.askflag===true">
       <div v-if="Object.keys(list1).length>0">
-        <div>
-          查询的原料信息如下：
-        </div>
-        <br><br>
-        <table class="table">
-          <thead>
-          <tr>
-            <th>原料名称</th>
-            <th>cas号</th>
-            <th>数量</th>
-            <th>纯度</th>
-            <th>价格</th>
-            <th>供应商</th>
-            <th>联系方式</th>
-            <th>录入时间</th>
-            <th>备注</th>
-            <th></th>
-            <!--        <th></th>-->
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="x in list1" :key="x.accountid">
-            <td>
-              <el-input v-model="x.materialname"></el-input>
-            </td>
-            <td>
-              <el-input v-model="x.cas"></el-input>
-            </td>
-            <td>
-              <el-input v-model="x.quantities"></el-input>
-            </td>
-            <td>
-              <el-input v-model="x.qurity"></el-input>
-            </td>
-            <td>
-              <el-input v-model="x.price"></el-input>
-            </td>
-            <td>
-              <el-input v-model="x.provider"></el-input>
-            </td>
-            <td>
-              <el-input v-model="x.providerphone"></el-input>
-            </td>
-            <td>
-              <div v-text="x.createdate"></div>
-            </td>
-            <td>
-              <el-input v-model="x.bz"></el-input>
-            </td>
-            <td>
-              <el-button round type="primary" v-on:click="update(x)">修改</el-button>
-            </td>
-            <td>
-              <el-button circle icon="el-icon-delete" type="info" v-on:click="deletem(x, index)"></el-button>
-            </td>
-            <!--        <td><el-button v-on:click="dele(x)">删除</el-button></td>-->
-          </tr>
-          </tbody>
-        </table>
+        <el-table v-if="Object.keys(list1).length>0"
+                  :data="list1"
+                  height="400"
+                  border
+                  style="width: 100%">
+          <el-table-column
+            prop= "materialid"
+            label="序号" width="50px">
+          </el-table-column>
+          <el-table-column
+            prop= "materialname"
+            label="原料名称" width="150px">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.materialname"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop= "cas"
+            label="cas号" width="120px">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.cas"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop= "quantities"
+            label="数量" width="90px">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.quantities"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="纯度" width="80px">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.qurity"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop= "price"
+            label="价格">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.price"></el-input>
+            </template>
+          </el-table-column>
+
+          <el-table-column
+            prop= "provider"
+            label="供应商">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.provider"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop= "providerphone"
+            label="联系方式" >
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.providerphone"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop= "createdate"
+            label="录入时间" width="105px">
+          </el-table-column>
+          <el-table-column
+            label="备注" width="80px">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.bz"></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="操作" width="100px">
+            <template slot-scope="scope">
+                <el-button round type="primary" v-on:click="update(scope.row)">修改</el-button>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="操作" width="65px">
+            <template slot-scope="scope">
+                <el-button circle icon="el-icon-delete" type="info" v-on:click="deletem(scope.row, index)"></el-button>
+            </template>
+          </el-table-column>
+        </el-table>
       </div>
       <div v-else>
         未查询到相关结果
       </div>
     </div>
-    <br><br>
+    <hr>
     <div>（二）请录入原料数据库中没有的原料信息</div>
     <br>
     <table class="table">
@@ -114,14 +136,12 @@
       </tr>
       </tbody>
     </table>
-    <br>
-    <el-button type="primary" v-on:click="insert">新建该原料条目</el-button>
+    <el-button type="primary" v-on:click="insert" style="margin-top:10px">新建该原料条目</el-button>
   </div>
 </template>
 
 <script>
 import CIdentityCheck from './CIdentityCheck'
-import Chead from './Chead'
 
 export default {
   name: 'C2',
@@ -154,10 +174,6 @@ export default {
             this.list1 = successResponse.data.data
             this.newm.askflag = true
             console.log(this.list1)
-            // console.log(this.askflag)
-            // for(x in this.list1) {
-            //   x.updatename = windows.sessionStorage.getItem('account_id')
-            // }
           } else {
             this.$message(successResponse.data.msg)
           }
@@ -195,26 +211,6 @@ export default {
         this.$message('原料Cas缺失，请补充')
         return
       }
-      // if (!(_this.newm.quantities)) {
-      //   this.$message('原料数量缺失，请补充')
-      //   return
-      // }
-      // if (!(_this.newm.qurity)) {
-      //   this.$message('原料纯度缺失，请补充')
-      //   return
-      // }
-      // if (!(_this.newm.price)) {
-      //   this.$message('原料价格缺失，请补充')
-      //   return
-      // }
-      // if (!(_this.newm.provider)) {
-      //   this.$message('原料供应商缺失，请补充')
-      //   return
-      // }
-      // if (!(_this.newm.providerphone)) {
-      //   this.$message('原料供应商联系方式缺失，请补充')
-      //   return
-      // }
       this.$axios
         .post('/insertmaterial', {
           materialname: _this.newm.materialname,
@@ -275,20 +271,10 @@ export default {
     }
   },
   components: {
-    CIdentityCheck,
-    Chead
+    CIdentityCheck
   }
 }
 </script>
 
 <style scoped>
-.table {
-  width: 1000px;
-  height: 100px;
-  border: 1px solid #ccc;
-  border-collapse: collapse;
-  align-content: center;
-  alignment: center;
-  margin: auto;
-}
 </style>

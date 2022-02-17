@@ -1,6 +1,5 @@
 <template>
   <div>
-    <CIdentityCheck></CIdentityCheck>
     <Chead></Chead>
     <br>
     <div>（一）需要与接单客户沟通任务</div>
@@ -16,35 +15,32 @@
     <br>
     <el-row v-for="(item, index) in list1" :key="item.projectid">
       <el-row>
-        <el-col :span="5">编号：{{ item.projectid }}</el-col>
-        <el-col :span="7">询单日期：{{ item.createdate }}</el-col>
-        <el-col :span="7">完成时间：{{ item.evaluationdate }}</el-col>
-      </el-row>
-      <br>
-      <el-row>
-        <el-col :span="5">耗时：{{ item.dura }}小时</el-col>
-        <el-col :span="4">状态：{{ item.projectztjs }}</el-col>
-        <el-col :span="5">成交结果：{{ item.projectresultkf }}</el-col>
+        <el-col  :span="3">编号：{{ item.projectid }}</el-col>
+        <el-col :span="4">询单日期：{{ item.createdate }}</el-col>
+        <el-col :span="5">完成时间：{{ item.projectZt.evaluationdate }}</el-col>
+        <el-col :span="4">耗时：{{ item.projectZt.timed }}小时</el-col>
+        <el-col :span="4">状态：{{ item.projectZt.projectztjs }}</el-col>
+        <el-col :span="4">成交结果：{{ item.projectZt.projectresultkf }}</el-col>
       </el-row>
       <br>
       <el-row>
         <el-row>
-          <el-col :offset="2" :span="4">
-            <el-button style="color: lightskyblue" v-on:click="dialogTableVisible1[index].flag1 = true">项目及外包价格
+          <el-col :offset="3" :span="4">
+            <el-button type="primary" v-on:click="dialogTableVisible1[index].flag1 = true" plain>项目及外包价格
             </el-button>
           </el-col>
-          <el-col :span="5">
-            <el-button style="background-color: yellowgreen" v-on:click="dialogTableVisible1[index].flag2 = true">
+          <el-col :span="4">
+            <el-button type="primary" v-on:click="dialogTableVisible1[index].flag2 = true" plain>
               接单客户意向
             </el-button>
           </el-col>
-          <el-col :span="5">
-            <el-button style="background-color: yellowgreen" v-on:click="dialogTableVisible1[index].flag3 = true">
+          <el-col :span="4">
+            <el-button type="primary" v-on:click="dialogTableVisible1[index].flag3 = true" plain>
               确认接单客户与条件
             </el-button>
           </el-col>
-          <el-col :span="5">
-            <el-button type="info" v-on:click="dialogTableVisible1[index].flag4 = true">实验情况</el-button>
+          <el-col :span="4">
+            <el-button type="primary" v-on:click="dialogTableVisible1[index].flag4 = true" plain>实验情况</el-button>
           </el-col>
         </el-row>
       </el-row>
@@ -152,6 +148,16 @@
         </div>
       </el-dialog>
     </el-row>
+    <el-pagination class="fy"
+                   layout="total, sizes, prev, pager, next, jumper"
+                   :total="total1"
+                   :page-sizes="[3, 5, 10]"
+                   :page-size= "pageSize1"
+                   v-show="total1>3"
+                   @size-change="handleSizeChange1"
+                   @current-change="handleCurrentChange1"
+                   background>
+    </el-pagination>
     <br>
     <div>（二）已经完成接单客户沟通任务</div>
     下拉菜单选择时间范围：
@@ -166,35 +172,32 @@
     <br>
     <el-row v-for="(item, index) in list2" :key="item.projectid">
       <el-row>
-        <el-col :span="5">编号：{{ item.projectid }}</el-col>
-        <el-col :span="7">询单日期：{{ item.createdate }}</el-col>
-        <el-col :span="7">完成时间：{{ item.evaluationdate }}</el-col>
-      </el-row>
-      <br>
-      <el-row>
-        <el-col :span="5">耗时：{{ item.dura }}小时</el-col>
-        <el-col :span="7">状态：{{ item.projectztjs }}</el-col>
-        <el-col :span="7">成交结果：{{ item.projectresultkf }}</el-col>
+        <el-col :span="3">编号：{{ item.projectid }}</el-col>
+        <el-col :span="4">询单日期：{{ item.createdate }}</el-col>
+        <el-col :span="5">完成时间：{{ item.projectZt.evaluationdate }}</el-col>
+        <el-col :span="4">耗时：{{ item.projectZt.timed }}小时</el-col>
+        <el-col :span="4">状态：{{ item.projectZt.projectztjs }}</el-col>
+        <el-col :span="4">成交结果：{{ item.projectZt.projectresultkf }}</el-col>
       </el-row>
       <br>
       <el-row>
         <el-row>
-          <el-col :offset="2" :span="4">
-            <el-button style="color: lightskyblue" v-on:click="dialogTableVisible2[index].flag1 = true">项目及外包价格
+          <el-col :offset="3" :span="4">
+            <el-button type="primary" v-on:click="dialogTableVisible2[index].flag1 = true" plain>项目及外包价格
             </el-button>
           </el-col>
-          <el-col :span="5">
-            <el-button style="background-color: yellowgreen" v-on:click="dialogTableVisible2[index].flag2 = true">
+          <el-col :span="4">
+            <el-button type="primary" v-on:click="dialogTableVisible2[index].flag2 = true" plain>
               接单客户意向
             </el-button>
           </el-col>
-          <el-col :span="5">
-            <el-button style="background-color: yellowgreen" v-on:click="dialogTableVisible2[index].flag3 = true">
+          <el-col :span="4">
+            <el-button type="primary" v-on:click="dialogTableVisible2[index].flag3 = true" plain>
               确认接单客户与条件
             </el-button>
           </el-col>
-          <el-col :span="5">
-            <el-button style="background-color: yellowgreen">
+          <el-col :span="4">
+            <el-button type="info">
               实验情况：{{ item.testresult }}
             </el-button>
           </el-col>
@@ -262,10 +265,10 @@
       </el-dialog>
       <el-dialog :visible.sync="dialogTableVisible2[index].flag3" title="确认接单客户与条件">
         <el-row>
-          <div align="center">接单客户名称：{{ item.finalreceivereceivekhname }}</div>
+          <div align="center">接单客户名称：{{ item.finalreceive.receivekhname }}</div>
         </el-row>
         <el-row>
-          <div align="center">接单客户联系方式：{{ item.finalreceivereceivekhphone }}</div>
+          <div align="center">接单客户联系方式：{{ item.finalreceive.receivekhphone }}</div>
         </el-row>
         <el-row>
           <div align="center">接单价格：{{ item.finalreceive.receiveprice }}</div>
@@ -278,6 +281,16 @@
         </div>
       </el-dialog>
     </el-row>
+    <el-pagination class="fy"
+                   layout="total, sizes, prev, pager, next, jumper"
+                   :total="total2"
+                   :page-sizes="[3, 5, 10]"
+                   :page-size= "pageSize2"
+                   v-show="total2>3"
+                   @size-change="handleSizeChange2"
+                   @current-change="handleCurrentChange2"
+                   background>
+    </el-pagination>
   </div>
 </template>
 
@@ -290,6 +303,12 @@ export default {
   name: 'C4',
   data () {
     return {
+      currentPage1: 1,
+      currentPage2: 1,
+      pageSize1: 3,
+      pageSize2: 3,
+      total1: 0,
+      total2: 0,
       account_id: window.sessionStorage.getItem('account_id'),
       interval1: '',
       interval2: '',
@@ -314,10 +333,6 @@ export default {
     Chead
   },
   created () {
-    // let strOrig, lastIndex
-    // strOrig = axios.defaults.baseURL
-    // lastIndex = strOrig.lastIndexOf('/')
-    // this.url = strOrig.substr(0, lastIndex) + '/'
   },
   methods: {
     submittest (index) {
@@ -343,14 +358,14 @@ export default {
       var _this = this
       // this.$message('end')
       this.$axios
-        .post('/updatereceivekh', {
+        .post('/updatePriceAndTime', {
           projectid: _this.list1[index].projectid,
           receivekhname: _this.form.receivekhname,
           receivekhphone: _this.form.receivekhphone,
           neededtime: _this.form.neededtime,
           receiveprice: _this.form.receiveprice,
           isfinalreceive: '是',
-          createname: _this.account_id
+          updatename: _this.account_id
         })
         .then(successResponse => {
           if (successResponse.data.success) {
@@ -390,12 +405,15 @@ export default {
       var _this = this
       this.$axios
         .post('/unreceive', {
-          interval: _this.interval1
+          interval: _this.interval1,
+          page: this.currentPage1,
+          size: this.pageSize1
         })
         .then(successResponse => {
           if (successResponse.data.success) {
             console.log(successResponse.data.data)
-            this.list1 = successResponse.data.data
+            this.list1 = successResponse.data.data.content
+            this.total1 = successResponse.data.data.totalElements
             if (this.list1.length < 1) {
               this.$message('查询时间段内无项目')
             }
@@ -461,15 +479,16 @@ export default {
         })
     },
     showhavereceive () {
-      var _this = this
       this.$axios
         .post('/havereceive', {
-          interval: _this.interval2
+          interval: this.interval2,
+          page: this.currentPage2,
+          size: this.pageSize2
         })
         .then(successResponse => {
           if (successResponse.data.success) {
-            // console.log(successResponse.data.data)
-            this.list2 = successResponse.data.data
+            this.list2 = successResponse.data.data.content
+            this.total2 = successResponse.data.data.totalElements
             if (this.list2.length < 1) {
               this.$message('查询时间段内无项目')
             }
@@ -553,7 +572,207 @@ export default {
                 })
                 .then(successResponse => {
                   if (successResponse.data.success) {
-                    // console.log(this.list2[m].projectid + ' finalprice info ' + successResponse.data.data)
+                    this.list2[m].finalreceive = successResponse.data.data
+                    this.$set(this.list2[m], 'testresult', successResponse.data.data.testresult)
+                    console.log('finalreceive', this.list2[m].finalreceive)
+                  } else {
+                    this.$message(successResponse.data.msg)
+                  }
+                })
+                .catch(failResponse => {
+                })
+            }
+          } else {
+            this.$message(successResponse.data.msg)
+          }
+        })
+        .catch(failResponse => {
+        })
+    },
+    handleCurrentChange1 (currentPage) {
+      this.getList1(currentPage)
+    },
+    handleSizeChange1 (pageSize) {
+      this.pageSize1 = pageSize
+      this.getList1(this.currentPage1)
+    },
+    getList1 (currentPage) {
+      this.currentPage1 = currentPage
+      this.$axios
+        .post('/unreceive', {
+          interval: this.interval1,
+          page: this.currentPage1,
+          size: this.pageSize1
+        })
+        .then(successResponse => {
+          if (successResponse.data.success) {
+            console.log(successResponse.data.data)
+            this.list1 = successResponse.data.data.content
+            if (this.list1.length < 1) {
+              this.$message('查询时间段内无项目')
+            }
+            // eslint-disable-next-line
+            for (let m in this.list1) {
+              this.dialogTableVisible1.push({
+                flag1: false,
+                flag2: false,
+                flag3: false,
+                flag4: false
+              })
+              this.$axios
+                .post('/queryfeasible', {
+                  projectid: this.list1[m].projectid
+                })
+                .then(successResponse => {
+                  if (successResponse.data.success) {
+                    console.log(successResponse.data.data)
+                    this.$set(this.list1[m], 'hsl', successResponse.data.data.hsl)
+                    this.$set(this.list1[m], 'msl', successResponse.data.data.msl)
+                    this.$set(this.list1[m], 'csl', successResponse.data.data.csl)
+                    this.$set(this.list1[m], 'isdifficultjs', successResponse.data.data.isdifficultjs)
+                    this.$set(this.list1[m], 'timeneeded', successResponse.data.data.timeneeded)
+                    this.$set(this.list1[m], 'bz', successResponse.data.data.bz)
+                    this.$set(this.list1[m], 'jllsjcs', successResponse.data.data.jllsjcs)
+                    this.$set(this.list1[m], 'dtlxsjcs', successResponse.data.data.dtlxsjcs)
+                    this.$set(this.list1[m], 'zsjcs', successResponse.data.data.zsjcs)
+                    let strs = successResponse.data.data.papersjs.split('||')
+                    let paperType = []
+                    console.log('strs', strs)
+                    strs.forEach(item => {
+                      let strss = item.split('&&')
+                      paperType.push(strss[strss.length - 1])
+                    })
+                    this.$set(this.list1[m], 'paperType', paperType)
+                    this.$set(this.list1[m], 'papersjs', strs)
+                    this.$axios
+                      .post('/querywbprice', {
+                        projectid: this.list1[m].projectid
+                      })
+                      .then(successResponse => {
+                        if (successResponse.data.success) {
+                          console.log(successResponse.data.data)
+                          this.list1[m].wbprice = successResponse.data.data
+                        } else {
+                          this.$message(successResponse.data.msg)
+                        }
+                      })
+                      .catch(failResponse => {
+                      })
+                  } else {
+                    this.$message(successResponse.data.msg)
+                  }
+                })
+                .catch(failResponse => {
+                })
+            }
+          } else {
+            this.$message(successResponse.data.msg)
+          }
+        })
+        .catch(failResponse => {
+        })
+    },
+    handleSizeChange2 (pageSize) {
+      this.pageSize2 = pageSize
+      this.getList2(this.currentPage2)
+    },
+    handleCurrentChange2 (currentPage) {
+      this.getList2(currentPage)
+    },
+    getList2 (currentPage) {
+      this.currentPage2 = currentPage
+      this.$axios
+        .post('/havereceive', {
+          interval: this.interval2,
+          page: this.currentPage2,
+          size: this.pageSize2
+        })
+        .then(successResponse => {
+          if (successResponse.data.success) {
+            this.list2 = successResponse.data.data.content
+            if (this.list2.length < 1) {
+              this.$message('查询时间段内无项目')
+            }
+            // eslint-disable-next-line
+            for (let m in this.list2) {
+              this.dialogTableVisible2.push({
+                flag1: false,
+                flag2: false,
+                flag3: false,
+                flag4: false
+              })
+
+              this.$axios
+                .post('/queryfeasible', {
+                  projectid: this.list2[m].projectid
+                })
+                .then(successResponse => {
+                  if (successResponse.data.success) {
+                    this.$set(this.list2[m], 'hsl', successResponse.data.data.hsl)
+                    this.$set(this.list2[m], 'msl', successResponse.data.data.msl)
+                    this.$set(this.list2[m], 'csl', successResponse.data.data.csl)
+                    this.$set(this.list2[m], 'isdifficultjs', successResponse.data.data.isdifficultjs)
+                    this.$set(this.list2[m], 'timeneeded', successResponse.data.data.timeneeded)
+                    this.$set(this.list2[m], 'bz', successResponse.data.data.bz)
+                    this.$set(this.list2[m], 'jllsjcs', successResponse.data.data.jllsjcs)
+                    this.$set(this.list2[m], 'dtlxsjcs', successResponse.data.data.dtlxsjcs)
+                    this.$set(this.list2[m], 'zsjcs', successResponse.data.data.zsjcs)
+                    let strs = successResponse.data.data.papersjs.split('||')
+                    let paperType = []
+                    console.log('strs', strs)
+                    strs.forEach(item => {
+                      let strss = item.split('&&')
+                      paperType.push(strss[strss.length - 1])
+                    })
+                    this.$set(this.list2[m], 'paperType', paperType)
+                    this.$set(this.list2[m], 'papersjs', strs)
+                    this.$axios
+                      .post('/querywbprice', {
+                        projectid: this.list2[m].projectid
+                      })
+                      .then(successResponse => {
+                        if (successResponse.data.success) {
+                          // console.log(successResponse.data.data)
+                          this.list2[m].wbprice = successResponse.data.data
+                        } else {
+                          this.$message(successResponse.data.msg)
+                        }
+                      })
+                      .catch(failResponse => {
+                      })
+                  } else {
+                    this.$message(successResponse.data.msg)
+                  }
+                })
+                .catch(failResponse => {
+                })
+              this.list2[m].receive = []
+              this.list2[m].finalreceive = {
+                receiveprice: '',
+                neededtime: '',
+                testresult: '',
+                receivekhname: '',
+                receivekhphone: ''
+              }
+              this.$axios
+                .post('/queryreceive', {
+                  projectid: this.list2[m].projectid
+                })
+                .then(successResponse => {
+                  if (successResponse.data.success) {
+                    this.list2[m].receive = successResponse.data.data
+                  } else {
+                    this.$message(successResponse.data.msg)
+                  }
+                })
+                .catch(failResponse => {
+                })
+              this.$axios
+                .post('/queryfinalreceive', {
+                  projectid: this.list2[m].projectid
+                })
+                .then(successResponse => {
+                  if (successResponse.data.success) {
                     this.list2[m].finalreceive = successResponse.data.data
                     this.$set(this.list2[m], 'testresult', successResponse.data.data.testresult)
                     console.log('finalreceive', this.list2[m].finalreceive)

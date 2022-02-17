@@ -103,12 +103,12 @@ public class JSController {
     @CrossOrigin
     @PostMapping(value = "/api/queryfinalprice")
     @ResponseBody
-    public Result<String> queryfinalprice(@RequestBody JSONObject json) {
+    public Result<Final_price> queryfinalprice(@RequestBody JSONObject json) {
         int projectid = -1;
         if (json.getInteger("projectid") != null) {
             projectid = json.getInteger("projectid");
         }
-        Result<String> finalprice = new Result<String>(feasible_projectService.askfinalprice(projectid));
+        Result<Final_price> finalprice = new Result<Final_price>(feasible_projectService.askfinalprice(projectid));
         log.info("查询项目ID为：" + projectid + "\n项目信息为：" + finalprice.getData().toString());
         return finalprice;
     }
