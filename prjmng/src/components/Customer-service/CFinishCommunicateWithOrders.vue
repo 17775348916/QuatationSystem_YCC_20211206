@@ -17,8 +17,8 @@
         <el-col :span="5">
           <div>询单日期：{{ x.createdate }}</div>
         </el-col>
-        <el-col :span="5">
-          <div>完成时间：{{ x.projectZt.evaluationdate }}</div>
+        <el-col :span="7">
+          <div>技术评估完成时间：{{ x.projectZt.evaluationdate }}</div>
         </el-col>
         <el-col :span="3">
           <div>耗时：{{ x.projectZt.timed }}小时</div>
@@ -26,7 +26,7 @@
         <el-col :span="3">
           <div>状态：{{ x.projectZt.projectztjs }}</div>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="3">
           <div>成交结果：{{ x.projectZt.projectresultkf }}</div>
         </el-col>
       </el-row>
@@ -131,7 +131,7 @@
         </div>
       </el-dialog>
       <el-dialog title="询单产品信息" :visible.sync="dialogTableVisible2[index].productflag">
-        <el-descriptions class="margin-top1" title="询单产品信息" :column="3" :size="mini" style="margin-bottom:20px" border>
+        <el-descriptions class="margin-top1" title="询单产品信息" :column="3" style="margin-bottom:20px" border>
           <el-descriptions-item>
             <template slot="label">
               <i class="el-icon-goods"></i>
@@ -163,7 +163,7 @@
                 placement="top-end"
                 width="150px"
                 trigger="click">
-                <img alt="图片未上传" v-bind:src="x.projectdetails" style="max-width:600px"/>
+                <img alt="图片加载中" v-bind:src="x.projectdetails" style="max-width:600px"/>
                 <el-button slot="reference">预览</el-button>
               </el-popover>
             </div>
@@ -181,7 +181,7 @@
         </div>
       </el-dialog>
       <el-dialog title="项目评估信息" :visible.sync="dialogTableVisible2[index].pgflag">
-        <div v-if="x.projectztjs === '已评估-不可行'">
+        <div v-if="x.projectZt.projectztjs === '已评估-不可行'">
           <el-descriptions :column="3" border>
             <el-descriptions-item>
               <template slot="label">
@@ -335,6 +335,18 @@ export default {
   components: {
     CIdentityCheck
   },
+  create () {
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
+  },
   methods: {
     showhavefinish () {
       this.$axios
@@ -369,7 +381,6 @@ export default {
                   })
                   .then(successResponse => {
                     if (successResponse.data.success) {
-                      console.log(successResponse.data.data)
                       this.list2[m].mlist = successResponse.data.data
                     } else {
                       this.$message(successResponse.data.msg)
@@ -383,7 +394,6 @@ export default {
                   })
                   .then(successResponse => {
                     if (successResponse.data.success) {
-                      console.log(successResponse.data.data)
                       this.list2[m].projectdetails = 'data:image/png;base64,' + successResponse.data.data.base64id
                     } else {
                       this.$message(successResponse.data.msg)
@@ -414,7 +424,6 @@ export default {
                     })
                     .then(successResponse => {
                       if (successResponse.data.success) {
-                        console.log(successResponse.data.data)
                         this.$set(this.list2[m], 'hsl', successResponse.data.data.hsl)
                         this.$set(this.list2[m], 'msl', successResponse.data.data.msl)
                         this.$set(this.list2[m], 'csl', successResponse.data.data.csl)
@@ -426,7 +435,6 @@ export default {
                         this.$set(this.list2[m], 'zsjcs', successResponse.data.data.zsjcs)
                         let strs = successResponse.data.data.papersjs.split('||')
                         let paperType = []
-                        console.log('strs', strs)
                         strs.forEach(item => {
                           let strss = item.split('&&')
                           paperType.push(strss[strss.length - 1])
@@ -492,7 +500,6 @@ export default {
         })
         .then(successResponse => {
           if (successResponse.data.success) {
-            console.log(successResponse.data.data)
             this.list2 = successResponse.data.data.content
             if (this.list2.length < 1) {
               this.$message('查询时间段内无项目')
@@ -544,7 +551,6 @@ export default {
                       if (successResponse.data.success) {
                         console.log(successResponse.data.data)
                         this.$set(this.list2[m], 'reasonsjs', successResponse.data.data.reasonsjs)
-                        // this.list2[m].ztjs = successResponse.data.data
                       } else {
                         this.$message(successResponse.data.msg)
                       }
@@ -558,7 +564,6 @@ export default {
                     })
                     .then(successResponse => {
                       if (successResponse.data.success) {
-                        console.log(successResponse.data.data)
                         this.$set(this.list2[m], 'hsl', successResponse.data.data.hsl)
                         this.$set(this.list2[m], 'msl', successResponse.data.data.msl)
                         this.$set(this.list2[m], 'csl', successResponse.data.data.csl)
@@ -570,7 +575,6 @@ export default {
                         this.$set(this.list2[m], 'zsjcs', successResponse.data.data.zsjcs)
                         let strs = successResponse.data.data.papersjs.split('||')
                         let paperType = []
-                        console.log('strs', strs)
                         strs.forEach(item => {
                           let strss = item.split('&&')
                           paperType.push(strss[strss.length - 1])
@@ -583,7 +587,6 @@ export default {
                           })
                           .then(successResponse => {
                             if (successResponse.data.success) {
-                              // console.log(successResponse.data.data)
                               this.list2[m].finalprice = successResponse.data.data.finalprice.toFixed(2)
                               this.list2[m].outsourcingPrice = successResponse.data.data.wbprice.toFixed(2)
                               if (successResponse.data.data.pricemodel === 'A') {

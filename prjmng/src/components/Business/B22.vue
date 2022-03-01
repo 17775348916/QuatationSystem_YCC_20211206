@@ -31,7 +31,7 @@
             </el-row>
           </span>
           <hr>
-          <el-descriptions class="margin-top" title="询单人联系信息" :column="4" :size="mini" style="margin-bottom:20px" border>
+          <el-descriptions class="margin-top" title="询单人联系信息" :column="4" style="margin-bottom:20px" border>
             <el-descriptions-item>
               <template slot="label">
                 <i class="el-icon-user"></i>
@@ -62,7 +62,7 @@
             </el-descriptions-item>
           </el-descriptions>
 
-          <el-descriptions class="margin-top1" title="询单产品信息" :column="4" :size="mini" style="margin-bottom:20px" border>
+          <el-descriptions class="margin-top1" title="询单产品信息" :column="4" style="margin-bottom:20px" border>
             <el-descriptions-item>
               <template slot="label">
                 <i class="el-icon-goods"></i>
@@ -94,7 +94,7 @@
                   placement="top-end"
                   width="150px"
                   trigger="click">
-                  <img alt="图片未上传" v-bind:src="x.projectdetails" style="max-width:600px"/>
+                  <img alt="图片加载中" v-bind:src="x.projectdetails" style="max-width:600px"/>
                   <el-button slot="reference">预览</el-button>
                 </el-popover>
               </div>
@@ -108,7 +108,44 @@
             </el-descriptions-item>
           </el-descriptions>
 
-          <el-descriptions class="margin-top" title="技术评估状态与结果" :column="2" :size="medium" style="margin-bottom:20px" border>
+          <el-descriptions class="margin-top1" title="询单人判断信息" :column="5" style="margin-bottom:20px" border>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-office-building"></i>
+                询单单位性质
+              </template>
+              {{ x.khtype }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-info"></i>
+                询单单位是否有成交机会
+              </template>
+              {{ x.isdeal }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-s-check"></i>
+                询单人身份是否真实
+              </template>
+              {{ x.khryisreal }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-money"></i>
+                询单人是否有钱
+              </template>
+              {{ x.ismoney }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-warning"></i>
+                客户合作历史
+              </template>
+              {{ x.cohistory }}
+            </el-descriptions-item>
+          </el-descriptions>
+          <el-descriptions class="margin-top" title="技术评估状态与结果" :column="2" style="margin-bottom:20px" border>
             <el-descriptions-item>
               <template slot="label">
                 <i class="el-icon-star-on"></i>
@@ -121,11 +158,13 @@
                 <i class="el-icon-message-solid"></i>
                 温馨提示
               </template>
-              请您及时将技术评估结果告知客户，并告知客户我们会安排专门的客服人员为其报价，请客户留意邮箱或微信。如果客户有疑问，请您将客户的疑问转告公司客服人员，客服人员会与客户进行进一步沟通。
+              <div style="color:red">
+                请您及时将技术评估结果告知客户，并告知客户我们会安排专门的客服人员为其报价，请客户留意邮箱或微信。如果客户有疑问，请您将客户的疑问转告公司客服人员，客服人员会与客户进行进一步沟通。
+              </div>
             </el-descriptions-item>
           </el-descriptions>
 
-          <el-descriptions class="margin-top" title="客户反馈与项目成交状态" :column="2" :size="medium" style="margin-bottom:20px;" border>
+          <el-descriptions class="margin-top" title="客户反馈与项目成交状态" :column="2" style="margin-bottom:20px;" border>
             <el-descriptions-item>
               <template slot="label" style="width:200px">
                 <i class="el-icon-star-on"></i>
@@ -182,6 +221,16 @@ export default {
     IdentityCheck
   },
   created () {
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
   },
   methods: {
     showhavezt () {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CIdentityCheck></CIdentityCheck>
+    <IdentityCheck></IdentityCheck>
     <br>
     <div>
       （一）请查询或更新原数据库中的原料信息
@@ -92,13 +92,13 @@
           <el-table-column
             label="操作" width="100px">
             <template slot-scope="scope">
-                <el-button round type="primary" v-on:click="update(scope.row)">修改</el-button>
+              <el-button round type="primary" v-on:click="update(scope.row)">修改</el-button>
             </template>
           </el-table-column>
           <el-table-column
             label="操作" width="65px">
             <template slot-scope="scope">
-                <el-button circle icon="el-icon-delete" type="info" v-on:click="deletem(scope.row, index)"></el-button>
+              <el-button circle icon="el-icon-delete" type="info" v-on:click="deletem(scope.row, index)"></el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -145,10 +145,10 @@
 </template>
 
 <script>
-import CIdentityCheck from './CIdentityCheck'
+import IdentityCheck from './IdentityCheck'
 
 export default {
-  name: 'C2',
+  name: 'M5',
   data () {
     return {
       info: '',
@@ -164,15 +164,6 @@ export default {
         providerphone: '',
         bz: ''
       }
-    }
-  },
-  create () {
-    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
-    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
-      window.sessionStorage.removeItem('TUnevaluatedInterval')
-    }
-    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
-      window.sessionStorage.removeItem('CEvaluatedInterval')
     }
   },
   methods: {
@@ -298,8 +289,23 @@ export default {
       })
     }
   },
+  created () {
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CNeedCommunicateWithOrdersInterval') != null) {
+      window.sessionStorage.removeItem('CNeedCommunicateWithOrdersInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
+  },
   components: {
-    CIdentityCheck
+    IdentityCheck
   }
 }
 </script>

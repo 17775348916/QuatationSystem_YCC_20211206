@@ -66,7 +66,7 @@
           <el-row>
             <el-col :span="12">
               <div>产品结构图片：</div>
-              <img alt="图片未上传" v-bind:src="x.projectdetails" style="max-width: 600px"/>
+              <img alt="图片加载中" v-bind:src="x.projectdetails" style="max-width: 600px"/>
             </el-col>
             <el-col :span="12">
               <div>备注：{{ x.bz }}</div>
@@ -182,7 +182,7 @@
           <el-row>
             <el-col :span="12">
               <div>产品结构图片：</div>
-              <img alt="图片未上传" v-bind:src="x.projectdetails" style="max-width:600px"/>
+              <img alt="图片加载中" v-bind:src="x.projectdetails" style="max-width:600px"/>
             </el-col>
             <el-col :span="12">
               <div>备注：{{ x.bz }}</div>
@@ -267,10 +267,16 @@ export default {
     IdentityCheck
   },
   created () {
-    // let strOrig, lastIndex
-    // strOrig = axios.defaults.baseURL
-    // lastIndex = strOrig.lastIndexOf('/')
-    // this.url = strOrig.substr(0, lastIndex) + '/'
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
   },
   methods: {
     showunzt () {

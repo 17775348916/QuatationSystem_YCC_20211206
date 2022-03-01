@@ -48,7 +48,7 @@
                 <i class="el-icon-notebook-2"></i>
                 <span slot="title">历史项目查看</span>
               </el-menu-item>
-              <el-menu-item index="/M4">
+              <el-menu-item index="/M5">
                 <i class="el-icon-s-data"></i>
                 <span slot="title">原料数据库管理</span>
               </el-menu-item>
@@ -81,15 +81,29 @@ export default {
       typeid: window.sessionStorage.getItem('usertype')
     }
   },
+  created () {
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
+  },
   methods: {
     menuClick (index) {
       this.$router.push(index)
+      window.location.reload()
     },
     handleCommand (command) {
       window.sessionStorage.removeItem('account_id')
       window.sessionStorage.removeItem('usertype')
       window.sessionStorage.removeItem('islogin')
       this.$router.replace('/managelogin')
+      window.location.reload()
     }
   },
   components: {

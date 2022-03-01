@@ -66,7 +66,7 @@
             placement="top-end"
             width="150px"
             trigger="click">
-            <img alt="图片未上传" v-bind:src="project.projectdetails" style="max-width:600px"/>
+            <img alt="图片加载中" v-bind:src="project.projectdetails" style="max-width:600px"/>
             <el-button slot="reference" size="mini">预览</el-button>
           </el-popover>
         </div>
@@ -127,9 +127,6 @@
         </el-table>
       </div>
     </el-row>
-<!--      <div align="right">-->
-<!--        <el-button type="primary" v-on:click="submit">提交原料信息</el-button>-->
-<!--      </div>-->
   </div>
 </template>
 
@@ -150,6 +147,12 @@ export default {
     }
   },
   created () {
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
     if (window.sessionStorage.getItem(this.account_id)) {
       this.projectid = window.sessionStorage.getItem(this.account_id)
     } else {
@@ -244,7 +247,6 @@ export default {
     submit () {
       // console.log(this.list1)
       for (let m in this.list1) {
-        // console.log(this.list1[m].materialname, this.list1[m].cas, this.list1[m].materialsl)
         if (!(this.list1[m].materialname && this.list1[m].materialsl)) {
           this.$message('原料名 或 需要数量 有缺失，请再次确认')
           return
@@ -255,13 +257,13 @@ export default {
         .then(successResponse => {
           if (successResponse.data.success) {
             this.$message('下达成功')
+            this.$router.replace('/TUnevaluated')
           } else {
             this.$message(successResponse.data.msg)
           }
         })
         .catch(failResponse => {
         })
-      this.$router.replace('/TUnevaluated')
     },
     addfromlist2 (x) {
       this.cnt = this.cnt + 1
@@ -275,7 +277,6 @@ export default {
         uuid: this.cnt,
         materialsl: ''
       })
-      console.log(this.list1)
     }
   }
 }

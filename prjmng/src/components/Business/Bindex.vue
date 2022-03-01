@@ -7,6 +7,16 @@
         <div class="title">
           ChemEagle Brain 1.0
         </div>
+        <div v-if="usertype === '1'" style="margin-left:800px">
+          <el-dropdown trigger="click" @command="operations">
+          <span class="el-dropdown-link" style="font-size:18px;color:black;font-family:华文楷体">
+           <i class="el-icon-setting"></i>   快捷操作
+          </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="a">管理员首页</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
         <el-dropdown trigger="click" @command="handleCommand">
           <span class="el-dropdown-link" style="font-size:15px;color:black">
             <i class="el-icon-user-solid" ></i>
@@ -51,11 +61,16 @@
           </el-menu>
         </el-aside>
         <el-main>
-          <el-breadcrumb v-if="this.$router.currentRoute.path!='/Bindex'" separator-class="el-icon-arrow-right">
+          <el-breadcrumb v-if="this.$router.currentRoute.path!=='/Bindex'" separator-class="el-icon-arrow-right">
             <el-breadcrumb-item :to="{ path: '/Bindex' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item>{{this.$router.currentRoute.name}}</el-breadcrumb-item>
           </el-breadcrumb>
-          <div class="welcomeTitle" v-if="this.$router.currentRoute.path=='/Bindex'">
+          <div align="left" style="color:red" v-if="this.$router.currentRoute.path === '/Bindex'">
+            <div>
+              已录入询单项目共 {{PossibleToHaveADeal + ImpossibleToHaveADeal}} 项：其中有成交可能项目 {{PossibleToHaveADeal}} 项，无成交可能项目 {{ImpossibleToHaveADeal}} 项。
+            </div>
+          </div>
+          <div class="welcomeTitle" v-if="this.$router.currentRoute.path==='/Bindex'">
             商务人员您好，欢迎来到ChemEagle Brain 1.0 !
           </div>
           <router-view/>
@@ -74,21 +89,68 @@ export default {
     return {
       message: '',
       account_id: window.sessionStorage.getItem('account_id'),
-      usertype: ''
-      // name: '',
+      usertype: window.sessionStorage.getItem('usertype'),
+      PossibleToHaveADeal: '',
+      ImpossibleToHaveADeal: ''
     }
   },
   created () {
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
+    // 查找有成交可能的项目
+    this.$axios
+      .post('/allproj', {
+        page: 1,
+        size: 5,
+        interval: 300000,
+        resultkf: '所有'
+      })
+      .then(successResponse => {
+        if (successResponse.data.success) {
+          this.PossibleToHaveADeal = successResponse.data.data.totalElements
+        } else {
+          this.$message(successResponse.data.msg)
+        }
+      }).catch(failResponse => {})
+    // 查找没有成交可能的项目
+    this.$axios
+      .post('/showUnavailables', {
+        page: 1,
+        size: 5,
+        interval: 300000
+      })
+      .then(successResponse => {
+        if (successResponse.data.success) {
+          this.ImpossibleToHaveADeal = successResponse.data.data.totalElements
+        } else {
+          this.$message(successResponse.data.msg)
+        }
+      }).catch(failResponse => {})
   },
   methods: {
     menuClick (index) {
       this.$router.push(index)
+      window.location.reload()
     },
     handleCommand (command) {
       window.sessionStorage.removeItem('account_id')
       window.sessionStorage.removeItem('usertype')
       window.sessionStorage.removeItem('islogin')
       this.$router.replace('/A')
+    },
+    operations (command) {
+      if (command === 'a') {
+        this.$router.replace('/manageindex')
+        window.location.reload()
+      }
     }
   },
   components: {
@@ -141,7 +203,11 @@ body > .el-container {
   margin-top:50px;
   color:#409eff
 }
-.el-dropdown-link{
-
-}
+/*.el-dropdown-link {*/
+/*  cursor: pointer;*/
+/*  color: #409EFF;*/
+/*}*/
+/*.el-icon-arrow-down {*/
+/*  font-size: 12px;*/
+/*}*/
 </style>

@@ -12,14 +12,14 @@
     <button v-on:click="showunfinish()">查询</button>
     <el-row v-for="(x, index) in list1" :key="x.projectid" style="margin-top:10px">
       <el-row>
-        <el-col :span="4">
+        <el-col :span="3">
           <div>编号：{{ x.projectid }}</div>
         </el-col>
         <el-col :span="5">
           <div>询单日期：{{ x.createdate }}</div>
         </el-col>
-        <el-col :span="5">
-          <div>完成时间：{{ x.projectZt.evaluationdate }}</div>
+        <el-col :span="7">
+          <div>技术评估完成时间：{{ x.projectZt.evaluationdate }}</div>
         </el-col>
         <el-col :span="4">
           <div>耗时：{{ x.projectZt.timed }}小时</div>
@@ -162,7 +162,7 @@
                 placement="top-end"
                 width="150px"
                 trigger="click">
-                <img alt="图片未上传" v-bind:src="x.projectdetails" style="max-width:600px"/>
+                <img alt="图片加载中" v-bind:src="x.projectdetails" style="max-width:600px"/>
                 <el-button slot="reference">预览</el-button>
               </el-popover>
             </div>
@@ -180,7 +180,7 @@
         </div>
       </el-dialog>
       <el-dialog title="项目评估信息" :visible.sync="dialogTableVisible1[index].pgflag">
-        <div v-if="x.projectztjs === '已评估-不可行'">
+        <div v-if="x.projectZt.projectztjs === '已评估-不可行'">
           <el-descriptions :column="3" border>
             <el-descriptions-item>
               <template slot="label">
@@ -329,6 +329,16 @@ export default {
     }
   },
   created () {
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
   },
   components: {
     CIdentityCheck
@@ -411,7 +421,6 @@ export default {
                 })
                 .then(successResponse => {
                   if (successResponse.data.success) {
-                    console.log(successResponse.data.data)
                     this.list1[m].mlist = successResponse.data.data
                   } else {
                     this.$message(successResponse.data.msg)
@@ -425,7 +434,6 @@ export default {
                 })
                 .then(successResponse => {
                   if (successResponse.data.success) {
-                    console.log(successResponse.data.data)
                     this.list1[m].projectdetails = 'data:image/png;base64,' + successResponse.data.data.base64id
                   } else {
                     this.$message(successResponse.data.msg)
@@ -440,8 +448,7 @@ export default {
                   })
                   .then(successResponse => {
                     if (successResponse.data.success) {
-                      this.$set(this.list2[m], 'reasonsjs', successResponse.data.data.reasonsjs)
-                      // this.list1[m].ztjs = successResponse.data.data
+                      this.$set(this.list1[m], 'reasonsjs', successResponse.data.data.reasonsjs)
                     } else {
                       this.$message(successResponse.data.msg)
                     }
@@ -455,7 +462,6 @@ export default {
                   })
                   .then(successResponse => {
                     if (successResponse.data.success) {
-                      console.log(successResponse.data.data)
                       this.$set(this.list1[m], 'hsl', successResponse.data.data.hsl)
                       this.$set(this.list1[m], 'msl', successResponse.data.data.msl)
                       this.$set(this.list1[m], 'csl', successResponse.data.data.csl)
@@ -530,7 +536,6 @@ export default {
         })
         .then(successResponse => {
           if (successResponse.data.success) {
-            console.log(successResponse.data.data)
             this.list1 = successResponse.data.data.content
             if (this.list1.length < 1) {
               this.$message('查询时间段内无项目')
@@ -558,7 +563,6 @@ export default {
                   })
                   .then(successResponse => {
                     if (successResponse.data.success) {
-                      console.log(successResponse.data.data)
                       this.list1[m].mlist = successResponse.data.data
                     } else {
                       this.$message(successResponse.data.msg)
@@ -572,7 +576,6 @@ export default {
                   })
                   .then(successResponse => {
                     if (successResponse.data.success) {
-                      console.log(successResponse.data.data)
                       this.list1[m].projectdetails = 'data:image/png;base64,' + successResponse.data.data.base64id
                     } else {
                       this.$message(successResponse.data.msg)
@@ -587,8 +590,7 @@ export default {
                     })
                     .then(successResponse => {
                       if (successResponse.data.success) {
-                        this.$set(this.list2[m], 'reasonsjs', successResponse.data.data.reasonsjs)
-                        // this.list1[m].ztjs = successResponse.data.data
+                        this.$set(this.list1[m], 'reasonsjs', successResponse.data.data.reasonsjs)
                       } else {
                         this.$message(successResponse.data.msg)
                       }
@@ -602,7 +604,6 @@ export default {
                     })
                     .then(successResponse => {
                       if (successResponse.data.success) {
-                        console.log(successResponse.data.data)
                         this.$set(this.list1[m], 'hsl', successResponse.data.data.hsl)
                         this.$set(this.list1[m], 'msl', successResponse.data.data.msl)
                         this.$set(this.list1[m], 'csl', successResponse.data.data.csl)
@@ -614,7 +615,6 @@ export default {
                         this.$set(this.list1[m], 'zsjcs', successResponse.data.data.zsjcs)
                         let strs = successResponse.data.data.papersjs.split('||')
                         let paperType = []
-                        console.log('strs', strs)
                         strs.forEach(item => {
                           let strss = item.split('&&')
                           paperType.push(strss[strss.length - 1])
@@ -627,7 +627,6 @@ export default {
                           })
                           .then(successResponse => {
                             if (successResponse.data.success) {
-                              console.log(successResponse.data.data)
                               this.list1[m].finalprice = successResponse.data.data.finalprice.toFixed(2)
                               this.list1[m].outsourcingPrice = successResponse.data.data.wbprice.toFixed(2)
                               if (successResponse.data.data.pricemodel === 'A') {

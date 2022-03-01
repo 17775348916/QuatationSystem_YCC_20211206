@@ -1,6 +1,15 @@
 <template>
   <div>
     <IdentityCheck></IdentityCheck>
+    查看无成交可能项目，请选择时间范围：
+    <select v-model="interval" placeholder="时间范围">
+      <option label="当天" value="1">当天</option>
+      <option label="近3天" value="3">近3天</option>
+      <option label="近1周" value="7">近1周</option>
+      <option label="近1月" value="30">近1月</option>
+      <option label="所有" value="300000">所有</option>
+    </select>
+    <button v-on:click="showUnavailables()">查询</button>
     <el-collapse accordion :data="list" style="margin-top:20px">
       <div v-for="(x, index) in list" :key="index">
         <el-collapse-item>
@@ -75,7 +84,7 @@
                   placement="top-end"
                   width="150px"
                   trigger="click">
-                  <img alt="图片未上传" v-bind:src="x.projectdetails" style="max-width:600px"/>
+                  <img alt="图片加载中" v-bind:src="x.projectdetails" style="max-width:600px"/>
                   <el-button slot="reference">预览</el-button>
                 </el-popover>
               </div>
@@ -86,6 +95,43 @@
                 备注
               </template>
               {{ x.bz }}
+            </el-descriptions-item>
+          </el-descriptions>
+          <el-descriptions class="margin-top1" title="询单人判断信息" :column="5" style="margin-bottom:20px" border>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-office-building"></i>
+                询单单位性质
+              </template>
+              {{ x.khtype }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-info"></i>
+                询单单位是否有成交机会
+              </template>
+              {{ x.isdeal }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-s-check"></i>
+                询单人身份是否真实
+              </template>
+              {{ x.khryisreal }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-money"></i>
+                询单人是否有钱
+              </template>
+              {{ x.ismoney }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-warning"></i>
+                客户合作历史
+              </template>
+              {{ x.cohistory }}
             </el-descriptions-item>
           </el-descriptions>
           <hr>
@@ -121,56 +167,24 @@ export default {
     }
   },
   created () {
-    this.$axios
-      .post('/showUnavailables', {
-        page: this.currentPage,
-        size: this.pageSize
-      })
-      .then(successResponse => {
-        if (successResponse.data.success) {
-          this.list = successResponse.data.data.content
-          this.total = successResponse.data.data.totalElements
-          if (this.list.length < 1) {
-            this.$message('查询时间段内无项目')
-          } else {
-            for (let m in this.list) {
-              this.$axios
-                .post('/lookpic', {
-                  imgpath: this.list[m].projectdetails
-                })
-                .then(successResponse => {
-                  if (successResponse.data.success) {
-                    console.log(successResponse.data.data)
-                    this.list[m].projectdetails = 'data:image/png;base64,' + successResponse.data.data.base64id
-                  } else {
-                    this.$message(successResponse.data.msg)
-                  }
-                })
-                .catch(failResponse => {
-                })
-            }
-          }
-        } else {
-          this.$message(successResponse.data.msg)
-        }
-      })
-      .catch(failResponse => {
-      })
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
   },
   methods: {
-    handleCurrentChange (currentPage) {
-      this.getList(currentPage)
-    },
-    handleSizeChange (pageSize) {
-      this.pageSize = pageSize
-      this.getList(this.currentPage)
-    },
-    getList (currentPage) {
-      this.currentPage = currentPage
+    showUnavailables () {
       this.$axios
         .post('/showUnavailables', {
           page: this.currentPage,
-          size: this.pageSize
+          size: this.pageSize,
+          interval: this.interval
         })
         .then(successResponse => {
           if (successResponse.data.success) {
@@ -202,6 +216,17 @@ export default {
         })
         .catch(failResponse => {
         })
+    },
+    handleCurrentChange (currentPage) {
+      this.getList(currentPage)
+    },
+    handleSizeChange (pageSize) {
+      this.pageSize = pageSize
+      this.getList(this.currentPage)
+    },
+    getList (currentPage) {
+      this.currentPage = currentPage
+      this.showUnavailables()
     }
   },
   components: {

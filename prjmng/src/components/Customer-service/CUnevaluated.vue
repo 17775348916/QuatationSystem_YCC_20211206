@@ -91,6 +91,19 @@ export default {
   components: {
     CIdentityCheck
   },
+  created () {
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      this.interval1 = window.sessionStorage.getItem('CUnevaluatedInterval')
+      this.showunzt()
+    }
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
+  },
   methods: {
     showunzt () {
       this.$axios
@@ -106,6 +119,7 @@ export default {
             if (this.list1.length < 1) {
               this.$message('查询时间段内无项目')
             }
+            window.sessionStorage.setItem('CUnevaluatedInterval', this.interval1)
             this.total1 = successResponse.data.data.totalElements
             this.$axios
               .post('/materialMissionNum', {

@@ -54,7 +54,7 @@
             placement="top-end"
             width="150px"
             trigger="click">
-            <img alt="图片未上传" v-bind:src="project.projectdetails" style="max-width:600px"/>
+            <img alt="图片加载中" v-bind:src="project.projectdetails" style="max-width:600px"/>
             <el-button slot="reference">预览</el-button>
           </el-popover>
         </div>
@@ -207,6 +207,12 @@ export default {
     }
   },
   created () {
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
     if (window.sessionStorage.getItem(this.account_id)) {
       this.projectid = window.sessionStorage.getItem(this.account_id)
     } else {
@@ -269,7 +275,7 @@ export default {
         .then(successResponse => {
           if (successResponse.data.success) {
             this.$message('评估成功!')
-            this.$router.replace('/Tindex')
+            this.$router.replace('/TUnevaluated')
           } else {
             this.$message(successResponse.data.msg)
             this.$router.replace('/Tindex')
@@ -290,7 +296,7 @@ export default {
         .then(successResponse => {
           if (successResponse.data.success) {
             this.$message('评估成功!')
-            this.$router.replace('/Tindex')
+            this.$router.replace('/TUnevaluated')
           } else {
             this.$message(successResponse.data.msg)
             this.$router.replace('/Tindex')

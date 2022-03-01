@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -75,7 +76,20 @@ public class MaterialService {
     }
 
     public List<Material_need> askneed(int projectid) {
-        return material_needDAO.findAllByProjectidAndDeleteflag(projectid, "1");
+        return material_needDAO.findAllByProjectidAndDeleteflag(projectid,"1");
+    }
+
+    // 查询原料信息
+    public List<List<Material_info_LR>> findAllByProjectidAndDeleteflag(List<Integer> projectids, List<String> deleteflags){
+        List<List<Material_info_LR>> result = new ArrayList<>();
+        for(int i = 0;i< projectids.size();i++){
+            List<Material_info_LR> obj = material_info_lrdao.findAllByProjectidAndDeleteflag(projectids.get(i), deleteflags.get(i));
+            if(obj == null){
+                log.error("[MaterialService.findAllByProjectidAndDeleteflag]从数据库获取的obj为空");
+            }
+            result.add(obj);
+        }
+        return result;
     }
 
     public boolean xiada(List<Material_need> mlist) {

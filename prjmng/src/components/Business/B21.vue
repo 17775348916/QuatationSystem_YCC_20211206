@@ -54,7 +54,7 @@
               {{ x.khname }}
             </el-descriptions-item>
           </el-descriptions>
-          <el-descriptions class="margin-top1" title="询单产品信息" :column="4" :size="mini" style="margin-bottom:20px" border>
+          <el-descriptions class="margin-top1" title="询单产品信息" :column="4" style="margin-bottom:20px" border>
             <el-descriptions-item>
               <template slot="label">
                 <i class="el-icon-goods"></i>
@@ -86,7 +86,7 @@
                   placement="top-end"
                   width="150px"
                   trigger="click">
-                  <img alt="图片未上传" v-bind:src="x.projectdetails" style="max-width:600px"/>
+                  <img alt="图片加载中" v-bind:src="x.projectdetails" style="max-width:600px"/>
                   <el-button slot="reference">预览</el-button>
                 </el-popover>
               </div>
@@ -99,8 +99,44 @@
               {{ x.bz }}
             </el-descriptions-item>
           </el-descriptions>
-
-          <el-descriptions class="margin-top" title="技术评估状态与结果" :column="2" :size="medium" style="margin-bottom:20px" border>
+          <el-descriptions class="margin-top1" title="询单人判断信息" :column="5" style="margin-bottom:20px" border>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-office-building"></i>
+                询单单位性质
+              </template>
+              {{ x.khtype }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-info"></i>
+                询单单位是否有成交机会
+              </template>
+              {{ x.isdeal }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-s-check"></i>
+                询单人身份是否真实
+              </template>
+              {{ x.khryisreal }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-money"></i>
+                询单人是否有钱
+              </template>
+              {{ x.ismoney }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-warning"></i>
+                客户合作历史
+              </template>
+              {{ x.cohistory }}
+            </el-descriptions-item>
+          </el-descriptions>
+          <el-descriptions class="margin-top" title="技术评估状态与结果" :column="2" style="margin-bottom:20px" border>
             <el-descriptions-item>
               <template slot="label">
                 <i class="el-icon-star-on"></i>
@@ -119,7 +155,7 @@
             </el-descriptions-item>
           </el-descriptions>
 
-          <el-descriptions class="margin-top" title="客户反馈与项目成交状态" :column="2" :size="medium" style="margin-bottom:20px" border>
+          <el-descriptions class="margin-top" title="客户反馈与项目成交状态" :column="2" style="margin-bottom:20px" border>
             <el-descriptions-item>
               <template slot="label">
                 <i class="el-icon-star-on"></i>
@@ -175,12 +211,15 @@ export default {
     IdentityCheck
   },
   created () {
-    if (window.sessionStorage.getItem('islogin') == null) {
-      this.$message('未登录，请先登录')
-      this.$router.replace({path: '/A'})
-    } else {
-      this.account_id = window.sessionStorage.getItem('account_id')
-      this.usertype = window.sessionStorage.getItem('usertype')
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
     }
   },
   methods: {

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
+
 @Controller
 @Slf4j
 public class SWController {
@@ -49,16 +50,18 @@ public class SWController {
     @PostMapping(value = "/api/showUnavailables")
     @ResponseBody
     public Result<Page<Project_Overview>> showUnavailablesPage(@RequestBody JSONObject json) {
-        int page = 1, size = 5;
+        int page = 1, size = 5,interval = -1;
         Page<Project_Overview> projectOverviews = null;
-        if (json.getInteger("page") == null || json.getInteger("size") == null) {
-            log.error("[SWController.showUnavailables]:json中的page或size为空");
+        if (json.getInteger("page") == null || json.getInteger("size") == null
+                || json.getInteger("interval") == null) {
+            log.error("[SWController.showUnavailables]:json中的page或size或interval为空");
             return null;
         }
         page=json.getInteger("page")-1;
         size=json.getInteger("size");
-        Page<Project_Overview> project_overviews = project_overviewService.showUnavailablesPage(page, size);
-        return new Result<>(project_overviews);
+        interval = json.getInteger("interval");
+        Page<Project_Overview> projects = project_overviewService.showUnavailablesPage(page, size, interval);
+        return new Result<>(projects);
     }
 
 
@@ -204,14 +207,13 @@ public class SWController {
     @PostMapping(value = "/api/unfinish")
     @ResponseBody
     public Result<List<ProjWithTimeVo>> lookunfinish(@RequestBody JSONObject json) {
-        int interval = -1;
+        int interval;
         if (json.getInteger("interval") != null) {
             interval = json.getInteger("interval");
         } else {
             log.info(json.toJSONString());
             return new Result<>("400", false, "未获得正确的间隔时间");
         }
-//        int interval = json.getInteger("interval");
         List<ProjWithTimeVo> pwt = project_overviewService.queryunfinish(interval);
         log.info("查询间隔为" + interval + "\n");
         for (ProjWithTimeVo p : pwt) {
@@ -224,14 +226,23 @@ public class SWController {
     @PostMapping(value = "/api/allproj")
     @ResponseBody
     public Result<Page<Project_Overview>> lookallproj(@RequestBody JSONObject json) {
-        int page = 1, size = 5;
-        if (json.getInteger("page") == null || json.getInteger("size") == null) {
-            log.error("[SWController.lookallproj]:json中的page或size为空");
+        int page = 1, size = 5, interval = -1;
+        String resultkf = "成交";
+        Page<Project_Overview> pwt = null;
+        if (json.getInteger("page") == null || json.getInteger("size") == null ||
+                json.getString("resultkf") == null || json.getInteger("interval") == null) {
+            log.error("[SWController.lookallproj]:json中的page或size或resultkf或interval为空");
             return null;
         }
         page=json.getInteger("page")-1;
         size=json.getInteger("size");
-        Page<Project_Overview> pwt = project_overviewService.queryall(page,size);
+        resultkf = json.getString("resultkf");
+        interval = json.getInteger("interval");
+        if("所有".equals(resultkf)){
+            pwt = project_overviewService.queryallByInterval(page,size,interval);
+        }else{
+            pwt = project_overviewService.queryallByIntervalAndResultkf(page,size,interval,resultkf);
+        }
         return new Result<>(pwt);
     }
 
@@ -313,5 +324,24 @@ public class SWController {
         }
         Page<Project_Overview> pwt = project_overviewService.findByIntervalAlreadyFilledTestResult(page, size, interval);
         return new Result<>(pwt);
+    }
+
+    /**
+     * 根据给定的projectId查看项目信息
+     * @param json
+     * @return
+     */
+    @CrossOrigin
+    @PostMapping(value = "/api/queryProjectOverviewByProjectId")
+    @ResponseBody
+    public Result<Project_Overview> queryProjectOverviewByProjectId(@RequestBody JSONObject json){
+        int projectId = -1;
+        if (json.getInteger("projectid") == null){
+            log.error("[SWController.queryProjectOverviewByProjectId]前端未传projectid");
+            return new Result<>("400",false,"未获得正确的projectid");
+        }
+        projectId=json.getInteger("projectid");
+        Project_Overview project = project_overviewService.queryProjectOverviewByProjectId(projectId);
+        return new Result<>(project);
     }
 }

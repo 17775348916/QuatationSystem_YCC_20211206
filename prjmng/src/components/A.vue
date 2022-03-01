@@ -55,11 +55,10 @@ export default {
       }
     }
   },
-  create () {
+  created () {
     window.sessionStorage.removeItem('account_id')
     window.sessionStorage.removeItem('usertype')
     window.sessionStorage.removeItem('islogin')
-    location.reload()
   },
   methods: {
     login () {

@@ -167,6 +167,16 @@ export default {
     ImgUpload
   },
   created () {
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
     if (localStorage.getItem('b1projectname')) {
       this.product.Project_name = localStorage.getItem('b1projectname')
     }
@@ -213,20 +223,24 @@ export default {
   methods: {
     submit () {
       var _this = this
-      if (!(_this.contact.KHRY_Contact)) {
-        this.$message('询单人联系方式缺失，请补充')
-        return
-      }
-      if (!(_this.contact.KHRY_Type)) {
-        this.$message('询单人员身份缺失，请补充')
+      if (!(_this.contact.KH_name)) {
+        this.$message('询单单位名称缺失，请补充')
         return
       }
       if (!(_this.contact.KHRY_name)) {
         this.$message('询单人员姓名缺失，请补充')
         return
       }
-      if (!(_this.contact.KH_name)) {
-        this.$message('询单单位名称缺失，请补充')
+      if (!(_this.contact.KHRY_Type)) {
+        this.$message('询单人员身份缺失，请补充')
+        return
+      }
+      if (!(_this.contact.KHRY_Contact)) {
+        this.$message('询单人联系方式缺失，请补充')
+        return
+      }
+      if (!(_this.product.Project_name)) {
+        this.$message('产品名称有缺失，请补充')
         return
       }
       if (!(_this.product.Project_details)) {
@@ -235,10 +249,6 @@ export default {
       }
       if (!(_this.product.Project_SL)) {
         this.$message('需求量缺失，请补充')
-        return
-      }
-      if (!(_this.product.Project_name)) {
-        this.$message('产品名称有缺失，请补充')
         return
       }
       if (!(_this.judge.Is_deal) || !(_this.judge.Is_money) || !(_this.judge.KH_type) || !(_this.judge.KHRY_IsReal) || !(_this.judge.Co_history)) {
@@ -263,16 +273,10 @@ export default {
           bz: _this.product.BZ,
           createname: window.sessionStorage.getItem('account_id'),
           updatename: window.sessionStorage.getItem('account_id')
-          // createdate: year + '-' + (month + 1) + '-' + day,
-          // updatedate: year + '-' + (month + 1) + '-' + day
         })
         .then(successResponse => {
           if (successResponse.data.success) {
-            // this.$message('添加成功')
-            this.$confirm('项目信息已提交，继续录入新项目？', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消'
-            }).then(() => {
+            if (localStorage.getItem('b1projectname') != null) {
               localStorage.removeItem('b1projectname')
               localStorage.removeItem('b1projectdetails')
               localStorage.removeItem('b1projectsl')
@@ -287,25 +291,101 @@ export default {
               localStorage.removeItem('b1ismoney')
               localStorage.removeItem('b1isdeal')
               localStorage.removeItem('b1bz')
-              // this.$message('添加成功')
-              location.reload()
-              // this.$router.replace('/B1')
-            }).catch(() => {
-              this.$router.replace('/Bindex')
-            })
+              this.product.Project_name = ''
+              this.product.Project_details = ''
+              this.product.Project_SL = ''
+              this.product.Cas = ''
+              this.contact.KH_name = ''
+              this.contact.KHRY_name = ''
+              this.contact.KHRY_Type = ''
+              this.contact.KHRY_Contact = ''
+              this.judge.KH_type = ''
+              this.judge.KHRY_IsReal = ''
+              this.judge.Co_history = ''
+              this.judge.Is_money = ''
+              this.judge.Is_deal = ''
+              this.product.BZ = ''
+              this.product.Project_details = ''
+              this.$refs.imgUpload.originname = ''
+              this.$refs.imgUpload.fileList = []
+            } else {
+              this.product.Project_name = ''
+              this.product.Project_details = ''
+              this.product.Project_SL = ''
+              this.product.Cas = ''
+              this.contact.KH_name = ''
+              this.contact.KHRY_name = ''
+              this.contact.KHRY_Type = ''
+              this.contact.KHRY_Contact = ''
+              this.judge.KH_type = ''
+              this.judge.KHRY_IsReal = ''
+              this.judge.Co_history = ''
+              this.judge.Is_money = ''
+              this.judge.Is_deal = ''
+              this.product.BZ = ''
+              this.product.Project_details = ''
+              this.$refs.imgUpload.originname = ''
+              this.$refs.imgUpload.fileList = []
+            }
           } else {
             this.$message('添加失败,' + successResponse.data.msg)
           }
         })
         .catch(failResponse => {
           // console.log(this.loginForm)
+        }).then(() => {
+          this.open()
         })
+    },
+    open () {
+      this.$confirm('项目信息已提交，继续录入新项目？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        window.location.reload()
+      }).catch(() => {
+        this.$router.replace('/Bindex')
+        window.location.reload()
+      })
     },
     uploadImg () {
       this.product.Project_details = this.$refs.imgUpload.url
     },
     b1save () {
-      let _this = this
+      var _this = this
+      if (!(_this.contact.KH_name)) {
+        this.$message('询单单位名称缺失，请补充')
+        return
+      }
+      if (!(_this.contact.KHRY_name)) {
+        this.$message('询单人员姓名缺失，请补充')
+        return
+      }
+      if (!(_this.contact.KHRY_Type)) {
+        this.$message('询单人员身份缺失，请补充')
+        return
+      }
+      if (!(_this.contact.KHRY_Contact)) {
+        this.$message('询单人联系方式缺失，请补充')
+        return
+      }
+      if (!(_this.product.Project_name)) {
+        this.$message('产品名称有缺失，请补充')
+        return
+      }
+      if (!(_this.product.Project_details)) {
+        this.$message('产品内容，产品结构式图片缺失，请补充')
+        return
+      }
+      if (!(_this.product.Project_SL)) {
+        this.$message('需求量缺失，请补充')
+        return
+      }
+      if (!(_this.judge.Is_deal) || !(_this.judge.Is_money) || !(_this.judge.KH_type) || !(_this.judge.KHRY_IsReal) || !(_this.judge.Co_history)) {
+        this.$message('身份评价判断有缺失，请补充')
+        return
+      }
       localStorage.setItem('b1projectname', _this.product.Project_name)
       localStorage.setItem('b1projectdetails', _this.product.Project_details)
       localStorage.setItem('b1projectsl', _this.product.Project_SL)

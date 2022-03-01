@@ -211,6 +211,10 @@ export default {
     Chead
   },
   created () {
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
     if (window.sessionStorage.getItem(this.account_id)) {
       this.projectid = window.sessionStorage.getItem(this.account_id)
     } else {
@@ -278,13 +282,6 @@ export default {
     // this.url = strOrig.substr(0, lastIndex) + '/'
   },
   methods: {
-    changeflag (index) {
-      if (this.other[index].flag) {
-        this.other[index].flag = false
-      } else {
-        this.other[index].flag = true
-      }
-    },
     addfromlist2 (index, x) {
       this.other[index].nmaterialname = x.materialname
       this.other[index].ncas = x.cas
@@ -332,7 +329,7 @@ export default {
           .then(successResponse => {
             if (successResponse.data.success) {
               this.$message('反馈成功')
-              this.$router.replace('/Cindex')
+              this.$router.replace('/CUnevaluated')
             } else {
               this.$message(successResponse.data.msg)
             }
@@ -387,7 +384,7 @@ export default {
         .then(successResponse => {
           if (successResponse.data.success) {
             this.$message('已告知技术人员项目所需的原料均可获得，原料价格已经提交给后台进行项目报价计算')
-            this.$router.replace('/Cindex')
+            this.$router.replace('/CUnevaluated')
           } else {
             this.$message(successResponse.data.msg)
           }

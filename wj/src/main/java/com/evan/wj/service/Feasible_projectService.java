@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -42,6 +43,20 @@ public class Feasible_projectService {
             return new Result<>("400", false, "项目id不正确");
         }
     }
+
+    public List<Feasible_project> queryprojByProjectId(List<Integer> projectIds) {
+        List<Feasible_project> list = new ArrayList<>();
+        for (int projectId : projectIds) {
+            if (feasibleProjectDAO.existsByProjectid(projectId)) {
+                list.add(feasibleProjectDAO.findByProjectid(projectId));
+            } else {
+                log.error("[Feasible_projectService.queryprojByProjectId]不存在projectId为" + projectId + "的信息");
+                list.add(new Feasible_project());
+            }
+        }
+        return list;
+    }
+
     @SuppressWarnings("AlibabaTransactionMustHaveRollback")
     @Transactional
     public int savenew(Feasible_project newfproj) {
@@ -68,6 +83,7 @@ public class Feasible_projectService {
             return 2;
         }
     }
+
     @SuppressWarnings("AlibabaTransactionMustHaveRollback")
     @Transactional
     public void culculate(int projectid, String evaname) {
@@ -79,8 +95,8 @@ public class Feasible_projectService {
         String khtype = pov.getKhtype(), ismoney = pov.getIsmoney(), isdifficult = fproj.getIsdifficultjs();
 
         Quoting_model model = quoting_modelDAO.askmodel(khtype, ismoney, isdifficult);
-        if(model == null){
-            log.error("{Feasible_projectService.culculate：}没有当前报价模型,报价模型为："+isdifficult);
+        if (model == null) {
+            log.error("{Feasible_projectService.culculate：}没有当前报价模型,报价模型为：" + isdifficult);
             return;
         }
         log.info(projectid + "询价模式依据" + khtype + " " + ismoney + " " + isdifficult + "\n" + model.toString());
@@ -96,7 +112,7 @@ public class Feasible_projectService {
 
         //原料成本
         double costa = 0;
-        for(Material_info_LR m : mlist) {
+        for (Material_info_LR m : mlist) {
             costa += m.getPrice();
         }
         fp.setMaterialcost(costa);
@@ -115,19 +131,18 @@ public class Feasible_projectService {
 
         double firmtot = costa + costb + costc + costd1;
         double collegetot = costa + costb + costc + costd2;
-        if("A".equals(model.getModelname())) {
+        if ("A".equals(model.getModelname())) {
             fp.setWorkcost(costd1);
-            fp.setAllcost(firmtot);
         } else {
             fp.setWorkcost(costd2);
-            fp.setAllcost(collegetot);
         }
-
+        //不管是A模式还是B/C/D模式，总成本都设置成高校成本
+        fp.setAllcost(collegetot);
         double wbprice = collegetot / model.getProductcoefficient();
         fp.setWbprice(wbprice);
 
         double finalprice;
-        if("A".equals(modelname)) {
+        if ("A".equals(modelname)) {
             finalprice = firmtot / model.getFirmcoefficient();
         } else {
             finalprice = wbprice / model.getCollegecoefficient();
@@ -138,7 +153,7 @@ public class Feasible_projectService {
     }
 
     public Final_price askfinalprice(int projectid) {
-        if (final_priceDAO.existsByProjectid(projectid)){
+        if (final_priceDAO.existsByProjectid(projectid)) {
 
             return final_priceDAO.findByProjectid(projectid);
         }
@@ -146,21 +161,41 @@ public class Feasible_projectService {
     }
 
     public String askOutsourcingPrice(int projectid) {
-        if (final_priceDAO.existsByProjectid(projectid)){
+        if (final_priceDAO.existsByProjectid(projectid)) {
 
-            return String.format("%.1f",final_priceDAO.findByProjectid(projectid).getWbprice());
+            return String.format("%.1f", final_priceDAO.findByProjectid(projectid).getWbprice());
         }
         return "";
     }
 
     public String askwbprice(int projectid) {
-        if (final_priceDAO.existsByProjectid(projectid)){
-            return String.format("%.1f",final_priceDAO.findByProjectid(projectid).getWbprice());
+        if (final_priceDAO.existsByProjectid(projectid)) {
+            return String.format("%.1f", final_priceDAO.findByProjectid(projectid).getWbprice());
         }
         return "";
+    }
+
+    /**
+     * 批量查询外包价格
+     *
+     * @param projectIds
+     * @return
+     */
+    public List<String> queryWbPrices(List<Integer> projectIds) {
+        List<String> res = new ArrayList<>();
+        for (int projectid : projectIds) {
+            if (final_priceDAO.existsByProjectid(projectid)) {
+                res.add(String.format("%.1f", final_priceDAO.findByProjectid(projectid).getWbprice()));
+            } else {
+                log.error("[Feasible_projectService.queryWbPrices]projectId为" + projectid + "的最终价格有误");
+                res.add(String.format("%.1f", 0.00));
+            }
+        }
+        return res;
     }
 
     public Final_price askpriceinfo(int projectid) {
         return final_priceDAO.findByProjectid(projectid);
     }
+
 }

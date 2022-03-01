@@ -43,6 +43,12 @@ public interface Project_OverviewDAO extends JpaRepository<Project_Overview, Int
             "where zt.project_id = ov.project_id;", nativeQuery = true)
     void updatetimed();
 
+    @Transactional
+    @Modifying
+    @Query(value = "update project_overview ov \n" +
+            "set ov.time = TIMESTAMPDIFF(hour, ov.create_date, current_timestamp) \n" +
+            "where ov.is_accept_sw = '无';", nativeQuery = true)
+    void updatetime();
 //    @Transactional
 //    @Modifying
 //    @Query(value = "update project_zt zt ,project_overview ov \n" +

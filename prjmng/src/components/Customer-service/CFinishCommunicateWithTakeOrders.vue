@@ -13,9 +13,9 @@
       <el-row>
         <el-col :span="2">编号：{{ item.projectid }}</el-col>
         <el-col :span="5">询单日期：{{ item.createdate }}</el-col>
-        <el-col :span="5">完成时间：{{ item.projectZt.evaluationdate }}</el-col>
-        <el-col :span="4">耗时：{{ item.projectZt.timed }}小时</el-col>
-        <el-col :span="4">状态：{{ item.projectZt.projectztjs }}</el-col>
+        <el-col :span="7">技术评估完成时间：{{ item.projectZt.evaluationdate }}</el-col>
+        <el-col :span="3">耗时：{{ item.projectZt.timed }}小时</el-col>
+        <el-col :span="3">状态：{{ item.projectZt.projectztjs }}</el-col>
         <el-col :span="4">成交结果：{{ item.projectZt.projectresultkf }}</el-col>
       </el-row>
 
@@ -24,6 +24,9 @@
             <el-button  type="primary" v-on:click="dialogTableVisible2[index].flag1 = true" plain>项目及外包价格
             </el-button>
           </el-col>
+        <el-col :span="3">
+          <el-button type="primary" v-on:click="dialogTableVisible2[index].productflag = true" plain>询单产品信息</el-button>
+        </el-col>
           <el-col :span="5">
             <el-button  type="primary" v-on:click="dialogTableVisible2[index].flag2 = true" plain>
               接单客户意向
@@ -116,6 +119,57 @@
           <el-button type="primary" @click="dialogTableVisible2[index].flag1 = false">确 定</el-button>
         </div>
       </el-dialog>
+
+      <el-dialog title="询单产品信息" :visible.sync="dialogTableVisible2[index].productflag">
+        <el-descriptions class="margin-top1" title="询单产品信息" :column="3" style="margin-bottom:20px" border>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-goods"></i>
+              产品名称
+            </template>
+            {{ item.projectname }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-info"></i>
+              cas号
+            </template>
+            {{ item.cas }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-shopping-cart-full"></i>
+              需求量
+            </template>
+            {{ item.projectsl }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-view"></i>
+              产品结构照片
+            </template>
+            <div>
+              <el-popover
+                placement="top-end"
+                width="150px"
+                trigger="click">
+                <img alt="图片加载中" v-bind:src="item.projectdetails" style="max-width:600px"/>
+                <el-button slot="reference">预览</el-button>
+              </el-popover>
+            </div>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-warning"></i>
+              备注
+            </template>
+            {{ item.bz }}
+          </el-descriptions-item>
+        </el-descriptions>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="dialogTableVisible2[index].productflag = false">确 定</el-button>
+        </div>
+      </el-dialog>
       <el-dialog :visible.sync="dialogTableVisible2[index].flag2" title="接单客户意向">
         <el-table :data="item.receive" style="width: 100%">
           <el-table-column label="接单客户名称" prop="receivekhname"></el-table-column>
@@ -165,9 +219,9 @@
     <el-pagination class="fy"
                    layout="total, sizes, prev, pager, next, jumper"
                    :total="total2"
-                   :page-sizes="[ 5, 10]"
+                   :page-sizes="[ 3,5, 10]"
                    :page-size= "pageSize2"
-                   v-show="total2>5"
+                   v-show="total2>3"
                    @size-change="handleSizeChange2"
                    @current-change="handleCurrentChange2"
                    background>
@@ -182,7 +236,7 @@ export default {
   data () {
     return {
       currentPage2: 1,
-      pageSize2: 5,
+      pageSize2: 3,
       total2: 0,
       account_id: window.sessionStorage.getItem('account_id'),
       interval2: '',
@@ -202,6 +256,18 @@ export default {
   },
   components: {
     CIdentityCheck
+  },
+  created () {
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
   },
   methods: {
     showhavereceive () {
@@ -224,9 +290,23 @@ export default {
                 flag1: false,
                 flag2: false,
                 flag3: false,
-                flag4: false
+                flag4: false,
+                productflag: false
               })
-
+              this.$axios
+                .post('/lookpic', {
+                  imgpath: this.list2[m].projectdetails
+                })
+                .then(successResponse => {
+                  if (successResponse.data.success) {
+                    console.log(successResponse.data.data)
+                    this.list2[m].projectdetails = 'data:image/png;base64,' + successResponse.data.data.base64id
+                  } else {
+                    this.$message(successResponse.data.msg)
+                  }
+                })
+                .catch(failResponse => {
+                })
               this.$axios
                 .post('/queryfeasible', {
                   projectid: this.list2[m].projectid
@@ -342,9 +422,23 @@ export default {
                 flag1: false,
                 flag2: false,
                 flag3: false,
-                flag4: false
+                flag4: false,
+                productflag: false
               })
-
+              this.$axios
+                .post('/lookpic', {
+                  imgpath: this.list2[m].projectdetails
+                })
+                .then(successResponse => {
+                  if (successResponse.data.success) {
+                    console.log(successResponse.data.data)
+                    this.list2[m].projectdetails = 'data:image/png;base64,' + successResponse.data.data.base64id
+                  } else {
+                    this.$message(successResponse.data.msg)
+                  }
+                })
+                .catch(failResponse => {
+                })
               this.$axios
                 .post('/queryfeasible', {
                   projectid: this.list2[m].projectid

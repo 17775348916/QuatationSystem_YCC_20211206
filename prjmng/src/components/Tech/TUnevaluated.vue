@@ -10,7 +10,7 @@
         <option label="近1月" value="30">近1月</option>
         <option label="所有" value="30000">所有</option>
       </select>
-      <el-button size="small" v-on:click="showunzt()">查询</el-button>
+      <el-button size="small" v-on:click="showunzt(interval1)">查询</el-button>
     </div>
 
     <el-table v-if="Object.keys(list1).length>0"
@@ -90,22 +90,33 @@ export default {
     TIdentityCheck
   },
   created () {
-
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      this.interval1 = window.sessionStorage.getItem('TUnevaluatedInterval')
+      this.pageSize1 = window.sessionStorage.getItem('TUnevaluatedPageSize')
+      this.currentPage1 = window.sessionStorage.getItem('TUnevaluatedCurrentPage')
+      this.showunzt()
+    }
   },
   methods: {
-    propDisplay (row, column) {
-    },
     showunzt () {
-      var _this = this
       this.$axios
         .post('/unevaluatedPage', {
-          page: 1,
-          size: 5,
-          interval: _this.interval1,
+          page: this.currentPage1,
+          size: this.pageSize1,
+          interval: this.interval1,
           status: '未评估'
         })
         .then(successResponse => {
           if (successResponse.data.success) {
+            window.sessionStorage.setItem('TUnevaluatedInterval', this.interval1)
+            window.sessionStorage.setItem('TUnevaluatedCurrentPage', this.currentPage1)
+            window.sessionStorage.setItem('TUnevaluatedPageSize', this.pageSize1)
             this.list1 = successResponse.data.data.content
             if (this.list1.length < 1) {
               this.$message('查询时间段内无项目')
@@ -117,7 +128,6 @@ export default {
         })
         .catch(failResponse => {
         })
-      this.$forceUpdate()
     },
     handleCurrentChange1 (currentPage) {
       this.getList1(currentPage)
@@ -169,7 +179,7 @@ export default {
                 cancelButtonText: '取消'
               }).then(() => {
                 window.sessionStorage.setItem(this.account_id, x)
-                this.$router.replace('/T2')
+                this.$router.push('/T2')
               }).catch(() => {
               })
             } else {
@@ -178,7 +188,7 @@ export default {
                 cancelButtonText: '取消'
               }).then(() => {
                 window.sessionStorage.setItem(this.account_id, x)
-                this.$router.replace('/T2')
+                this.$router.push('/T2')
               }).catch(() => {
               })
             }

@@ -1,6 +1,8 @@
 package com.evan.wj.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.evan.wj.pojo.Feasible_project;
 import com.evan.wj.pojo.Final_price;
 import com.evan.wj.pojo.No_feasible_project;
@@ -17,6 +19,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @Slf4j
@@ -82,9 +87,32 @@ public class JSController {
         if (json.getInteger("projectid") != null) {
             projectid = json.getInteger("projectid");
         }
-        Result<Feasible_project> proj = feasible_projectService.queryproj(projectid);
-        log.info("查询项目ID为：" + projectid + "\n项目信息为：" + proj.toString());
-        return proj;
+        return feasible_projectService.queryproj(projectid);
+    }
+
+    /**
+     * 批量查询可行项目信息
+     * @param json
+     * @return
+     */
+    @CrossOrigin
+    @PostMapping(value = "/api/queryfeasibleByProjectIds")
+    @ResponseBody
+    public Result<List<Feasible_project>> queryfeasibleByProjectIds(@RequestBody JSONObject json) {
+        List<Integer> projectIds = new ArrayList<>();
+        try{
+            JSONArray projectId = json.getJSONArray("projectIds");
+            String js=JSONObject.toJSONString(projectId, SerializerFeature.WriteClassName);
+            projectIds = JSONObject.parseArray(js,Integer.class);
+        }catch (Exception e){
+            log.error("[JsController.queryfeasibleByProjectIds]json解析失败");
+        }
+        if(null == projectIds){
+            log.error("[JsController.queryfeasibleByProjectIds]projectIds为空");
+        }
+        assert projectIds != null;
+        List<Feasible_project> feasibleProjects = feasible_projectService.queryprojByProjectId(projectIds);
+        return new Result<>(feasibleProjects);
     }
 
     @CrossOrigin
@@ -128,15 +156,20 @@ public class JSController {
     @CrossOrigin
     @PostMapping(value = "/api/querypriceinfo")
     @ResponseBody
-    public Result<Final_price> querypriceinfo(@RequestBody JSONObject json) {
+    public Result querypriceinfo(@RequestBody JSONObject json) {
         int projectid = -1;
-        if (json.getInteger("projectid") != null) {
-            projectid = json.getInteger("projectid");
+        if (json.getInteger("projectid") == null) {
+            log.info("[JSController.querypriceinfo]传入的projectid为空");
         }
+        projectid = json.getInteger("projectid");
         Result<Final_price> finalprice = new Result<Final_price>(feasible_projectService.askpriceinfo(projectid));
+        if(finalprice == null){
+            return new Result("200",true,"未查到projectid为"+projectid+"的报价计算器的计算信息");
+        }
         log.info("查询项目ID为：" + projectid + "\n项目报价信息为：" + finalprice.getData().toString());
         return finalprice;
     }
+
 
     @CrossOrigin
     @PostMapping(value = "/api/querywbprice")
@@ -151,6 +184,24 @@ public class JSController {
         return finalprice;
     }
 
+    @CrossOrigin
+    @PostMapping(value = "/api/querywbprices")
+    @ResponseBody
+    public Result<List<String>> querywbprices(@RequestBody JSONObject json) {
+        List<Integer> projectIds = new ArrayList<>();
+        try{
+            JSONArray projectId = json.getJSONArray("projectIds");
+            String js=JSONObject.toJSONString(projectId, SerializerFeature.WriteClassName);
+            projectIds = JSONObject.parseArray(js,Integer.class);
+        }catch(Exception e){
+            log.error("[JSController.querywbprices]json解析失败");
+        }
+        if (projectIds == null) {
+            log.error("[JSController.querywbprices]projectIds为空");
+        }
+        assert projectIds != null;
+        return new Result<>(feasible_projectService.queryWbPrices(projectIds));
+    }
 
 
     @CrossOrigin

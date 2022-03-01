@@ -1,5 +1,7 @@
 package com.evan.wj.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.evan.wj.result.Result;
 import com.evan.wj.util.StringUtils;
 import com.evan.wj.vo.FileVo;
@@ -16,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @Slf4j
@@ -59,7 +63,6 @@ class ImageController {
             byte[] rs = new byte[fis.available()];
             fis.read(rs);
             fis.close();
-//            log.info("base64编码结果为：" + Arrays.toString(rs));
             img.setBase64id(rs);
             return new Result<ImgVo>(img);
         } catch (IOException e) {
@@ -68,6 +71,36 @@ class ImageController {
         }
     }
 
+    /**
+     * 批量转换图片信息
+     * @param json
+     * @return
+     * @throws IOException
+     */
+    @CrossOrigin
+    @PostMapping("api/lookpics")
+    @ResponseBody
+    public  Result<List<byte[]>> imgTransLis(@RequestBody JSONObject json) throws IOException{
+        JSONArray imgs = json.getJSONArray("imgpath");
+        List<byte[]> resultList= new ArrayList<>();
+        for( Object img : imgs){
+            String fullpath = folder + "/" + img;
+            log.info("读取文件路径：" + fullpath);
+            try {
+                FileInputStream fis = new FileInputStream(fullpath);
+                byte[] rs = new byte[fis.available()];
+                fis.read(rs);
+                fis.close();
+//                img.setBase64id(rs);
+                resultList.add(rs);
+            } catch (IOException e) {
+                e.printStackTrace();
+                resultList.add(new byte[200]);
+                log.error("[ImageController.imgTransLis]中"+img+"图片打开失败");
+            }
+        }
+        return new Result<>(resultList);
+    }
 //    public void MoveFile(String filename, int projectid) {
 //
 //    }

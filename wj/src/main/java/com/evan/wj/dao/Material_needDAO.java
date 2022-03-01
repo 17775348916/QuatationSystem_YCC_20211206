@@ -1,6 +1,5 @@
 package com.evan.wj.dao;
 
-import com.evan.wj.pojo.Material_info;
 import com.evan.wj.pojo.Material_need;
 import org.springframework.data.jpa.repository.JpaRepository;
 

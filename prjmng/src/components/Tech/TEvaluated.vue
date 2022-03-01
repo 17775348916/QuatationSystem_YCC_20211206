@@ -32,7 +32,7 @@
             </el-row>
           </span>
           <hr>
-          <el-descriptions class="margin-top1" title="询单产品信息" :column="4" :size="mini" style="margin-bottom:20px" border>
+          <el-descriptions class="margin-top1" title="询单产品信息" :column="4" style="margin-bottom:20px" border>
             <el-descriptions-item>
               <template slot="label">
                 <i class="el-icon-goods"></i>
@@ -64,7 +64,7 @@
                   placement="top-end"
                   width="150px"
                   trigger="click">
-                  <img alt="图片未上传" v-bind:src="x.projectdetails" style="max-width:600px"/>
+                  <img alt="图片加载中" v-bind:src="x.projectdetails" style="max-width:600px"/>
                   <el-button slot="reference" size="mini">预览</el-button>
                 </el-popover>
               </div>
@@ -78,7 +78,7 @@
             </el-descriptions-item>
           </el-descriptions>
           <div v-if="x.projectZt.projectztjs === '已评估-可行'">
-          <el-descriptions class="margin-top" title="技术评估状态与结果" :column="4" :size="medium" style="margin-bottom:20px" border>
+          <el-descriptions class="margin-top" title="技术评估状态与结果" :column="3" border>
             <el-descriptions-item>
               <template slot="label">
                 <i class="el-icon-document"></i>
@@ -86,13 +86,13 @@
               </template>
               氢谱:{{ x.hsl }}; 碳谱:{{ x.csl }}; 质谱:{{ x.msl }}
             </el-descriptions-item>
-            <el-descriptions-item>
-              <template slot="label">
-                <i class="el-icon-time"></i>
-                测试总时间(天)
-              </template>
-              {{ x.zsjcs }}
-            </el-descriptions-item>
+<!--            <el-descriptions-item>-->
+<!--              <template slot="label">-->
+<!--                <i class="el-icon-time"></i>-->
+<!--                测试总时间(天)-->
+<!--              </template>-->
+<!--              {{ x.zsjcs }}-->
+<!--            </el-descriptions-item>-->
             <el-descriptions-item>
               <template slot="label">
                 <i class="el-icon-timer"></i>
@@ -195,7 +195,7 @@
           </el-descriptions>
           </div>
           <div v-else>
-            <el-descriptions class="margin-top1" title="技术评估状态与结果" :column="2" :size="mini" style="margin-bottom:20px" border>
+            <el-descriptions class="margin-top1" title="技术评估状态与结果" :column="2" style="margin-bottom:20px" border>
               <el-descriptions-item>
                 <template slot="label">
                   <i class="el-icon-message-solid"></i>
@@ -244,7 +244,16 @@ export default {
     TIdentityCheck
   },
   created () {
-
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
   },
   methods: {
     showhavezt () {

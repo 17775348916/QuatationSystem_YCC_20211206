@@ -62,6 +62,10 @@
                 <el-input v-model="scope.row.productcoefficient" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
               </template>
             </el-table-column>
+            <el-table-column
+              prop="updatedate"
+              label="修改时间">
+            </el-table-column>
           </el-table>
         </el-main>
     <div align="center">
@@ -87,12 +91,21 @@ export default {
     IdentityCheck
   },
   created () {
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
     this.$axios
       .post('/lookmodel', {})
       .then(successResponse => {
         if (successResponse.data.success) {
           this.model = successResponse.data.data
-          console.log(this.model)
         }
       })
       .catch(failResponse => {
@@ -106,6 +119,16 @@ export default {
         .then(successResponse => {
           if (successResponse.data.success) {
             this.$message('修改成功')
+            this.$axios
+              .post('/lookmodel', {})
+              .then(successResponse => {
+                if (successResponse.data.success) {
+                  this.model = successResponse.data.data
+                }
+              })
+              .catch(failResponse => {
+                // console.log(this.loginForm)
+              })
           }
         })
         .catch(failResponse => {

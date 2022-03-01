@@ -1,6 +1,8 @@
 package com.evan.wj.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.evan.wj.pojo.Material_info;
 import com.evan.wj.pojo.Material_info_LR;
 import com.evan.wj.pojo.Material_need;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -77,7 +80,8 @@ public class MaterialController {
 
     @CrossOrigin
     @PostMapping(value = "api/querymaterialneed")
-    @ResponseBody Result<List<Material_need> > querymaterialneed(@RequestBody JSONObject json) {
+    @ResponseBody
+    Result<List<Material_need> > querymaterialneed(@RequestBody JSONObject json) {
         int projectid = -1;
         if(json.getInteger("projectid") != null) {
             projectid = json.getInteger("projectid");
@@ -89,9 +93,41 @@ public class MaterialController {
         return new Result<List<Material_need>>(material_Service.askneed(projectid));
     }
 
+    /**
+     * 根据projectId和deleteflag来动态查询所需的材料信息
+     */
+    @CrossOrigin
+    @PostMapping(value = "api/queryMaterialByProjectIdAndDeleteflag")
+    @ResponseBody
+    Result<List<List<Material_info_LR>>> queryMaterialByProjectIdAndDeleteflag(@RequestBody JSONObject json) {
+        List<Integer> projectIds = new ArrayList<>();
+        List<String> deleteflags = new ArrayList<>();
+        List<List<Material_info_LR>> result= new ArrayList<>();
+        try{
+            JSONArray projectId = json.getJSONArray("projectIds");
+            String js=JSONObject.toJSONString(projectId, SerializerFeature.WriteClassName);
+            projectIds = JSONObject.parseArray(js,Integer.class);
+            JSONArray deleteflag = json.getJSONArray("deleteflags");
+            js=JSONObject.toJSONString(deleteflag, SerializerFeature.WriteClassName);
+            deleteflags = JSONObject.parseArray(js,String.class);
+        }catch(Exception e){
+            log.error("[MaterialController.queryMaterialByProjectIdAndDeleteflag]json解析失败");
+        }
+        if(null == projectIds || null == deleteflags){
+            log.error("[MaterialController.queryMaterialByProjectIdAndDeleteflag]projectIds或者deleteflags为空");
+        }
+        assert projectIds != null;
+        result = material_Service.findAllByProjectidAndDeleteflag(projectIds,deleteflags);
+        if(result == null){
+            log.error("[MaterialController.queryMaterialByProjectIdAndDeleteflag]result为空");
+        }
+        return new Result<>(result);
+    }
+
     @CrossOrigin
     @PostMapping(value = "api/JS/feedback")
-    @ResponseBody Result<String> feedback(@RequestBody JSONObject json) {
+    @ResponseBody
+    Result<String> feedback(@RequestBody JSONObject json) {
         int projectid = -1;
         if(json.getInteger("projectid") != null) {
             projectid = json.getInteger("projectid");
@@ -110,14 +146,15 @@ public class MaterialController {
         if(json.getInteger("projectid") != null) {
             projectid = json.getInteger("projectid");
         } else {
-            log.info(json.toJSONString());
+            log.error("[MaterialController.querymateriallr]的projectid为空");
             return new Result<>("400",false,"未获得正确的项目编号");
         }
-        log.info(projectid + " ");
         List<Material_info_LR> materialNeeds = material_Service.askneedlr(projectid);
         log.info(projectid + "的需要材料情况为\n" + materialNeeds.toString());
         return new Result<List<Material_info_LR>>(materialNeeds);
     }
+
+
 
     @CrossOrigin
     @PostMapping(value = "api/lookallmaterial")

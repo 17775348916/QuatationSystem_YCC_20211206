@@ -31,6 +31,7 @@ import CFinishCommunicateWithOrders from '../components/Customer-service/CFinish
 import CFinishCommunicateWithTakeOrders from '../components/Customer-service/CFinishCommunicateWithTakeOrders'
 import CNeedCommunicateWithTakeOrders from '../components/Customer-service/CNeedCommunicateWithTakeOrders'
 import BUnavailable from '../components/Business/BUnavailable'
+import M5 from '../components/manage/M5'
 
 Vue.use(Router)
 
@@ -178,7 +179,7 @@ export default new Router({
         },
         {
           path: '/M2',
-          name: '历史项目查看(*仅展示有成交可能的项目，没有成交可能性的项目请到商务人员系统中查看)',
+          name: '历史项目查看',
           component: M2
         },
         {
@@ -188,8 +189,13 @@ export default new Router({
         },
         {
           path: '/M4',
-          name: '原料数据库管理',
+          name: '原料数据库管理1',
           component: M4
+        },
+        {
+          path: '/M5',
+          name: '原料数据库管理',
+          component: M5
         }
       ]
     },

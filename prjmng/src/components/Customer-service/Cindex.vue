@@ -7,6 +7,16 @@
         <div class="title">
           ChemEagle Brain 1.0
         </div>
+        <div v-if="usertype === '1'" style="margin-left:800px">
+          <el-dropdown trigger="click" @command="operations">
+          <span class="el-dropdown-link" style="font-size:18px;color:black;font-family:华文楷体">
+           <i class="el-icon-setting"></i>   快捷操作
+          </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="a">管理员首页</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
         <el-dropdown trigger="click" @command="handleCommand">
           <span class="el-dropdown-link" style="font-size:15px;color:black">
             <i class="el-icon-user-solid" ></i>
@@ -77,6 +87,17 @@
             <el-breadcrumb-item :to="{ path: '/Cindex' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item>{{this.$router.currentRoute.name}}</el-breadcrumb-item>
           </el-breadcrumb>
+          <div v-if="this.$router.currentRoute.path === '/Cindex'">
+            <div align="left" style="color:red">
+              未提供原料任务：{{noProvideMaterial}} 项； 已提供原料任务：{{provideMaterial}} 项。
+            </div>
+            <div align="left" style="color:red;margin-top:10px">
+              未完成下单客户沟通任务：{{needCommunicateWithOrders}} 项； 已完成下单客户沟通任务：{{finishCommunicateWithOrders}} 项。
+            </div>
+            <div align="left" style="color:red;margin-top:10px">
+              未完成接单客户沟通任务：{{needCommunicateWithTakeOrders}} 项； 已完成接单客户沟通任务：{{finishCommunicateWithTakeOrders}} 项。
+            </div>
+          </div>
           <div class="welcomeTitle" v-if="this.$router.currentRoute.path==='/Cindex'">
             客服人员您好，欢迎来到ChemEagle Brain 1.0 !
           </div>
@@ -95,16 +116,124 @@ export default {
   data () {
     return {
       account_id: window.sessionStorage.getItem('account_id'),
-      usertype: ''
+      usertype: window.sessionStorage.getItem('usertype'),
+      needCommunicateWithOrders: '',
+      finishCommunicateWithOrders: '',
+      needCommunicateWithTakeOrders: '',
+      finishCommunicateWithTakeOrders: '',
+      provideMaterial: '',
+      noProvideMaterial: '',
+      i: 0
     }
   },
   components: {
     CIdentityCheck,
     Chead
   },
+  created () {
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CEvaluatedInterval')
+    }
+    // 查找未完成下单客户沟通任务
+    this.$axios
+      .post('/evaluatedPage', {
+        page: 1,
+        size: 5,
+        interval: 300000,
+        status: '已评估',
+        resultkf: '待定'
+      })
+      .then(successResponse => {
+        if (successResponse.data.success) {
+          this.needCommunicateWithOrders = successResponse.data.data.totalElements
+        } else {
+          this.$message(successResponse.data.msg)
+        }
+      }).catch(failResponse => {})
+    // 查找已完成下单客户沟通任务
+    this.$axios
+      .post('/finishContactPage', {
+        status: '已评估',
+        resultkf: '待定',
+        interval: 300000,
+        page: 1,
+        size: 5
+      })
+      .then(successResponse => {
+        if (successResponse.data.success) {
+          this.finishCommunicateWithOrders = successResponse.data.data.totalElements
+        } else {
+          this.$message(successResponse.data.msg)
+        }
+      }).catch(failResponse => {})
+    // 查找未完成接单客户沟通任务
+    this.$axios
+      .post('/unreceive', {
+        interval: 300000,
+        page: 1,
+        size: 5
+      })
+      .then(successResponse => {
+        if (successResponse.data.success) {
+          this.needCommunicateWithTakeOrders = successResponse.data.data.totalElements
+        } else {
+          this.$message(successResponse.data.msg)
+        }
+      }).catch(failResponse => {})
+    // 查找已完成接单客户沟通任务
+    this.$axios
+      .post('/havereceive', {
+        interval: 300000,
+        page: 1,
+        size: 5
+      })
+      .then(successResponse => {
+        if (successResponse.data.success) {
+          this.finishCommunicateWithTakeOrders = successResponse.data.data.totalElements
+        } else {
+          this.$message(successResponse.data.msg)
+        }
+      }).catch(failResponse => {})
+    // 查找已提供原料任务
+    this.$axios
+      .post('/evaluatedPage', {
+        interval: 300000,
+        resultkf: '所有',
+        page: 1,
+        size: 5,
+        status: '已评估'
+      })
+      .then(successResponse => {
+        if (successResponse.data.success) {
+          this.provideMaterial = successResponse.data.data.totalElements
+          this.$axios
+            .post('/materialMissionNum', {
+              interval: 30000,
+              status: '未评估'
+            })
+            .then(successResponse => {
+              if (successResponse.data.success) {
+                this.provideMaterial = this.provideMaterial + JSON.parse(successResponse.data.data).provideNum
+                this.noProvideMaterial = JSON.parse(successResponse.data.data).noProvideNum
+              }
+            })
+            .catch(failResponse => {})
+        } else {
+          this.$message(successResponse.data.msg)
+        }
+      }).catch(failResponse => {})
+  },
   methods: {
     menuClick (index) {
       this.$router.push(index)
+      window.location.reload()
     },
     handleCommand (command) {
       window.sessionStorage.removeItem('account_id')
@@ -112,126 +241,11 @@ export default {
       window.sessionStorage.removeItem('islogin')
       this.$router.replace('/A')
     },
-    showunzt () {
-      this.$axios
-        .post('/unevaluatedPage', {
-          interval: this.interval1,
-          page: this.currentPage1,
-          size: this.pageSize1,
-          status: '未评估'
-        })
-        .then(successResponse => {
-          if (successResponse.data.success) {
-            this.list1 = successResponse.data.data.content
-            if (this.list1.length < 1) {
-              this.$message('查询时间段内无项目')
-            }
-            this.total1 = successResponse.data.data.totalElements
-            this.$axios
-              .post('/materialMissionNum', {
-                interval: this.interval1,
-                status: '未评估'
-              })
-              .then(successResponse => {
-                if (successResponse.data.success) {
-                  this.provideNum = JSON.parse(successResponse.data.data).provideNum
-                  this.noProvideNum = JSON.parse(successResponse.data.data).noProvideNum
-                }
-              })
-              .catch(failResponse => {})
-          } else {
-            this.$message(successResponse.data.msg)
-          }
-        })
-        .catch(failResponse => {
-        })
-    },
-    showhavezt () {
-      this.$axios.post('/evaluatedPage', {
-        interval: this.interval2,
-        resultkf: '所有',
-        page: this.currentPage2,
-        size: this.pageSize2,
-        status: '已评估'
-      })
-        .then(successResponse => {
-          if (successResponse.data.success) {
-            this.list2 = successResponse.data.data.content
-            if (this.list2.length < 1) {
-              this.$message('查询时间段内无项目')
-            }
-            this.total2 = successResponse.data.data.totalElements
-          } else {
-            this.$message(successResponse.data.msg)
-          }
-        })
-        .catch(failResponse => {
-        })
-    },
-    feedback (projectid) {
-      window.sessionStorage.setItem(this.account_id, projectid)
-      // console.log(projectid)
-      this.$router.replace('/C1')
-    },
-    handleCurrentChange1 (currentPage) {
-      this.getList1(currentPage)
-    },
-    handleSizeChange1 (pageSize) {
-      this.pageSize1 = pageSize
-      this.getList1(this.currentPage1)
-    },
-    getList1 (currentPage) {
-      this.currentPage1 = currentPage
-      this.$axios
-        .post('/unevaluatedPage', {
-          interval: this.interval1,
-          page: currentPage,
-          size: this.pageSize1,
-          status: '未评估'
-        })
-        .then(successResponse => {
-          // console.log(successResponse.data)
-          if (successResponse.data.success) {
-            console.log(successResponse.data.data)
-            this.list1 = successResponse.data.data.content
-            if (this.list1.length < 1) {
-              this.$message('查询时间段内无项目')
-            }
-          } else {
-            this.$message(successResponse.data.msg)
-          }
-        })
-        .catch(failResponse => {
-        })
-    },
-    handleSizeChange2 (pageSize) {
-      this.pageSize2 = pageSize
-      this.getList2(this.currentPage2)
-    },
-    handleCurrentChange2 (currentPage) {
-      this.getList2(currentPage)
-    },
-    getList2 (currentPage) {
-      this.currentPage2 = currentPage
-      this.$axios.post('/evaluatedPage', {
-        interval: this.interval2,
-        resultkf: '所有',
-        page: this.currentPage2,
-        size: this.pageSize2,
-        status: '已评估'
-      })
-        .then(successResponse => {
-          if (successResponse.data.success) {
-            this.list2 = successResponse.data.data.content
-            if (this.list2.length < 1) {
-              this.$message('查询时间段内无项目')
-            }
-          } else {
-            this.$message(successResponse.data.msg)
-          }
-        })
-        .catch(failResponse => {
-        })
+    operations (command) {
+      if (command === 'a') {
+        this.$router.push('/manageindex')
+        window.location.reload()
+      }
     }
   }
 }
@@ -280,8 +294,5 @@ body > .el-container {
   font-family:华文楷体;
   margin-top:50px;
   color:#409eff
-}
-.el-dropdown-link{
-
 }
 </style>

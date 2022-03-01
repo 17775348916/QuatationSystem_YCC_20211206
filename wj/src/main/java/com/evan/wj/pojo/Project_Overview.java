@@ -130,6 +130,9 @@ public class Project_Overview {
     @Column(name = "test_result")
     private String testresult;
 
+    @Column(name = "time")
+    private int time;
+
     @OneToOne
     @JoinColumn(name = "project_id")
     private ProjectZt projectZt;

@@ -75,17 +75,32 @@ export default {
   components: {
     CIdentityCheck
   },
+  created () {
+    // 退出T1 T2 TUnevaluated界面后，就不做自动查询
+    if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('TUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
+      window.sessionStorage.removeItem('CUnevaluatedInterval')
+    }
+    if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
+      this.interval2 = window.sessionStorage.getItem('CEvaluatedInterval')
+      this.showhavezt()
+    }
+  },
   methods: {
     showhavezt () {
-      this.$axios.post('/evaluatedPage', {
-        interval: this.interval2,
-        resultkf: '所有',
-        page: this.currentPage2,
-        size: this.pageSize2,
-        status: '已评估'
-      })
+      this.$axios
+        .post('/evaluatedPage', {
+          interval: this.interval2,
+          resultkf: '所有',
+          page: this.currentPage2,
+          size: this.pageSize2,
+          status: '已评估'
+        })
         .then(successResponse => {
           if (successResponse.data.success) {
+            window.sessionStorage.setItem('CEvaluatedInterval', this.interval2)
             this.list2 = successResponse.data.data.content
             if (this.list2.length < 1) {
               this.$message('查询时间段内无项目')
