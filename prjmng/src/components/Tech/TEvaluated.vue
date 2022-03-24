@@ -86,13 +86,6 @@
               </template>
               氢谱:{{ x.hsl }}; 碳谱:{{ x.csl }}; 质谱:{{ x.msl }}
             </el-descriptions-item>
-<!--            <el-descriptions-item>-->
-<!--              <template slot="label">-->
-<!--                <i class="el-icon-time"></i>-->
-<!--                测试总时间(天)-->
-<!--              </template>-->
-<!--              {{ x.zsjcs }}-->
-<!--            </el-descriptions-item>-->
             <el-descriptions-item>
               <template slot="label">
                 <i class="el-icon-timer"></i>
@@ -213,6 +206,7 @@
                    :total="total2"
                    :page-sizes="[5, 10]"
                    :page-size= "pageSize2"
+                   :current-page.sync = currentPage2
                    v-show="total2>5"
                    @size-change="handleSizeChange2"
                    @current-change="handleCurrentChange2"
@@ -257,6 +251,7 @@ export default {
   },
   methods: {
     showhavezt () {
+      this.currentPage2 = 1
       var _this = this
       this.$axios.post('/evaluatedPage', {
         interval: _this.interval2,

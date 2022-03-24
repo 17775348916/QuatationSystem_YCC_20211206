@@ -1,7 +1,6 @@
 <template>
   <div>
     <CIdentityCheck></CIdentityCheck>
-
     <el-container >
       <el-header style="text-align: right; font-size: 16px">
         <div class="title">
@@ -113,6 +112,7 @@ import CIdentityCheck from './CIdentityCheck'
 import Chead from './Chead'
 export default {
   name: 'Cindex',
+  inject: ['reload'],
   data () {
     return {
       account_id: window.sessionStorage.getItem('account_id'),
@@ -141,99 +141,101 @@ export default {
     if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
       window.sessionStorage.removeItem('CEvaluatedInterval')
     }
-    // 查找未完成下单客户沟通任务
-    this.$axios
-      .post('/evaluatedPage', {
-        page: 1,
-        size: 5,
-        interval: 300000,
-        status: '已评估',
-        resultkf: '待定'
-      })
-      .then(successResponse => {
-        if (successResponse.data.success) {
-          this.needCommunicateWithOrders = successResponse.data.data.totalElements
-        } else {
-          this.$message(successResponse.data.msg)
-        }
-      }).catch(failResponse => {})
-    // 查找已完成下单客户沟通任务
-    this.$axios
-      .post('/finishContactPage', {
-        status: '已评估',
-        resultkf: '待定',
-        interval: 300000,
-        page: 1,
-        size: 5
-      })
-      .then(successResponse => {
-        if (successResponse.data.success) {
-          this.finishCommunicateWithOrders = successResponse.data.data.totalElements
-        } else {
-          this.$message(successResponse.data.msg)
-        }
-      }).catch(failResponse => {})
-    // 查找未完成接单客户沟通任务
-    this.$axios
-      .post('/unreceive', {
-        interval: 300000,
-        page: 1,
-        size: 5
-      })
-      .then(successResponse => {
-        if (successResponse.data.success) {
-          this.needCommunicateWithTakeOrders = successResponse.data.data.totalElements
-        } else {
-          this.$message(successResponse.data.msg)
-        }
-      }).catch(failResponse => {})
-    // 查找已完成接单客户沟通任务
-    this.$axios
-      .post('/havereceive', {
-        interval: 300000,
-        page: 1,
-        size: 5
-      })
-      .then(successResponse => {
-        if (successResponse.data.success) {
-          this.finishCommunicateWithTakeOrders = successResponse.data.data.totalElements
-        } else {
-          this.$message(successResponse.data.msg)
-        }
-      }).catch(failResponse => {})
-    // 查找已提供原料任务
-    this.$axios
-      .post('/evaluatedPage', {
-        interval: 300000,
-        resultkf: '所有',
-        page: 1,
-        size: 5,
-        status: '已评估'
-      })
-      .then(successResponse => {
-        if (successResponse.data.success) {
-          this.provideMaterial = successResponse.data.data.totalElements
-          this.$axios
-            .post('/materialMissionNum', {
-              interval: 30000,
-              status: '未评估'
-            })
-            .then(successResponse => {
-              if (successResponse.data.success) {
-                this.provideMaterial = this.provideMaterial + JSON.parse(successResponse.data.data).provideNum
-                this.noProvideMaterial = JSON.parse(successResponse.data.data).noProvideNum
-              }
-            })
-            .catch(failResponse => {})
-        } else {
-          this.$message(successResponse.data.msg)
-        }
-      }).catch(failResponse => {})
+    if (this.$router.currentRoute.path === '/Cindex') {
+      // 查找未完成下单客户沟通任务
+      this.$axios
+        .post('/evaluatedPage', {
+          page: 1,
+          size: 5,
+          interval: 300000,
+          status: '已评估',
+          resultkf: '待定'
+        })
+        .then(successResponse => {
+          if (successResponse.data.success) {
+            this.needCommunicateWithOrders = successResponse.data.data.totalElements
+          } else {
+            this.$message(successResponse.data.msg)
+          }
+        }).catch(failResponse => {})
+      // 查找已完成下单客户沟通任务
+      this.$axios
+        .post('/finishContactPage', {
+          status: '已评估',
+          resultkf: '待定',
+          interval: 300000,
+          page: 1,
+          size: 5
+        })
+        .then(successResponse => {
+          if (successResponse.data.success) {
+            this.finishCommunicateWithOrders = successResponse.data.data.totalElements
+          } else {
+            this.$message(successResponse.data.msg)
+          }
+        }).catch(failResponse => {})
+      // 查找未完成接单客户沟通任务
+      this.$axios
+        .post('/unreceive', {
+          interval: 300000,
+          page: 1,
+          size: 5
+        })
+        .then(successResponse => {
+          if (successResponse.data.success) {
+            this.needCommunicateWithTakeOrders = successResponse.data.data.totalElements
+          } else {
+            this.$message(successResponse.data.msg)
+          }
+        }).catch(failResponse => {})
+      // 查找已完成接单客户沟通任务
+      this.$axios
+        .post('/havereceive', {
+          interval: 300000,
+          page: 1,
+          size: 5
+        })
+        .then(successResponse => {
+          if (successResponse.data.success) {
+            this.finishCommunicateWithTakeOrders = successResponse.data.data.totalElements
+          } else {
+            this.$message(successResponse.data.msg)
+          }
+        }).catch(failResponse => {})
+      // 查找已提供原料任务
+      this.$axios
+        .post('/evaluatedPage', {
+          interval: 300000,
+          resultkf: '所有',
+          page: 1,
+          size: 5,
+          status: '已评估'
+        })
+        .then(successResponse => {
+          if (successResponse.data.success) {
+            this.provideMaterial = successResponse.data.data.totalElements
+            this.$axios
+              .post('/materialMissionNum', {
+                interval: 30000,
+                status: '未评估'
+              })
+              .then(successResponse => {
+                if (successResponse.data.success) {
+                  this.provideMaterial = this.provideMaterial + JSON.parse(successResponse.data.data).provideNum
+                  this.noProvideMaterial = JSON.parse(successResponse.data.data).noProvideNum
+                }
+              })
+              .catch(failResponse => {})
+          } else {
+            this.$message(successResponse.data.msg)
+          }
+        }).catch(failResponse => {})
+    }
   },
   methods: {
     menuClick (index) {
       this.$router.push(index)
-      window.location.reload()
+      this.reload()
     },
     handleCommand (command) {
       window.sessionStorage.removeItem('account_id')
@@ -244,7 +246,7 @@ export default {
     operations (command) {
       if (command === 'a') {
         this.$router.push('/manageindex')
-        window.location.reload()
+        this.reload()
       }
     }
   }

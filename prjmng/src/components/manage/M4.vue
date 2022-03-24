@@ -37,6 +37,7 @@
                        :total="total"
                        :page-sizes="[5, 10, 20]"
                        :page-size= "pageSize"
+                       :current-page.sync = "currentPage"
                        v-show="total>5"
                        @size-change="handleSizeChange"
                        @current-change="handleCurrentChange"

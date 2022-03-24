@@ -31,7 +31,6 @@ class ImageController {
     @PostMapping("api/imgupload")
     @ResponseBody
     public Result<FileVo> coversUpload(@RequestBody MultipartFile file) throws Exception {
-//        FileVo newfile = new FileVo();
         String originname = file.getOriginalFilename();
         String filetype = originname.substring(originname.lastIndexOf("."));
         File imageFolder = new File(folder);
@@ -44,7 +43,6 @@ class ImageController {
             file.transferTo(f);
             String imgURL = f.getName();
             log.info(f.getAbsolutePath() + file.toString());
-//            return imgURL;
             return new Result<FileVo>(new FileVo(imgURL, originname));
         } catch (IOException e) {
             e.printStackTrace();

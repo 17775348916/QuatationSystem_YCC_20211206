@@ -301,6 +301,7 @@
                    :total="total1"
                    :page-sizes="[3, 5, 10]"
                    :page-size= "pageSize1"
+                   :current-page.sync = currentPage1
                    v-show="total1>3"
                    @size-change="handleSizeChange1"
                    @current-change="handleCurrentChange1"
@@ -383,6 +384,7 @@ export default {
         })
     },
     showunfinish () {
+      this.currentPage1 = 1
       this.$axios
         .post('/evaluatedPage', {
           page: this.currentPage1,

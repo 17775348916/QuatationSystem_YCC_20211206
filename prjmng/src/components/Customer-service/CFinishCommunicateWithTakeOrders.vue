@@ -221,6 +221,7 @@
                    :total="total2"
                    :page-sizes="[ 3,5, 10]"
                    :page-size= "pageSize2"
+                   :current-page.sync = "currentPage2"
                    v-show="total2>3"
                    @size-change="handleSizeChange2"
                    @current-change="handleCurrentChange2"
@@ -271,6 +272,7 @@ export default {
   },
   methods: {
     showhavereceive () {
+      this.currentPage2 = 1
       this.$axios
         .post('/havereceive', {
           interval: this.interval2,

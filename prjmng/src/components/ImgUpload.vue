@@ -2,7 +2,7 @@
   <el-upload
     class="img-upload"
     ref="upload"
-    action="http://39.101.135.32:8443/api/imgupload"
+    action="http://106.12.213.102:8443/api/imgupload"
     :on-preview="handlePreview"
     :on-remove="handleRemove"
     :before-remove="beforeRemove"

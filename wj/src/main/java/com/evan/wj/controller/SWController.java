@@ -229,15 +229,19 @@ public class SWController {
         int page = 1, size = 5, interval = -1;
         String resultkf = "成交";
         Page<Project_Overview> pwt = null;
-        if (json.getInteger("page") == null || json.getInteger("size") == null ||
-                json.getString("resultkf") == null || json.getInteger("interval") == null) {
-            log.error("[SWController.lookallproj]:json中的page或size或resultkf或interval为空");
+        if (json.getInteger("page") == null && json.getInteger("size") == null &&
+                json.getString("resultkf") == null && json.getInteger("interval") == null) {
+            log.error("[SWController.lookallproj]:json中的page、size、resultkf、interval皆为空");
             return null;
         }
         page=json.getInteger("page")-1;
         size=json.getInteger("size");
         resultkf = json.getString("resultkf");
-        interval = json.getInteger("interval");
+        if(null == json.getInteger("interval")){
+            interval = 30000;
+        } else{
+            interval = json.getInteger("interval");
+        }
         if("所有".equals(resultkf)){
             pwt = project_overviewService.queryallByInterval(page,size,interval);
         }else{
@@ -245,6 +249,50 @@ public class SWController {
         }
         return new Result<>(pwt);
     }
+
+    /**
+     * 管理员界面下的多条件分页查询
+     * @param json
+     * @return
+     */
+    @CrossOrigin
+    @PostMapping(value = "/api/queryByKeywords")
+    @ResponseBody
+    public Result<Page<Project_Overview>> queryByKeywords(@RequestBody JSONObject json) {
+        int page = 1, size = 5, interval = -1;
+        String resultkf = "成交";
+        String customerName = "", productName = "", casName = "", khName = "",startTime = "", endTime = "";
+        Page<Project_Overview> pwt = null;
+        if (json.getInteger("page") == null && json.getInteger("size") == null &&
+                json.getString("resultkf") == null && json.getInteger("interval") == null) {
+            log.error("[SWController.lookallproj]:json中的page、size、resultkf、interval皆为空");
+            return null;
+        }
+        page=json.getInteger("page")-1;
+        size=json.getInteger("size");
+        resultkf = json.getString("resultkf");
+        customerName = json.getString("customerName");
+        productName = json.getString("productName");
+        casName = json.getString("casName");
+        khName = json.getString("khName");
+        endTime = json.getString("endTime");
+        startTime = json.getString("startTime");
+        if(null == json.getInteger("interval")){
+            interval = 30000;
+        } else{
+            interval = json.getInteger("interval");
+        }
+        pwt = project_overviewService.queryallByIntervalAndResultkfAndKhrynameAndProjectnameAndCas(page,size,interval,resultkf,customerName,productName,casName,khName,startTime,endTime);
+        return new Result<>(pwt);
+    }
+//    @CrossOrigin
+//    public static void main(String[] args) {
+//        int interval = -1;
+//        JSONObject json = new JSONObject();
+//        json.put("interval","");
+////        interval = json.getstring("interval");
+//        System.out.println(StringUtils.isEmpty(json.getString("interval")));
+//    }
 
     @CrossOrigin
     @PostMapping(value = "/api/finishContactPage")

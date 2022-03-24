@@ -130,6 +130,7 @@ import ImgUpload from '../ImgUpload'
 
 export default {
   name: 'B1',
+  inject: ['reload'],
   data: function () {
     return {
       message: '',
@@ -158,7 +159,6 @@ export default {
           Is_money: '',
           Co_history: ''
         },
-      // fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
       url: ''
     }
   },
@@ -343,10 +343,10 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        window.location.reload()
+        this.reload()
       }).catch(() => {
         this.$router.replace('/Bindex')
-        window.location.reload()
+        this.reload()
       })
     },
     uploadImg () {

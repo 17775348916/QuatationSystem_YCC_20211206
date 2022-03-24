@@ -30,12 +30,16 @@
             </el-table-column>
             <el-table-column label="级别">
               <template slot-scope="scope">
-                {{ identity[scope.row.typeid-1].rank }}
+                <span v-if="identity[(scope.row.typeid-1)] && identity[(scope.row.typeid-1)].rank">
+                  {{ identity[(scope.row.typeid-1)].rank }}
+                </span>
               </template>
             </el-table-column>
             <el-table-column label="用户角色">
               <template slot-scope="scope">
-                {{ identity[scope.row.typeid-1].type }}
+                <span v-if="identity[scope.row.typeid-1] && identity[scope.row.typeid-1].type">
+                  {{ identity[scope.row.typeid-1].type }}
+                </span>
               </template>
             </el-table-column>
             <el-table-column label="操作">
@@ -60,8 +64,9 @@ import IdentityCheck from './IdentityCheck'
 
 export default {
   name: 'M1',
+  inject: ['reload'],
   components: {IdentityCheck},
-  data: function () {
+  data () {
     return {
       account: [],
       identity: [],
@@ -85,40 +90,24 @@ export default {
       .then(successResponse => {
         if (successResponse.data.success) {
           this.account = successResponse.data.data
-          console.log('这是账号', successResponse.data)
         }
-      })
-      .catch(failResponse => {
-        // console.log(this.loginForm)
       })
     this.$axios
       .post('/identity', {})
       .then(successResponse => {
         if (successResponse.data.success) {
           this.identity = successResponse.data.data
-          console.log('这是identity', successResponse.data.data)
-          // console.log(successResponse.data)
-          // this.$message('%%%')
         }
-      })
-      .catch(failResponse => {
-        // console.log(this.loginForm)
       })
   },
   methods: {
     submit () {
-      // for (let index in this.oldaccount) {
-      //   // console.log(index + "->" + data[index]);
-      //   if (this.oldaccount[index] !== this.account[index].name) {
-      //     this.account[index].updatedata = this.year + '-' + (this.month + 1) + '-' + this.day + ' ' + this.hour + ':00:00'
-      //   }
-      // }
       this.$axios
         .post('/updateaccount', this.account)
         .then(successResponse => {
           if (successResponse.data.success) {
-            this.$message('修改已上传')
-            location.reload()
+            this.$message.success('修改成功')
+            this.reload()
           } else {
             this.$message(successResponse.data.msg)
           }
@@ -133,27 +122,31 @@ export default {
         accountname: '',
         name: '',
         typeid: 1
-        // createdate: today.substr(0, 10) + ' ' + hour + ':00:00',
-        // updatedata: today.substr(0, 10) + ' ' + hour + ':00:00'
       })
-      // console.log(this.account)
     },
-    deletem: function (x, index) {
-      this.$axios
-        .post('/deleteaccount', {
-          id: x.accountid
-        })
-        .then(successResponse => {
-          if (successResponse.data.success) {
-            this.$message('删除成功')
-            this.account.splice(index, 1)
-            location.reload()
-          } else {
-            this.$message(successResponse.data.msg)
-          }
-        })
-        .catch(failResponse => {
-        })
+    deletem (x, index) {
+      if (x.name === '') {
+        this.$message.success('删除成功')
+        this.reload()
+      } else {
+        this.$axios
+          .post('/deleteaccount', {
+            id: x.accountid
+          })
+          .then(successResponse => {
+            if (successResponse.data.success) {
+              this.$message.success('删除成功')
+              this.account.splice(index, 1)
+              this.reload()
+            } else {
+              this.$message(successResponse.data.msg)
+            }
+          })
+          .catch(failResponse => {
+            this.$message.error('请先提交修改后再进行删除')
+            this.reload()
+          })
+      }
     },
     menuClick (index) {
       this.$router.push(index)

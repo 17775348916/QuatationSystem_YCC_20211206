@@ -48,6 +48,7 @@
                    :total="total2"
                    :page-sizes="[5, 10]"
                    :page-size= "pageSize2"
+                   :current-page.sync = currentPage2
                    v-show="total2>5"
                    @size-change="handleSizeChange2"
                    @current-change="handleCurrentChange2"
@@ -90,6 +91,7 @@ export default {
   },
   methods: {
     showhavezt () {
+      this.currentPage2 = 1
       this.$axios
         .post('/evaluatedPage', {
           interval: this.interval2,

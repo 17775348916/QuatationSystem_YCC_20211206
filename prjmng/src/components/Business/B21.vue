@@ -179,6 +179,7 @@
                      :total="total1"
                      :page-sizes="[5, 10]"
                      :page-size= "pageSize1"
+                     :current-page.sync = currentPage1
                      v-show="total1>5"
                      @size-change="handleSizeChange1"
                      @current-change="handleCurrentChange1"
@@ -224,6 +225,7 @@ export default {
   },
   methods: {
     showunzt () {
+      this.currentPage1 = 1
       var _this = this
       // 原先为/unzt
       this.$axios

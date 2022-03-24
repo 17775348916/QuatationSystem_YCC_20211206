@@ -75,6 +75,7 @@ import IdentityCheck from './IdentityCheck'
 
 export default {
   name: 'manageindex',
+  inject: ['reload'],
   data () {
     return {
       accountid: window.sessionStorage.getItem('account_id'),
@@ -96,14 +97,14 @@ export default {
   methods: {
     menuClick (index) {
       this.$router.push(index)
-      window.location.reload()
+      this.reload()
     },
     handleCommand (command) {
       window.sessionStorage.removeItem('account_id')
       window.sessionStorage.removeItem('usertype')
       window.sessionStorage.removeItem('islogin')
       this.$router.replace('/managelogin')
-      window.location.reload()
+      this.reload()
     }
   },
   components: {

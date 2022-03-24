@@ -80,11 +80,10 @@ import IdentityCheck from './IdentityCheck'
 
 export default {
   name: 'M3',
-  data: function () {
+  data () {
     return {
-      model: '',
+      model: [],
       accountid: window.sessionStorage.getItem('account_id')
-
     }
   },
   components: {
@@ -127,7 +126,6 @@ export default {
                 }
               })
               .catch(failResponse => {
-                // console.log(this.loginForm)
               })
           }
         })

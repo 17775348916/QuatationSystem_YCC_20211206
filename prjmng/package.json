@@ -14,8 +14,15 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "angular-expressions": "^1.1.5",
     "axios": "^0.21.4",
+    "docxtemplater": "^3.29.0",
+    "docxtemplater-image-module-free": "^1.1.1",
     "element-ui": "^2.15.6",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.7.1",
+    "jszip-utils": "^0.1.0",
+    "pizzip": "^3.1.1",
     "semantic-ui": "^2.4.2",
     "semantic-ui-vue": "^0.11.0",
     "vue": "^2.5.2",
@@ -66,6 +73,7 @@
     "postcss-loader": "^2.0.8",
     "postcss-url": "^7.2.1",
     "rimraf": "^2.6.0",
+    "safe-buffer": "^5.2.1",
     "selenium-server": "^3.0.1",
     "semver": "^5.3.0",
     "shelljs": "^0.7.6",

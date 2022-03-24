@@ -1,6 +1,6 @@
 <template>
   <el-upload
-    action="http://39.101.135.32:8443/api/upload"
+    action="http://106.12.213.102:8443/api/upload"
     :on-preview="handlePreview"
     :on-remove="handleRemove"
     :before-remove="beforeRemove"
@@ -38,12 +38,10 @@ export default {
       console.log(this.url)
     },
     handlePreview (file) {
-      console.log(file)
       this.url = file.response.data.url
       window.open(this.url)
     },
     handleSuccess (response, file, fileList) {
-      console.log(response)
       if (fileList.length === 1) {
         this.url = response.data.url
       } else {

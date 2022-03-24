@@ -21,7 +21,7 @@ axios.interceptors.response.use(success => {
     if (error.response.data.msg) {
       Message.error({message: error.response.data.msg})
     } else {
-      Message.error({message: '后台服务问题：' + error.response.data.msg})
+      Message.error({message: '后台服务问题（可能是数据库中未查到相关信息）：' + error.response.data.msg})
     }
   }
 })

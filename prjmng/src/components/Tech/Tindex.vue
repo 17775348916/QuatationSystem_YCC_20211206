@@ -81,6 +81,7 @@ import TIdentityCheck from './TIdentityCheck'
 
 export default {
   name: 'Tindex',
+  inject: ['reload'],
   data: function () {
     return {
       activeName: '1',
@@ -105,42 +106,44 @@ export default {
     if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
       window.sessionStorage.removeItem('TUnevaluatedInterval')
     }
-    // 查找技术未评估任务
-    this.$axios
-      .post('/unevaluatedPage', {
-        page: 1,
-        size: 5,
-        interval: 300000,
-        status: '未评估'
-      })
-      .then(successResponse => {
-        if (successResponse.data.success) {
-          this.unevaluated = successResponse.data.data.totalElements
-        } else {
-          this.$message(successResponse.data.msg)
-        }
-      }).catch(failResponse => {})
-    // 查找技术已评估任务
-    this.$axios
-      .post('/evaluatedPage', {
-        interval: 300000,
-        resultkf: '所有',
-        page: 1,
-        size: 5,
-        status: '已评估'
-      })
-      .then(successResponse => {
-        if (successResponse.data.success) {
-          this.evaluated = successResponse.data.data.totalElements
-        } else {
-          this.$message(successResponse.data.msg)
-        }
-      }).catch(failResponse => {})
+    if (this.$router.currentRoute.path === '/Tindex') {
+      // 查找技术未评估任务
+      this.$axios
+        .post('/unevaluatedPage', {
+          page: 1,
+          size: 5,
+          interval: 300000,
+          status: '未评估'
+        })
+        .then(successResponse => {
+          if (successResponse.data.success) {
+            this.unevaluated = successResponse.data.data.totalElements
+          } else {
+            this.$message(successResponse.data.msg)
+          }
+        }).catch(failResponse => {})
+      // 查找技术已评估任务
+      this.$axios
+        .post('/evaluatedPage', {
+          interval: 300000,
+          resultkf: '所有',
+          page: 1,
+          size: 5,
+          status: '已评估'
+        })
+        .then(successResponse => {
+          if (successResponse.data.success) {
+            this.evaluated = successResponse.data.data.totalElements
+          } else {
+            this.$message(successResponse.data.msg)
+          }
+        }).catch(failResponse => {})
+    }
   },
   methods: {
     menuClick (index) {
       this.$router.push(index)
-      window.location.reload()
+      this.reload()
     },
     handleCommand (command) {
       window.sessionStorage.removeItem('account_id')
@@ -151,7 +154,7 @@ export default {
     operations (command) {
       if (command === 'a') {
         this.$router.push('/manageindex')
-        window.location.reload()
+        this.reload()
       }
     }
   }

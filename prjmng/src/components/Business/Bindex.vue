@@ -1,6 +1,6 @@
 /* eslint-disable */
 <template>
-  <div class="styleBindex">
+  <div class="styleBindex" v-cloak>
     <IdentityCheck></IdentityCheck>
     <el-container >
       <el-header style="text-align: right; font-size: 16px">
@@ -85,6 +85,7 @@
 import IdentityCheck from './IdentityCheck'
 export default {
   name: 'Bindex',
+  inject: ['reload'],
   data: function () {
     return {
       message: '',
@@ -105,40 +106,42 @@ export default {
     if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
       window.sessionStorage.removeItem('CUnevaluatedInterval')
     }
-    // 查找有成交可能的项目
-    this.$axios
-      .post('/allproj', {
-        page: 1,
-        size: 5,
-        interval: 300000,
-        resultkf: '所有'
-      })
-      .then(successResponse => {
-        if (successResponse.data.success) {
-          this.PossibleToHaveADeal = successResponse.data.data.totalElements
-        } else {
-          this.$message(successResponse.data.msg)
-        }
-      }).catch(failResponse => {})
-    // 查找没有成交可能的项目
-    this.$axios
-      .post('/showUnavailables', {
-        page: 1,
-        size: 5,
-        interval: 300000
-      })
-      .then(successResponse => {
-        if (successResponse.data.success) {
-          this.ImpossibleToHaveADeal = successResponse.data.data.totalElements
-        } else {
-          this.$message(successResponse.data.msg)
-        }
-      }).catch(failResponse => {})
+    if (this.$router.currentRoute.path === '/Bindex') {
+      // 查找有成交可能的项目
+      this.$axios
+        .post('/allproj', {
+          page: 1,
+          size: 5,
+          interval: 300000,
+          resultkf: '所有'
+        })
+        .then(successResponse => {
+          if (successResponse.data.success) {
+            this.PossibleToHaveADeal = successResponse.data.data.totalElements
+          } else {
+            this.$message(successResponse.data.msg)
+          }
+        }).catch(failResponse => {})
+      // 查找没有成交可能的项目
+      this.$axios
+        .post('/showUnavailables', {
+          page: 1,
+          size: 5,
+          interval: 300000
+        })
+        .then(successResponse => {
+          if (successResponse.data.success) {
+            this.ImpossibleToHaveADeal = successResponse.data.data.totalElements
+          } else {
+            this.$message(successResponse.data.msg)
+          }
+        }).catch(failResponse => {})
+    }
   },
   methods: {
     menuClick (index) {
       this.$router.push(index)
-      window.location.reload()
+      this.reload()
     },
     handleCommand (command) {
       window.sessionStorage.removeItem('account_id')
@@ -149,7 +152,7 @@ export default {
     operations (command) {
       if (command === 'a') {
         this.$router.replace('/manageindex')
-        window.location.reload()
+        this.reload()
       }
     }
   },
@@ -203,11 +206,4 @@ body > .el-container {
   margin-top:50px;
   color:#409eff
 }
-/*.el-dropdown-link {*/
-/*  cursor: pointer;*/
-/*  color: #409EFF;*/
-/*}*/
-/*.el-icon-arrow-down {*/
-/*  font-size: 12px;*/
-/*}*/
 </style>

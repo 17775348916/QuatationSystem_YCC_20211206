@@ -183,6 +183,7 @@
                    :total="total1"
                    :page-sizes="[3, 5, 10]"
                    :page-size= "pageSize1"
+                   :current-page.sync = currentPage1
                    v-show="total1>3"
                    @size-change="handleSizeChange1"
                    @current-change="handleCurrentChange1"
@@ -336,6 +337,7 @@
                    :total="total2"
                    :page-sizes="[3, 5, 10]"
                    :page-size= "pageSize2"
+                   :current-page.sync ="currentPage2"
                    v-show="total2>3"
                    @size-change="handleSizeChange2"
                    @current-change="handleCurrentChange2"
@@ -427,6 +429,7 @@ export default {
         })
     },
     showunfinish () {
+      this.currentPage1 = 1
       this.$axios
         .post('/evaluatedPage', {
           page: this.currentPage1,
@@ -554,6 +557,7 @@ export default {
         })
     },
     showhavefinish () {
+      this.currentPage2 = 1
       var _this = this
       this.$axios
         .post('/finishContactPage', {

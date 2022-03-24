@@ -140,8 +140,9 @@
       <el-pagination class="fy"
                      layout="total, sizes, prev, pager, next, jumper"
                      :total="total"
-                     :page-sizes="[5, 10]"
-                     :page-size= "pageSize"
+                     :page-sizes ="[5, 10]"
+                     :page-size = "pageSize"
+                     :current-page.sync = currentPage
                      v-show="total>5"
                      @size-change="handleSizeChange"
                      @current-change="handleCurrentChange"
@@ -180,6 +181,7 @@ export default {
   },
   methods: {
     showUnavailables () {
+      this.currentPage = 1
       this.$axios
         .post('/showUnavailables', {
           page: this.currentPage,
@@ -226,7 +228,42 @@ export default {
     },
     getList (currentPage) {
       this.currentPage = currentPage
-      this.showUnavailables()
+      this.$axios
+        .post('/showUnavailables', {
+          page: this.currentPage,
+          size: this.pageSize,
+          interval: this.interval
+        })
+        .then(successResponse => {
+          if (successResponse.data.success) {
+            this.list = successResponse.data.data.content
+            this.total = successResponse.data.data.totalElements
+            if (this.list.length < 1) {
+              this.$message('查询时间段内无项目')
+            } else {
+              for (let m in this.list) {
+                this.$axios
+                  .post('/lookpic', {
+                    imgpath: this.list[m].projectdetails
+                  })
+                  .then(successResponse => {
+                    if (successResponse.data.success) {
+                      console.log(successResponse.data.data)
+                      this.list[m].projectdetails = 'data:image/png;base64,' + successResponse.data.data.base64id
+                    } else {
+                      this.$message(successResponse.data.msg)
+                    }
+                  })
+                  .catch(failResponse => {
+                  })
+              }
+            }
+          } else {
+            this.$message(successResponse.data.msg)
+          }
+        })
+        .catch(failResponse => {
+        })
     }
   },
   components: {

@@ -59,6 +59,7 @@
                    :total="total1"
                    :page-sizes="[5, 10]"
                    :page-size= "pageSize1"
+                   :current-page.sync = currentPage1
                    v-show="total1>5"
                    @size-change="handleSizeChange1"
                    @current-change="handleCurrentChange1"
@@ -97,14 +98,15 @@ export default {
       window.sessionStorage.removeItem('CUnevaluatedInterval')
     }
     if (window.sessionStorage.getItem('TUnevaluatedInterval') != null) {
-      this.interval1 = window.sessionStorage.getItem('TUnevaluatedInterval')
-      this.pageSize1 = window.sessionStorage.getItem('TUnevaluatedPageSize')
-      this.currentPage1 = window.sessionStorage.getItem('TUnevaluatedCurrentPage')
-      this.showunzt()
+      this.interval1 = parseInt(window.sessionStorage.getItem('TUnevaluatedInterval'))
+      this.pageSize1 = parseInt(window.sessionStorage.getItem('TUnevaluatedPageSize'))
+      this.currentPage1 = parseInt(window.sessionStorage.getItem('TUnevaluatedCurrentPage'))
+      this.getList1(this.currentPage1)
     }
   },
   methods: {
     showunzt () {
+      this.currentPage1 = 1
       this.$axios
         .post('/unevaluatedPage', {
           page: this.currentPage1,
@@ -141,7 +143,7 @@ export default {
       this.$axios
         .post('/unevaluatedPage', {
           interval: this.interval1,
-          page: currentPage,
+          page: this.currentPage1,
           size: this.pageSize1,
           status: '未评估'
         })

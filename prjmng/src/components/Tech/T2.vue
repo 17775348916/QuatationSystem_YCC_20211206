@@ -236,14 +236,14 @@ export default {
                 console.log(successResponse.data.data)
                 this.project.projectdetails = 'data:image/png;base64,' + successResponse.data.data.base64id
               } else {
-                this.$message(successResponse.data.msg)
+                this.$message.error(successResponse.data.msg)
               }
             })
             .catch(failResponse => {
             })
           console.log(this.project)
         } else {
-          this.$message(successResponse.data.msg)
+          this.$message.error(successResponse.data.msg)
         }
       })
       .catch(failResponse => {
@@ -274,10 +274,10 @@ export default {
         })
         .then(successResponse => {
           if (successResponse.data.success) {
-            this.$message('评估成功!')
+            this.$message.success('评估成功!')
             this.$router.replace('/TUnevaluated')
           } else {
-            this.$message(successResponse.data.msg)
+            this.$message.error(successResponse.data.msg)
             this.$router.replace('/Tindex')
           }
         })
@@ -295,10 +295,10 @@ export default {
         })
         .then(successResponse => {
           if (successResponse.data.success) {
-            this.$message('评估成功!')
+            this.$message.success('评估成功!')
             this.$router.replace('/TUnevaluated')
           } else {
-            this.$message(successResponse.data.msg)
+            this.$message.error(successResponse.data.msg)
             this.$router.replace('/Tindex')
           }
         })

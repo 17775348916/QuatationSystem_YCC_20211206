@@ -101,6 +101,7 @@
                      :total="total1"
                      :page-sizes="[5, 10]"
                      :page-size= "pageSize1"
+                     :current-page.sync = currentPage1
                      v-show="total1>5"
                      @size-change="handleSizeChange1"
                      @current-change="handleCurrentChange1"
@@ -225,6 +226,7 @@
                      :total="total2"
                      :page-sizes="[5, 10]"
                      :page-size= "pageSize2"
+                     :current-page.sync = currentPage2
                      v-show="total2>5"
                      @size-change="handleSizeChange2"
                      @current-change="handleCurrentChange2"
@@ -281,6 +283,7 @@ export default {
   methods: {
     showunzt () {
       var _this = this
+      this.currentPage1 = 1
       // 原先为/unzt
       this.$axios
         .post('/unevaluatedPage', {
@@ -324,6 +327,7 @@ export default {
         })
     },
     showhavezt () {
+      this.currentPage2 = 1
       var _this = this
       this.$axios.post('/evaluatedPage', {
         interval: _this.interval2,

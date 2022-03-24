@@ -60,6 +60,7 @@
                    :total="total1"
                    :page-sizes="[5, 10]"
                    :page-size= "pageSize1"
+                   :current-page.sync = currentPage1
                    v-show="total1>5"
                    @size-change="handleSizeChange1"
                    @current-change="handleCurrentChange1"
@@ -98,7 +99,7 @@ export default {
     }
     if (window.sessionStorage.getItem('CUnevaluatedInterval') != null) {
       this.interval1 = window.sessionStorage.getItem('CUnevaluatedInterval')
-      this.showunzt()
+      this.getList1(this.currentPage1)
     }
     if (window.sessionStorage.getItem('CEvaluatedInterval') != null) {
       window.sessionStorage.removeItem('CEvaluatedInterval')
@@ -106,6 +107,7 @@ export default {
   },
   methods: {
     showunzt () {
+      this.currentPage1 = 1
       this.$axios
         .post('/unevaluatedPage', {
           interval: this.interval1,

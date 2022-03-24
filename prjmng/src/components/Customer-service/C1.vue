@@ -3,7 +3,7 @@
     <CIdentityCheck></CIdentityCheck>
     <br><br>
     <div v-if="project.projectztjs === '未评估'">
-      <el-descriptions class="margin-top" title="项目信息" :column="3" :size="medium" style="margin-bottom:20px" border>
+      <el-descriptions class="margin-top" title="项目信息" :column="3" style="margin-bottom:20px" border>
         <el-descriptions-item>
           <template slot="label">
             <i class="el-icon-s-opportunity"></i>
@@ -42,7 +42,7 @@
       </el-descriptions>
       <br>
       <el-row v-for="(item, index) in mlist" :key="index">
-        <el-descriptions class="margin-top" title="原料信息" :column="5" :size="medium" style="margin-bottom:20px" border>
+        <el-descriptions class="margin-top" title="原料信息" :column="5" style="margin-bottom:20px" border>
           <el-descriptions-item>
             <template slot="label">
               <i class="el-icon-finished"></i>
@@ -276,10 +276,6 @@ export default {
       })
       .catch(failResponse => {
       })
-    // let strOrig, lastIndex
-    // strOrig = axios.defaults.baseURL
-    // lastIndex = strOrig.lastIndexOf('/')
-    // this.url = strOrig.substr(0, lastIndex) + '/'
   },
   methods: {
     addfromlist2 (index, x) {
@@ -300,9 +296,6 @@ export default {
               this.searchlist = successResponse.data.data
               console.log(this.searchlist)
               for (let m in this.searchlist) {
-                // this.searchlist[m].materialname = this.searchlist[m].materialname ? this.searchlist[m].materialname : ''
-                // this.searchlist[m].cas = this.searchlist[m].cas ? this.searchlist[m].cas : ''
-                // this.searchlist[m].provider = this.searchlist[m].provider ? this.searchlist[m].provider : ''
                 this.searchlist[m].createdate = this.searchlist[m].createdate.substr(0, 10)
               }
               console.log(this.searchlist)
@@ -383,7 +376,7 @@ export default {
         .post('/fankui', resultlist)
         .then(successResponse => {
           if (successResponse.data.success) {
-            this.$message('已告知技术人员项目所需的原料均可获得，原料价格已经提交给后台进行项目报价计算')
+            this.$message.success('已告知技术人员项目所需的原料均可获得，原料价格已经提交给后台进行项目报价计算')
             this.$router.replace('/CUnevaluated')
           } else {
             this.$message(successResponse.data.msg)

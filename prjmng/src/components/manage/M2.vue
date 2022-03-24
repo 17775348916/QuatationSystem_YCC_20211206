@@ -1,30 +1,67 @@
 <template>
-  <div align="center">
+  <div>
     <IdentityCheck></IdentityCheck>
-    <div align="left" style="color:red;margin-top:10px">*仅展示有成交可能的项目，没有成交可能性的项目请到商务人员系统中查看</div>
-    下拉菜单选择时间范围：
-    <select v-model="interval" placeholder="时间范围" style="margin-right:20px">
-      <option label="当天" value="1">当天</option>
-      <option label="近3天" value="3">近3天</option>
-      <option label="近1周" value="7">近1周</option>
-      <option label="近1月" value="30">近1月</option>
-      <option label="所有" value="30000">所有</option>
-    </select>
-    下拉菜单可选择“成交结果”：
-    <select v-model="project_result_kf" placeholder="成交结果">
-      <option value="所有">所有</option>
-      <option value="成交">成交</option>
-      <option value="未成交">未成交</option>
-      <option value="待定">待定</option>
-    </select>
-    <el-button size="small" v-on:click="queryprojects()">查询</el-button>
-      <el-row v-for="(x, index) in list" :key="x.projectid" style="margin-top:20px">
+    <div align="left" style="color:red;margin-top:10px">
+      *仅展示有成交可能的项目，没有成交可能性的项目请到商务人员系统中查看
+      <div>
+        *关键字搜索功能：功能支持全部或部分关键字的组合搜索，使用精准匹配查询
+        </div>
+    </div>
+      <el-row style="margin-top:10px" type="flex" align="left">
+        <div style="margin-top:10px">询单单位名称:</div>
+        <el-input style="width:12%;margin-left:10px" v-model="khName" clearable placeholder="询单单位名称" @keydown.enter.native="queryprojects"></el-input>
+
+          <div style="margin-top:10px;margin-left:20px">询单人员姓名:</div>
+          <el-input style="width:12%;margin-left:10px" v-model="customerName" clearable placeholder="询单人员姓名" @keydown.enter.native="queryprojects"></el-input>
+
+        <div style="margin-top:10px;margin-left:20px">产品名称:</div>
+          <el-input style="width:12%;margin-left:10px" v-model="productName"  clearable placeholder="产品名称" @keydown.enter.native="queryprojects"></el-input>
+
+        <div style="margin-top:10px;margin-left:20px">cas号:</div>
+          <el-input style="width:12%;margin-left:10px" v-model="casName"  clearable placeholder="请输入cas号" @keydown.enter.native="queryprojects"></el-input>
+        <el-button style="margin-left:20px; width:10%" type="primary" v-on:click="queryprojects()" icon="el-icon-search" round>查询</el-button>
+      </el-row>
+    <el-row style="margin-top:20px" type="flex" algin="left">
+      <div style="margin-top:10px">选择时间范围:</div>
+          <el-select v-model="interval" clearable placeholder="时间范围" style="margin-left:10px; width:12%" type="flex">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+      <div style="margin-top:10px; margin-left:20px">选择成交结果:</div>
+          <el-select style="margin-left:10px;width:12%" v-model="project_result_kf" type="flex" clearable placeholder="成交结果">
+            <el-option
+              v-for="item in options2"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        <div style="margin-top:10px;margin-left:20px" class="demonstration">起止日期：</div>
+      <el-date-picker
+        v-model="value1"
+        type="daterange"
+        value-format="yyyy-MM-dd"
+        align="right"
+        start-placeholder="开始日期"
+        range-separator="至"
+        end-placeholder="结束日期"
+        style="width:30%"
+        :picker-options="setDisabled"
+      @change="dateFormat">
+      </el-date-picker>
+    </el-row>
+    <hr style="margin-top: 10px">
+      <div v-for="(x, index) in list" :key="x.projectid" style="margin-top:20px">
       <el-row>
-        <el-col :span="4">
+        <el-col :span="3">
           <div>编号：{{ x.projectid }}</div>
         </el-col>
         <el-col :span="4">
-          <div>客户：{{ x.khname }} - {{x.khryname}}</div>
+          <div>客户：{{ x.khname }}-{{x.khryname}}</div>
         </el-col>
         <el-col :span="4">
           <div>询单产品：{{ x.projectname }}</div>
@@ -32,8 +69,11 @@
         <el-col :span="6">
           <div>询单日期：{{ x.createdate }}</div>
         </el-col>
-        <el-col :span="5">
+        <el-col :span="4">
           <div>成交结果：{{ x.projectZt.projectresultkf }}</div>
+        </el-col>
+        <el-col :span="2">
+          <el-button style="margin-top:-5px" size="small" type="primary" icon="el-icon-download" @click="download(x,index)">下载</el-button>
         </el-col>
       </el-row>
       <el-row style="margin-top:10px">
@@ -92,6 +132,13 @@
       </el-dialog>
       <el-dialog title="客户信息" :visible.sync="dialogTableVisible[index].cflag">
         <el-descriptions :column="3" border>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-office-building"></i>
+              询单单位名称
+            </template>
+            {{ x.khname }}
+          </el-descriptions-item>
           <el-descriptions-item>
             <template slot="label">
               <i class="el-icon-user"></i>
@@ -278,7 +325,7 @@
                 <i class="el-icon-document"></i>
                 项目技术文档
               </template>
-              <div v-for ="(item,index) in x.papersjs" v-bind:key="index">
+              <div v-for ="(item,index) in x.papersjsList" v-bind:key="index">
                 <div v-if= "index === 0">
                   <div v-if="item.includes('.pdf')">
                     <a :href="item" target="_blank">{{x.paperType[index]}}</a>
@@ -389,12 +436,13 @@
                 <el-button type="primary" @click="dialogTableVisible[index].priceflag = false">确 定</el-button>
               </div>
             </el-dialog>
-    </el-row>
+    </div>
     <el-pagination class="fy1"
                    layout="total, sizes, prev, pager, next, jumper"
                    :total="total"
                    :page-sizes="[3, 5]"
                    :page-size= "pageSize"
+                   :current-page.sync= "currentPage"
                    v-show="total>3"
                    @size-change="handleSizeChange"
                    @current-change="handleCurrentChange"
@@ -404,9 +452,17 @@
 </template>
 
 <script>
+import Docxtemplater from 'docxtemplater'
+import PizZip from 'pizzip'
+import JSZipUtils from 'jszip-utils'
+import {saveAs} from 'file-saver'
+import JSZip from 'jszip'
 import IdentityCheck from './IdentityCheck'
+import expressions from 'angular-expressions'
+import ImageModule from 'docxtemplater-image-module-free'
 export default {
   name: 'M2',
+  inject: ['reload'],
   data () {
     return {
       list: [],
@@ -416,13 +472,69 @@ export default {
       currentPage: 1,
       pageSize: 3,
       total: 0,
-      papersjs: [],
+      papersjList: [],
       interval: '',
       project_result_kf: '',
       projectdetailList: [],
       projectIds: [],
       deleteflags: [],
-      materials: []
+      materials: [],
+      khName: '',
+      customerName: '',
+      productName: '',
+      casName: '',
+      value1: '',
+      startTime: '',
+      endTime: '',
+      setDisabled: {
+        disabledDate (time) {
+          return time.getTime() > Date.now()
+        }
+      },
+      options: [
+        {
+          value: '1',
+          label: '当天'
+        },
+        {
+          value: '3',
+          label: '近3天'
+        },
+        {
+          value: '7',
+          label: '近1周'
+        },
+        {
+          value: '30',
+          label: '近1个月'
+        },
+        {
+          value: '365',
+          label: '近1年'
+        },
+        {
+          value: '30000',
+          label: '所有'
+        }
+      ],
+      options2: [
+        {
+          value: '所有',
+          label: '所有'
+        },
+        {
+          value: '成交',
+          label: '成交'
+        },
+        {
+          value: '未成交',
+          label: '未成交'
+        },
+        {
+          value: '待定',
+          label: '待定'
+        }
+      ]
     }
   },
   created () {
@@ -439,20 +551,33 @@ export default {
     }
   },
   methods: {
+    dateFormat (picker) {
+      this.startTime = picker[0].toString()
+      this.endTime = picker[1].toString()
+    },
     queryprojects () {
+      this.currentPage = 1
       this.$axios
-        .post('/allproj', {
+        .post('/queryByKeywords', {
           page: this.currentPage,
           size: this.pageSize,
           interval: this.interval,
-          resultkf: this.project_result_kf
+          resultkf: this.project_result_kf,
+          customerName: this.customerName,
+          productName: this.productName,
+          casName: this.casName,
+          khName: this.khName,
+          startTime: this.startTime,
+          endTime: this.endTime
         })
         .then(successResponse => {
           if (successResponse.data.success) {
             this.list = successResponse.data.data.content
             this.total = successResponse.data.data.totalElements
             if (this.list.length < 1) {
-              this.$message('无项目记录')
+              this.$message.success('无项目记录')
+            } else {
+              this.$message.success('查询成功')
             }
             this.projectIds = []
             this.projectdetailList = []
@@ -521,7 +646,7 @@ export default {
                         paperType.push(strss[strss.length - 1])
                       })
                       this.$set(this.list[m], 'paperType', paperType)
-                      this.$set(this.list[m], 'papersjs', strs)
+                      this.$set(this.list[m], 'papersjsList', strs)
                       this.$axios
                         .post('/querypriceinfo', {
                           projectid: this.list[m].projectid
@@ -581,7 +706,7 @@ export default {
                 if (successResponse.data.success) {
                   this.materials = successResponse.data.data
                 } else {
-                  this.$message(successResponse.data.msg)
+                  this.$message.error(successResponse.data.msg)
                 }
               })
               .catch(failResponse => {
@@ -593,8 +718,137 @@ export default {
         .catch(failResponse => {
         })
     },
-    menuClick (index) {
-      this.$router.push(index)
+    download (x, index) {
+      let _this = this
+      let promises = []
+      const zips = new JSZip()
+      let cache = {}
+      const promise = new Promise((resolve, reject) => {
+        JSZipUtils.getBinaryContent('./static/input.docx', (error, content) => {
+          // input.docx是模板。我们在导出的时候，会根据此模板来导出对应的数据
+          // 抛出异常
+          if (error) {
+            this.$message.error('下载异常，请重新下载')
+            throw error
+          }
+          expressions.filters.size = function (input, width, height) {
+            return {
+              data: input,
+              size: [width, height]
+            }
+          }
+          let opts = {}
+          opts = { centered: false }
+          opts.getImage = function (chartId) {
+            return _this.base64DataURLToArrayBuffer(chartId)
+          }
+          opts.getSize = function () {
+            return [580, 300]
+          }
+          // 创建一个JSZip实例，内容为模板的内容
+          let zip = new PizZip(content)
+          // 创建并加载docxtemplater实例对象
+          let doc = new Docxtemplater()
+          doc.attachModule(new ImageModule(opts))
+          doc.loadZip(zip)
+          // 设置模板变量的值
+          doc.setData({
+            ...x,
+            isdifficultjs: x.ztjs.isdifficultjs,
+            ztjsbz: x.ztjs.bz,
+            timeneeded: x.ztjs.timeneeded,
+            evaluationdate: x.ztjs.evaluationdate,
+            evaluationname: x.ztjs.evaluationname,
+            pricemodel: x.priceinfo.pricemodel,
+            materialcost: x.priceinfo.materialcost,
+            csmaterialcost: x.priceinfo.csmaterialcost,
+            rjmaterialcost: x.priceinfo.rjmaterialcost,
+            allcost: x.priceinfo.allcost,
+            wbprice: x.priceinfo.wbprice,
+            finalprice: x.priceinfo.finalprice,
+            projectresultkf: x.projectZt.projectresultkf,
+            ztkhfeedback: x.projectZt.khfeedback,
+            downloadTime: new Date(),
+            image1: _this.projectdetailList[index],
+            table: _this.materials[index]
+          })
+          try {
+            // 用模板变量的值替换所有模板变量
+            doc.render()
+          } catch (error) {
+            // 抛出异常
+            let e = {
+              message: error.message,
+              name: error.name,
+              stack: error.stack,
+              properties: error.properties
+            }
+            console.log(JSON.stringify({ error: e }))
+            throw error
+          }
+          // 生成一个代表docxtemplater对象的zip文件（不是一个真实的文件，而是在内存中的表示）
+          let out = doc.getZip().generate({
+            type: 'blob',
+            mimeType:
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+          })
+          zips.file(x.projectid + '号项目详细信息.docx', out, {binary: true})
+          cache[x.projectid + '号项目详细信息.docx'] = out
+          resolve()
+        })
+      })
+      promises.push(promise)
+      if (x.ztjs.papersjs !== '' && x.ztjs.papersjs !== null && x.projectZt.projectresultkf !== '未成交') {
+        for (let i = 0; i < x.papersjsList.length; i++) {
+          const promise1 = this.getImgArrayBuffer(x.papersjsList[i]).then((data) => {
+            zips.file(x.paperType[i], data, {binary: true})
+            cache[x.paperType[i]] = data
+          })
+          promises.push(promise1)
+        }
+      }
+      Promise.all(promises).then(() => {
+        zips.generateAsync({type: 'blob'}).then((content) => {
+          saveAs(content, x.projectid + '号项目详细信息.zip')
+        })
+      })
+      this.$message.success(`开始下载${x.projectid}号项目的相关信息`)
+    },
+    // 通过url 转为blob格式
+    getImgArrayBuffer (url) {
+      return new Promise((resolve, reject) => {
+        let xmlhttp = new XMLHttpRequest()
+        xmlhttp.open('GET', url, true)
+        xmlhttp.responseType = 'blob'
+        xmlhttp.onload = function () {
+          if (this.status === 200) {
+            resolve(this.response)
+          } else {
+            reject(this.status)
+          }
+        }
+        xmlhttp.send()
+      })
+    },
+    base64DataURLToArrayBuffer (dataURL) {
+      var Buffer = require('safe-buffer').Buffer
+      const base64Regex = /^data:image\/(png|jpg|svg|svg\+xml);base64,/
+      if (!base64Regex.test(dataURL)) {
+        return false
+      }
+      const stringBase64 = dataURL.replace(base64Regex, '')
+      let binaryString
+      if (typeof window !== 'undefined') {
+        binaryString = window.atob(stringBase64)
+      } else {
+        binaryString = new Buffer(stringBase64, 'base64').toString('binary')
+      }
+      const len = binaryString.length
+      const bytes = new Uint8Array(len)
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i)
+      }
+      return bytes.buffer
     },
     handleCommand (command) {
       window.sessionStorage.removeItem('account_id')
@@ -612,21 +866,29 @@ export default {
     getList (currentPage) {
       this.currentPage = currentPage
       this.$axios
-        .post('/allproj', {
+        .post('/queryByKeywords', {
           page: this.currentPage,
           size: this.pageSize,
           interval: this.interval,
-          resultkf: this.project_result_kf
+          resultkf: this.project_result_kf,
+          customerName: this.customerName,
+          productName: this.productName,
+          casName: this.casName,
+          khName: this.khName,
+          startTime: this.startTime,
+          endTime: this.endTime
         })
         .then(successResponse => {
           if (successResponse.data.success) {
             this.list = successResponse.data.data.content
             this.total = successResponse.data.data.totalElements
             if (this.list.length < 1) {
-              this.$message('无项目记录')
+              this.$message.success('无项目记录')
+            } else {
+              this.$message.success('查询成功')
             }
-            this.projectdetailList = []
             this.projectIds = []
+            this.projectdetailList = []
             this.deleteflags = []
             for (let m in this.list) {
               this.dialogTableVisible.push({
@@ -655,9 +917,8 @@ export default {
                 allcost: '',
                 finalprice: ''
               }
-              // 为了做图片的显示
+              // 为了进行动态处理图片
               this.projectdetailList.push(this.list[m].projectdetails)
-              // 用于查询原料信息
               this.projectIds.push(this.list[m].projectid)
               this.deleteflags.push('1')
               if (this.list[m].projectZt.projectztjs === '已评估-不可行') {
@@ -688,13 +949,12 @@ export default {
                       this.list[m].ztjs.evaluationdate = successResponse.data.data.evaluationdate.substr(0, 10)
                       let strs = successResponse.data.data.papersjs.split('||')
                       let paperType = []
-                      console.log('strs', strs)
                       strs.forEach(item => {
                         let strss = item.split('&&')
                         paperType.push(strss[strss.length - 1])
                       })
                       this.$set(this.list[m], 'paperType', paperType)
-                      this.$set(this.list[m], 'papersjs', strs)
+                      this.$set(this.list[m], 'papersjsList', strs)
                       this.$axios
                         .post('/querypriceinfo', {
                           projectid: this.list[m].projectid
@@ -754,7 +1014,7 @@ export default {
                 if (successResponse.data.success) {
                   this.materials = successResponse.data.data
                 } else {
-                  this.$message(successResponse.data.msg)
+                  this.$message.error(successResponse.data.msg)
                 }
               })
               .catch(failResponse => {
