@@ -255,6 +255,22 @@ export default {
   },
   methods: {
     feasible_submit () {
+      if (this.input.hsl === 0 && this.input.csl === 0 && this.input.msl === 0) {
+        this.$message.error('氢谱、碳谱、质谱不能全为0，请补充完整！')
+        return
+      }
+      if (this.input.isdifficultjs === '') {
+        this.$message.error('技术难度不能为空，请完成选择！')
+        return
+      }
+      if (this.input.timeneeded === '') {
+        this.$message.error('完成项目时间不能为空！')
+        return
+      }
+      if (this.input.timeneeded === '0') {
+        this.$message.error('完成项目时间不能是0天！')
+        return
+      }
       let _this = this
       this.$axios
         .post('/JS/AddNewFeasibleProj', {

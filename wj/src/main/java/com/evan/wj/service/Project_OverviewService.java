@@ -394,7 +394,7 @@ public class Project_OverviewService {
                     predicateList.add(criteriaBuilder.lessThanOrEqualTo(join.get("timed"), interval * 24));
                 }
                 if (StringUtils.isNotEmpty(khryname)) {
-                    predicateList.add(criteriaBuilder.equal(root.get("khryname"), khryname));
+                    predicateList.add(criteriaBuilder.like(root.get("khryname"), "%"+khryname+"%"));
                 }
                 if (StringUtils.isNotEmpty(projectname)) {
                     predicateList.add(criteriaBuilder.like(root.get("projectname"), "%" + projectname + "%"));
@@ -403,7 +403,7 @@ public class Project_OverviewService {
                     predicateList.add(criteriaBuilder.equal(root.get("cas"), cas));
                 }
                 if (StringUtils.isNotEmpty(khName)) {
-                    predicateList.add(criteriaBuilder.equal(root.get("khname"), khName));
+                    predicateList.add(criteriaBuilder.like(root.get("khname"), "%"+khName+"%"));
                 }
                 if (StringUtils.isNotEmpty(startTime) && StringUtils.isNotEmpty(endTime)) {
                     predicateList.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdate").as(String.class), startTime));
