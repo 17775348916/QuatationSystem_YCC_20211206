@@ -51,13 +51,13 @@
               </template>
             </el-table-column>
             <el-table-column
-              label="高校报价系数">
+              label="产品报价系数">
               <template slot-scope="scope">
                 <el-input v-model="scope.row.collegecoefficient" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
               </template>
             </el-table-column>
             <el-table-column
-              label="产品报价系数">
+              label="高校报价系数">
               <template slot-scope="scope">
                 <el-input v-model="scope.row.productcoefficient" oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
               </template>
